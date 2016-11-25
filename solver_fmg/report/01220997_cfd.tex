@@ -146,8 +146,12 @@ To find the maximum error $\epsilon_{max}$ there are two methods possible:
 
 Whilst for the given problem an analytical solution is possible/feasible to find. Analytical results will not be used, to find $\epsilon_{max}$, as this is not practical for more complex problems.
 
+\subsection*{Convergence}
+
+To determine the point at which the finite difference approximation has converged to a solution the residual is calculated. The residual is seen to be the change in solution between two successive iterations. Note that this must be the maximum residual, $R_{max}$ not a mean of the residuals across the entire domain.
+
 \subsection*{Grid Independence}
-To find an approximation of the true solution a grid independence test is performed. Grid independence occurs when, the solution stops changing or changes very little as the number of elements is increased from $N$ to $2N$. This requires the solutions to have converged, the point at which convergence occurs must be identical between solutions. The point of convergence is said to be when the change in residual $R < 1 \times 10^{-6}$ between two successive iterations. Note that this must be the maximum residual, $R_{max}$ not a mean of the residuals across the entire domain.
+To find an approximation of the true solution a grid independence test is performed. Grid independence occurs when, the solution stops changing or changes very little as the number of elements is increased from $N$ to $2N$. This requires the solutions to have converged, the point at which convergence occurs must be identical between solutions. 
 
 \begin{figure}[!htb]
 \centering

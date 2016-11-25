@@ -4,8 +4,7 @@
 #	Description: 
 #		Solves the equation using Gauss-Seidel.
 #----------------------------------------------------------#
-# import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+# import matplotlib.cm as cm
 import numpy as np
 import mesh_gen as mg
 import bc_gen as bc
@@ -13,6 +12,7 @@ import solvers as run
 import store_file as sve
 import optparse
 import time
+import sys
 
 def arg():
 	# Define number of elements in x and y axes and also the numbe rof iterations in x1000
@@ -46,9 +46,9 @@ def main():
 	t0 = time.time()
 
 	if scheme == 1:
-		x, emax, t = run.gauss_seidel(V,R,x,b,itar,tinel)
+		x, emax, t = run.gauss_seidel(V,R,x,b,itar,tinel,n)
 	elif scheme == 2:
-		x, emax, t = run.sor(V,R,x,b,itar,tinel)
+		x, emax, t = run.sor(V,R,x,b,itar,tinel,n)
 	else:
 		print('Error: No scheme selected, 1 = Gauss-Seidel, 2 = Successive Overrelaxation')
 		quit()
