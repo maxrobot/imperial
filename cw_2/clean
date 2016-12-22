@@ -1,0 +1,4 @@
+rm output* 
+rm vort*
+rm ./images/temp*
+rm ./data/*

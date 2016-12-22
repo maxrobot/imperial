@@ -1,2 +1,0 @@
-rm ./data/*.txt
-rm ./images/*.svg
