@@ -12,7 +12,7 @@ program navierstokes
 !
   implicit none   !-->all the variables MUST be declared
 !
-  integer,parameter :: nx=129,ny=129,nt=10000,ns=3,nf=3,mx=nf*nx,my=nf*ny
+  integer,parameter :: nx=129,ny=129,nt=1000000,ns=3,nf=3,mx=nf*nx,my=nf*ny
   !size of the computational domain (nx x ny) 
   !size of the exchanger (mx x my)
   !number of time step for the simulation
@@ -44,7 +44,7 @@ program navierstokes
   ! AB2 temporal scheme itemp=1, RK3 temporal scheme itemp=2
     itemp=1
   ! Circular Cylinder geom=1, Square Cylinder geom=2
-    geom=1
+    geom=2
   ! Order selection Second order=2, Fourth order=4
     order=4
 
@@ -814,16 +814,6 @@ subroutine derix4(phi,nx,ny,dfi,xlx)
   real(8),dimension(nx,ny) :: phi,dfi
   real(8) :: dlx,xlx,udx
   integer :: i,j,nx,ny
-  
-  ! dlx=xlx/nx
-  ! udx=1./(dlx+dlx)
-  ! do j=1,ny
-  !    dfi(1,j)=udx*(phi(2,j)-phi(nx,j))
-  !    do i=2,nx-1
-  !       dfi(i,j)=udx*(phi(i+1,j)-phi(i-1,j))
-  !    enddo
-  !    dfi(nx,j)=udx*(phi(1,j)-phi(nx-1,j))
-  ! enddo
 
   dlx=12*(xlx/nx)
   udx=1./dlx
@@ -875,10 +865,9 @@ end subroutine deriy4
 !############################################
 
 !############################################
-!
 subroutine derxx4(phi,nx,ny,dfi,xlx)
 !
-!Fourth-order second derivative in y direction
+!Fourth-order second derivative in x direction
 !############################################
 
   implicit none
@@ -888,22 +877,21 @@ subroutine derxx4(phi,nx,ny,dfi,xlx)
   integer :: i,j,nx,ny
 
   dlx=xlx/nx
-  udx=1./(dlx*dlx)
+  udx=1./( 12.*(dlx*dlx) )
   do j=1,ny
-     dfi(1,j)=udx*(phi(2,j)-(phi(1,j)+phi(1,j))+phi(nx,j))
-     do i=2,nx-1
-        dfi(i,j)=udx*(phi(i+1,j)-(phi(i,j)+phi(i,j))&
-             +phi(i-1,j))
+     dfi(1,j)=udx*(-phi(3,j) + 16*phi(2,j)- 30*phi(1,j) + 16*phi(nx,j) - phi(nx-1,j))
+     dfi(2,j)=udx*(-phi(4,j) + 16*phi(3,j)- 30*phi(2,j) + 16*phi(1,j) - phi(nx,j))
+     do i=3,nx-2
+       dfi(i,j)=udx*(-phi(i+2,j) + 16*phi(i+1,j)- 30*phi(i,j) + 16*phi(i-1,j) - phi(i-2,j))
      enddo
-     dfi(nx,j)=udx*(phi(1,j)-(phi(nx,j)+phi(nx,j))+phi(nx-1,j))
+     dfi(nx-1,j)=udx*(-phi(1,j) + 16*phi(nx,j)- 30*phi(nx-1,j) + 16*phi(nx-2,j) - phi(nx-3,j))
+     dfi(nx,j)=udx*(-phi(2,j) + 16*phi(1,j)- 30*phi(nx,j) + 16*phi(nx-1,j) - phi(nx-2,j))
   enddo
-    
   return
 end subroutine derxx4
 !############################################
 
 !############################################
-!
 subroutine deryy4(phi,nx,ny,dfi,yly)
 !
 !Fourth-order second derivative in the y direction
@@ -914,21 +902,23 @@ subroutine deryy4(phi,nx,ny,dfi,yly)
   real(8),dimension(nx,ny) ::  phi,dfi
   real(8) :: dly,yly,udy
   integer :: i,j,nx,ny
-
+  
   dly=yly/ny
-  udy=1./(dly*dly)
-  do j=2,ny-1
-     do i=1,nx
-        dfi(i,j)=udy*(phi(i,j+1)-(phi(i,j)+phi(i,j))&
-             +phi(i,j-1))
+  udy=1./( 12*(dly*dly) )
+  do i=1,nx
+    dfi(i,1)=udy*(-phi(i,3) + 16*phi(i,2) - (30*phi(i,1)) + 16*phi(i,ny) - phi(i,ny-1))
+    dfi(i,2)=udy*(-phi(i,4) + 16*phi(i,3) - (30*phi(i,2)) + 16*phi(i,ny-1) - phi(i,ny-2))
+  enddo
+  do j=3,ny-1
+    do i=1,nx
+      dfi(i,j)=udy*(-phi(i,j+2) + 16*phi(i,j+1) - (30*phi(i,j)) + 16*phi(i,j-1) - phi(i,j-2))
      enddo
   enddo
   do i=1,nx
-     dfi(i,1)=udy*(phi(i,2)-(phi(i,1)+phi(i,1))+phi(i,ny))
-     dfi(i,ny)=udy*(phi(i,1)-(phi(i,ny)+phi(i,ny))+phi(i,ny-1))
+    dfi(i,ny-1)=udy*(-phi(i,1) + 16*phi(i,ny) - (30*phi(i,ny-1)) + 16*phi(i,ny-2) - phi(i,ny-3))
+    dfi(i,ny)=udy*(-phi(i,2) + 16*phi(i,1) - (30*phi(i,ny)) + 16*phi(i,ny-1) - phi(i,ny-2))
   enddo
-  
-  
+
   return
 end subroutine deryy4
 !############################################
