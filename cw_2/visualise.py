@@ -6,9 +6,9 @@ import matplotlib.cm as cm
 import numpy as np
 
 
-for x in xrange(10,100):
+for x in xrange(1,5):
 	# Open the first file
-	crs = open('./data/output00' + str(x),'r')
+	crs = open('./data/output000' + str(x),'r')
 	D = np.loadtxt(crs)
 
 	# Create Subplot

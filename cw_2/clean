@@ -2,3 +2,5 @@ rm output*
 rm vort*
 rm ./images/temp*
 rm ./data/*
+rm gmon.*
+rm analysis.txt

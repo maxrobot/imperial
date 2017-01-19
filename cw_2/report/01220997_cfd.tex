@@ -27,7 +27,7 @@
 
 %\usepackage{times} % Uncomment to use the Times New Roman font
 
-\input{/home/fmg215/Documents/latex/symbols.tex}
+\input{/home/friedrich/ownCloud/latex/symbols.tex}
 %----------------------------------------------------------------------------------------
 %	DOCUMENT INFORMATION
 %----------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@
   \caption{$n_t = 10000$}
   \label{fig:sub2}
 \end{subfigure}
-\caption{A figure with two subfigures}
+\caption{Vorticity plots, CFL = 0.25, Adams-Bashford Scheme, 2\textsuperscript{nd} order accuracy derivatives.}
 \label{fig:test}
 \end{figure}
 
@@ -133,7 +133,7 @@ It is not possible to run the simulations with a CFL of 0.75.
   \caption{$n_t = 10000$}
   \label{fig:sub2}
 \end{subfigure}
-\caption{A figure with two subfigures}
+\caption{Vorticity plots, CFL = 0.75, 3\textsuperscript{rd} order Runge-Kutta Scheme, 2\textsuperscript{nd} order accuracy derivatives.}
 \label{fig:test}
 \end{figure}
 
@@ -143,17 +143,82 @@ It is not possible to run the simulations with a CFL of 0.75.
 \section{}
 \textbf{Instead of circular cylinders, run a simulation using the same parameters as in the first simulation (second order Adams-Bashforth scheme, \url{itemp=1}, $CFL=0.25$) but with square cylinders. The subroutine \url{initl} needs to be modified, in particular for the array \url{eps}. For example, you can define \url{imin},\url{imax},\url{jmin},\url{jmax} where (\url{imin},\url{jmin}) is the bottom left corner of the square, (\url{imin},\url{jmax}) the bottom right corner, (\url{imax},\url{jmin}) the top left corner and (\url{imax},\url{jmax}) the top right corner. The length of the square will be equal to the diameter d of the circular cylinder. Generate 4 visualisations of the vortcity field for $nt = 2500, 5000, 7500, 10000$. Copy-paste the new 2D loop for the square cylinder in your report and briefly comment on the results in less than 50 words.}
 
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{q4_0001}
+  \caption{$n_t = 2500$}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{q4_0002}
+  \caption{$n_t = 5000$}
+  \label{fig:sub2}
+\end{subfigure}
+\newline
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{q4_0003}
+  \caption{$n_t = 7500$}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{q4_0004}
+  \caption{$n_t = 10000$}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Vorticity plots, CFL = 0.75, 3\textsuperscript{rd} order Runge-Kutta Scheme, 2\textsuperscript{nd} order accuracy derivatives.}
+\label{fig:test}
+\end{figure}
+
+
 %----------------------------------------------------------------------------------------
 %	QUESTION 5
 %----------------------------------------------------------------------------------------
 \section{}
 \textbf{We want to use centered fourth-order schemes for the first and second derivatives in the two spatial directions. Write four new subroutines, using the skeletons provided in the code : \url{derix4, deriy4, derxx4} and \url{deryy4}. In the subroutine \url{fluxx}, replace the second-order first and second derivatives with the new fourth-order ones. Then run a simulation with same parameters as the first simulation (question 1) but with the new the fourth-order schemes. Generate 4 visualisations of the vorticity field for $nt = 2500, 5000, 7500, 10000$. Briefly comment on the results and discuss the differences (if any) with the first simulation (question 1) in less than 100 words. Copy-paste the four new subroutines in your report.}
 
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{q5_0001}
+  \caption{$n_t = 2500$}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{q5_0002}
+  \caption{$n_t = 5000$}
+  \label{fig:sub2}
+\end{subfigure}
+\newline
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{q5_0003}
+  \caption{$n_t = 7500$}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1.1\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{q5_0004}
+  \caption{$n_t = 10000$}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Vorticity plots, CFL = 025, Adams-Bashford Scheme, 4\textsuperscript{th} order accuracy derivatives.}
+\label{fig:test}
+\end{figure}
+
 %----------------------------------------------------------------------------------------
 %	QUESTION 6
 %----------------------------------------------------------------------------------------
 \section{}
 \textbf{What will happen to the flow if you run the simulation in question 1 for a very long time? Justify your answer in less than 100 words.}
+
+Running the simulation for a long period of time would see the decay of any flows. This due to the truncation behaving as a dissipative term and as the simulation is using periodic boundary conditions there is no velocity added as $t \rightarrow \infty$. 
 
 %---------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY

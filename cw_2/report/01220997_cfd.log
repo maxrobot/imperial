@@ -1,15 +1,15 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.9.30)  21 DEC 2016 12:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev/Debian) (preloaded format=pdflatex 2016.9.9)  24 DEC 2016 22:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **01220997_cfd.tex
 (./01220997_cfd.tex
-LaTeX2e <2011/06/27>
-Babel <3.9h> and hyphenation patterns for 78 languages loaded.
+LaTeX2e <2014/05/01>
+Babel <3.9l> and hyphenation patterns for 4 languages loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
-Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
-File: size10.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
 )
 \c@part=\count79
 \c@section=\count80
@@ -82,7 +82,7 @@ LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amscls/amsthm.sty
-Package: amsthm 2004/08/06 v2.20
+Package: amsthm 2009/07/02 v2.20.1
 \thm@style=\toks19
 \thm@bodyfont=\toks20
 \thm@headfont=\toks21
@@ -104,10 +104,10 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
-Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+Package: graphicx 2014/04/25 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
 
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
-Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+Package: keyval 2014/05/08 v1.15 key=value parser (DPC)
 \KV@toks@=\toks25
 )
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
@@ -311,7 +311,7 @@ Package caption Info: hyperref package is loaded.
 \c@subfigure=\count115
 \c@subtable=\count116
 )
-(/home/fmg215/Documents/latex/symbols.tex
+(/home/friedrich/ownCloud/latex/symbols.tex
 \MiniPageLeft=\skip53
 \MiniPageRight=\skip54
 \MiniPageSmall=\skip55
@@ -350,6 +350,60 @@ LaTeX Warning: Label `fig:sub2' multiply defined.
 
 
 LaTeX Warning: Label `sub@fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `fig:sub1' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:sub1' multiply defined.
+
+
+LaTeX Warning: Label `fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `fig:sub1' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:sub1' multiply defined.
+
+
+LaTeX Warning: Label `fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `fig:test' multiply defined.
+
+
+LaTeX Warning: Label `fig:sub1' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:sub1' multiply defined.
+
+
+LaTeX Warning: Label `fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `fig:sub1' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:sub1' multiply defined.
+
+
+LaTeX Warning: Label `fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `sub@fig:sub2' multiply defined.
+
+
+LaTeX Warning: Label `fig:test' multiply defined.
 
 
 LaTeX Warning: Label `fig:sub1' multiply defined.
@@ -541,7 +595,7 @@ Overfull \hbox (24.18631pt too wide) in paragraph at lines 85--86
  []
 
 [2 <./images/q1_0001.png> <./images/q1_0002.png> <./images/q1_0003.png> <./imag
-es/q1_0004.png>] <./images/q3_0001.png, id=71, 578.16pt x 433.62pt>
+es/q1_0004.png>] <./images/q3_0001.png, id=72, 578.16pt x 433.62pt>
 File: ./images/q3_0001.png Graphic file (type png)
 
 <use ./images/q3_0001.png>
@@ -552,7 +606,7 @@ Overfull \hbox (24.18631pt too wide) in paragraph at lines 113--114
  [][] 
  []
 
-<./images/q3_0002.png, id=73, 578.16pt x 433.62pt>
+<./images/q3_0002.png, id=74, 578.16pt x 433.62pt>
 File: ./images/q3_0002.png Graphic file (type png)
  <use ./images/q3_0002.png>
 Package pdftex.def Info: ./images/q3_0002.png used on input line 119.
@@ -562,7 +616,7 @@ Overfull \hbox (24.18631pt too wide) in paragraph at lines 119--120
  [][] 
  []
 
-<./images/q3_0003.png, id=75, 578.16pt x 433.62pt>
+<./images/q3_0003.png, id=76, 578.16pt x 433.62pt>
 File: ./images/q3_0003.png Graphic file (type png)
  <use ./images/q3_0003.png>
 Package pdftex.def Info: ./images/q3_0003.png used on input line 126.
@@ -572,7 +626,7 @@ Overfull \hbox (24.18631pt too wide) in paragraph at lines 126--127
  [][] 
  []
 
-<./images/q3_0004.png, id=77, 578.16pt x 433.62pt>
+<./images/q3_0004.png, id=78, 578.16pt x 433.62pt>
 File: ./images/q3_0004.png Graphic file (type png)
  <use ./images/q3_0004.png>
 Package pdftex.def Info: ./images/q3_0004.png used on input line 132.
@@ -583,28 +637,111 @@ Overfull \hbox (24.18631pt too wide) in paragraph at lines 132--133
  []
 
 [3 <./images/q3_0001.png> <./images/q3_0002.png> <./images/q3_0003.png> <./imag
-es/q3_0004.png>] [4]
+es/q3_0004.png>] <./images/q4_0001.png, id=109, 578.16pt x 433.62pt>
+File: ./images/q4_0001.png Graphic file (type png)
+
+<use ./images/q4_0001.png>
+Package pdftex.def Info: ./images/q4_0001.png used on input line 150.
+(pdftex.def)             Requested size: 266.03473pt x 192.26556pt.
+
+Overfull \hbox (24.18631pt too wide) in paragraph at lines 150--151
+ [][] 
+ []
+
+<./images/q4_0002.png, id=111, 578.16pt x 433.62pt>
+File: ./images/q4_0002.png Graphic file (type png)
+ <use ./images/q4_0002.png>
+Package pdftex.def Info: ./images/q4_0002.png used on input line 156.
+(pdftex.def)             Requested size: 266.03473pt x 192.26556pt.
+
+Overfull \hbox (24.18631pt too wide) in paragraph at lines 156--157
+ [][] 
+ []
+
+<./images/q4_0003.png, id=113, 578.16pt x 433.62pt>
+File: ./images/q4_0003.png Graphic file (type png)
+ <use ./images/q4_0003.png>
+Package pdftex.def Info: ./images/q4_0003.png used on input line 163.
+(pdftex.def)             Requested size: 266.03473pt x 192.26556pt.
+
+Overfull \hbox (24.18631pt too wide) in paragraph at lines 163--164
+ [][] 
+ []
+
+<./images/q4_0004.png, id=115, 578.16pt x 433.62pt>
+File: ./images/q4_0004.png Graphic file (type png)
+ <use ./images/q4_0004.png>
+Package pdftex.def Info: ./images/q4_0004.png used on input line 169.
+(pdftex.def)             Requested size: 266.03473pt x 192.26556pt.
+
+Overfull \hbox (24.18631pt too wide) in paragraph at lines 169--170
+ [][] 
+ []
+
+<./images/q5_0001.png, id=120, 578.16pt x 433.62pt>
+File: ./images/q5_0001.png Graphic file (type png)
+ <use ./images/q5_0001.png>
+Package pdftex.def Info: ./images/q5_0001.png used on input line 188.
+(pdftex.def)             Requested size: 266.03473pt x 192.26556pt.
+
+Overfull \hbox (24.18631pt too wide) in paragraph at lines 188--189
+ [][] 
+ []
+
+<./images/q5_0002.png, id=122, 578.16pt x 433.62pt>
+File: ./images/q5_0002.png Graphic file (type png)
+ <use ./images/q5_0002.png>
+Package pdftex.def Info: ./images/q5_0002.png used on input line 194.
+(pdftex.def)             Requested size: 266.03473pt x 192.26556pt.
+
+Overfull \hbox (24.18631pt too wide) in paragraph at lines 194--195
+ [][] 
+ []
+
+<./images/q5_0003.png, id=124, 578.16pt x 433.62pt>
+File: ./images/q5_0003.png Graphic file (type png)
+ <use ./images/q5_0003.png>
+Package pdftex.def Info: ./images/q5_0003.png used on input line 201.
+(pdftex.def)             Requested size: 266.03473pt x 192.26556pt.
+
+Overfull \hbox (24.18631pt too wide) in paragraph at lines 201--202
+ [][] 
+ []
+
+<./images/q5_0004.png, id=126, 578.16pt x 433.62pt>
+File: ./images/q5_0004.png Graphic file (type png)
+ <use ./images/q5_0004.png>
+Package pdftex.def Info: ./images/q5_0004.png used on input line 207.
+(pdftex.def)             Requested size: 266.03473pt x 192.26556pt.
+
+Overfull \hbox (24.18631pt too wide) in paragraph at lines 207--208
+ [][] 
+ []
+
+[4 <./images/q4_0001.png> <./images/q4_0002.png> <./images/q4_0003.png> <./imag
+es/q4_0004.png>] [5 <./images/q5_0001.png> <./images/q5_0002.png> <./images/q5_
+0003.png> <./images/q5_0004.png>]
 No file 01220997_cfd.bbl.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 171.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 171.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 236.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 236.
 (./01220997_cfd.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 171.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 171.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 236.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 236.
 Package rerunfilecheck Info: File `01220997_cfd.out' has not changed.
 (rerunfilecheck)             Checksum: 3DC43373EC07B03296A6788CDFF2BB59;210.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 171.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 236.
  ) 
 Here is how much of TeX's memory you used:
- 8294 strings out of 493304
- 119866 string characters out of 6139871
- 214999 words of memory out of 5000000
- 11635 multiletter control sequences out of 15000+600000
+ 8336 strings out of 494977
+ 120785 string characters out of 6180184
+ 212949 words of memory out of 5000000
+ 11429 multiletter control sequences out of 15000+600000
  10727 words of font info for 42 fonts, out of 8000000 for 9000
- 957 hyphenation exceptions out of 8191
+ 36 hyphenation exceptions out of 8191
  42i,8n,40p,904b,507s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
@@ -614,13 +751,14 @@ exmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mtt10.pfb>
-Output written on 01220997_cfd.pdf (4 pages, 1250446 bytes).
+/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pf
+b>
+Output written on 01220997_cfd.pdf (5 pages, 2398636 bytes).
 PDF statistics:
- 158 PDF objects out of 1000 (max. 8388607)
- 115 compressed objects within 2 object streams
- 13 named destinations out of 1000 (max. 500000)
- 137 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 200 PDF objects out of 1000 (max. 8388607)
+ 131 compressed objects within 2 object streams
+ 16 named destinations out of 1000 (max. 500000)
+ 225 words of extra memory for PDF output out of 10000 (max. 10000000)
 
