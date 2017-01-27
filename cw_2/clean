@@ -4,3 +4,4 @@ rm ./images/temp*
 rm ./data/*
 rm gmon.*
 rm analysis.txt
+rm a.out
