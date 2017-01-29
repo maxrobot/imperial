@@ -12,7 +12,7 @@ program navierstokes
 !
   implicit none   !-->all the variables MUST be declared
 !
-  integer,parameter :: nx=129,ny=129,nt=10000,ns=3,nf=3,mx=nf*nx,my=nf*ny
+  integer,parameter :: nx=129,ny=129,nt=50,ns=3,nf=3,mx=nf*nx,my=nf*ny
   !size of the computational domain (nx x ny) 
   !size of the exchanger (mx x my)
   !number of time step for the simulation
@@ -39,10 +39,10 @@ program navierstokes
 
   !Name of the file for visualisation:
 990 format('./data/output',I4.4)
-  imodulo=2500 !snapshots to be saved every imodulo time steps
+  imodulo=5 !snapshots to be saved every imodulo time steps
 
   ! AB2 temporal scheme itemp=1, RK3 temporal scheme itemp=2
-    itemp=2
+    itemp=1
   ! Circular Cylinder geom=1, Square Cylinder geom=2
     geom=1
   ! Order selection Second order=2, Fourth order=4
@@ -157,20 +157,20 @@ program navierstokes
         !this file will be used by gnuplot for visualisations
         open(21,file=nfile,form='formatted',status='unknown')
         ! Writes out vorticity
-        ! do j=1,my
-        !   do i=1,mx
-        !      write(21,fmt='(2F12.6)',advance='no')  tf(i,j)
-        !   enddo
-        !   write(21,*) 
-        ! enddo
-        ! Writes out velocity
-        do j=1,ny
-          do i=1,nx
-             write(21,fmt='(2F12.6)',advance='no')  uuu(i,j)
+        do j=1,my
+          do i=1,mx
+             write(21,fmt='(2F12.6)',advance='no')  tf(i,j)
           enddo
           write(21,*) 
         enddo
-        close (21)  
+        ! Writes out velocity
+        ! do j=1,ny
+        !   do i=1,nx
+        !      write(21,fmt='(2F12.6)',advance='no')  uuu(i,j)
+        !   enddo
+        !   write(21,*) 
+        ! enddo
+        ! close (21)  
 
        !Computation of average values
        call average(uuu,um,nx,ny)

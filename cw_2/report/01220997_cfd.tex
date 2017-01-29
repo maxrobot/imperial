@@ -27,7 +27,7 @@
 
 %\usepackage{times} % Uncomment to use the Times New Roman font
 
-\input{/home/fmg215/Documents/latex/symbols.tex}
+\input{/home/friedrich/ownCloud/latex/symbols.tex}
 %----------------------------------------------------------------------------------------
 %	DOCUMENT INFORMATION
 %----------------------------------------------------------------------------------------
@@ -61,7 +61,11 @@
 
 \noindent
 \newline
-In figure \ref{fig:q1} we see the heat exchanger at intervals of $625$ units of normalised time. In image $(a)$, the flow enters the left side of the domain at $x = 0$, we see it forms a stagnation point on the cylinder leading edge. Focusing on the rear of the cylinder vortex shedding has begun as there are small pockets of reverse flow on each half of the rear cylinder. In the following image $(b)$ the small vortices have begun to interact with the larger vortical formations which has perturbed the flow and is beginning to cause the shear layer to fluctuate around an imaginary centerline. If the problem were simply a cyclinder in a channel then this would inevitably become a Von K\'{a}rm\'{a}n street vortex\cite{Karman_1963}. However due to the existence of cylinders behind the initial wake, such a flow structure cannot form, instead in image $(d)$ we can see coherent vortical structures forming as the pertubation moves across the domain.
+In figure \ref{fig:q1} snapshots of the heat exchanger at intervals of $625$ units of normalised time are shown. Image $(a)$, the flow enters the left side of the domain at $x = 0$, a stagnation point is seen to form on the cylinder leading edge. As time passes and the flow begins to have large-scale coherent structures such as in a Von K\'{a}rm\'{a}n street vortex\cite{Karman_1963}. This can be identified in images $(a)$ and $(b)$, with small pockets of reverse flow present at each trailing edge.
+
+The vortices now traverse the domain and inevitably collide with the cylinders that are situated downstream, image $(c)$. Then in the following image $(d)$ they are seen to wrap around the heat exchangers.
+
+The highly vortical structures will have consequences for the convection and conduction of heat between the elements and the fluid within in the exchanger. Strong vortices will enhance the transport of fluid to the elements increase the conduction. Then the destruction of strong coherent formations will enhance the mixing of the heat throughout the fluid.
 
 \begin{figure}[htb!]
 \centering
@@ -99,7 +103,7 @@ In figure \ref{fig:q1} we see the heat exchanger at intervals of $625$ units of 
 
 \noindent
 \newline
-It is not possible to run the simulations with a CFL of 0.75. This is due to the numerical domain no longer containing the physical domain. The solution then accumulates errors which lead to the exponential growth of values throughout the domain and the eventual explosion of the solution.
+It is not possible to run the simulations with $CFL = 0.75$ using the Adams-Bashforth scheme. This is due to the numerical domain no longer containing the physical domain. The solution then accumulates errors which lead to the exponential growth of values throughout the domain. Hence NaN is found at all points within the domain after 44 iterations.
 %----------------------------------------------------------------------------------------
 %	QUESTION 3
 %----------------------------------------------------------------------------------------
@@ -109,7 +113,9 @@ It is not possible to run the simulations with a CFL of 0.75. This is due to the
 
 \noindent
 \newline
-Using the Runge-Kutta scheme the simulation is now stable for $CFL=0.75$. This means now for each time step in we would have needed three times steps when using the set up in question 1. Comparing the domains in figure \ref{fig:q1} $(c)$ to that of figure \ref{fig:q3} $(a)$, they are identical.
+Using the Runge-Kutta scheme the simulation is now stable for $CFL=0.75$. Hence for each time-step completed using this order of $CFL$, we would have required three iterations if the $CFL$ were at $0.25$. This is noted in comparison of the figure \ref{fig:q1} $(c)$ to that of figure \ref{fig:q3} $(a)$ which occur after the same period of time is simulated.
+
+In figure \ref{fig:comp_rkadm} we can see the centre-line velocity at $nt = 2500$ and $7500$ for the Runge-Kutta simulation with $CFL =  0.75$, and the Adams-Bashforth at $CFL = 0.25$ repsectively. Both have the identical velocity therefore we can see that the more stable scheme allows us to progress in time more rapidly. Thus we understand one of the key compromises in CFD, computation time against computational accuracy.
 
 \begin{figure}[!htb]
 \centering
@@ -138,7 +144,7 @@ Using the Runge-Kutta scheme the simulation is now stable for $CFL=0.75$. This m
 \label{fig:q3}
 \end{figure}
 
-In figure \ref{fig:comp_rkadm} we can see the centre-line velocity at $nt = 2500$ and $7500$ for the Runge-Kutta simulation with $CFL =  0.75$, and the Adams-Bashforth at $CFL = 0.25$ repsectively. Immediately obvious is that both have the identical velocity therefore we can see that the more stable scheme allows us to progress in time more rapidly. Thus we understand one of the key compromises in CFD, computation time against computational accuracy.
+Remarking on the development of the flow the strength of vortices decays significantly between images $(a)$ and $(d)$. This is caused by the destruction of the large coherent vortices by the heating elements. The vortices then spread and mix throughout the domain. The negative clock-wise vortex is travelling upwards in the y axis and will ultimately come into contact with the counter-clockwise vortex where they will interact further losing kinetic energy.
 
 \begin{figure}[!htb]
   \centering
@@ -154,7 +160,7 @@ In figure \ref{fig:comp_rkadm} we can see the centre-line velocity at $nt = 2500
 \section*{Question 4}
 %\textbf{Instead of circular cylinders, run a simulation using the same parameters as in the first simulation (second order Adams-Bashforth scheme, \url{itemp=1}, $CFL=0.25$) but with square cylinders. The subroutine \url{initl} needs to be modified, in particular for the array \url{eps}. For example, you can define \url{imin},\url{imax},\url{jmin},\url{jmax} where (\url{imin},\url{jmin}) is the bottom left corner of the square, (\url{imin},\url{jmax}) the bottom right corner, (\url{imax},\url{jmin}) the top left corner and (\url{imax},\url{jmax}) the top right corner. The length of the square will be equal to the diameter d of the circular cylinder. Generate 4 visualisations of the vortcity field for $nt = 2500, 5000, 7500, 10000$. Copy-paste the new 2D loop for the square cylinder in your report and briefly comment on the results in less than 50 words.}
 
-The square cylinders are shown in figure \ref{fig:q4}. The vorticity plots are very similar to those of the circular cylinders. However we can see the inner trailing vortex is far weaker than for circle. This is as there is no adverse pressure gradient to allow the grouwth of these counter rotating structures. This has the effect of increasing the strength of the large vortices which then begin to interact with the other cylinders downstream. Overall the solution has stronger more distinct vortices, but shares similar general characteristics of shear layer mixing.
+The square cylinders are shown in figure \ref{fig:q4}. The vorticity plots are very similar to those of the circular cylinders. However we can see the inner trailing vortex is far weaker than for circle. This is as there is no adverse pressure gradient to allow the grouth of these counter rotating structures. This has the effect of increasing the strength of the large vortices which then begin to interact with the other cylinders downstream. Overall the solution has stronger and more distinct separated vortices, but shares similar general characteristics of shear layer mixing as with the circular case.
 
 \begin{figure}[htb!]
 \centering
@@ -253,36 +259,40 @@ Plotting the centreline velocity of both the second and fourth order schemes aga
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.5\linewidth, clip=true, trim=1cm 2cm 1cm 1cm]{velocity1}
+  \includegraphics[width=.5\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{velocity1}
   \caption{$n_t = 2500$}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.5\linewidth, clip=true, trim=1cm 2cm 1cm 1cm]{velocity2}
+  \includegraphics[width=.5\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{velocity2}
   \caption{$n_t = 5000$}
 \end{subfigure}
 \newline
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.5\linewidth, clip=true, trim=1cm 2cm 1cm 1cm]{velocity3}
+  \includegraphics[width=.5\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{velocity3}
   \caption{$n_t = 7500$}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.5\linewidth, clip=true, trim=1cm 2cm 1cm 1cm]{velocity4}
+  \includegraphics[width=.5\linewidth, clip=true, trim=1cm 1cm 1cm 1cm]{velocity4}
   \caption{$n_t = 10000$}
 \end{subfigure}
-\caption{Vorticity plots, CFL = 0.25, Adams-Bashford Scheme, 4\textsuperscript{th} order accuracy derivatives.}
-\label{fig:q5}
+\caption{Centerline Velocity, CFL = 0.25, Adams-Bashford Scheme.}
+\label{fig:q5c}
 \end{figure}
+
+Comparison of the centerline velocity fields of the cylinders between 2\textsuperscript{nd} and 4\textsuperscript{th}, we see that there is a small difference in velocity profile however it only becomes apparent in figure \ref{fig:q5c} $(c)$ onwards. The profiles are somewhat smoothed, due to the inclusion of more points in the calculation. However from the centerline velocity alone it is not possible to say whether the 4\textsuperscript{th} or 2\textsuperscript{nd} order are more dissipative in reality. Though it is likely to be the 2\textsuperscript{nd} order version as it truncates more of the solution, and there are no discontinuities across which the larger stencil of the fourth order derivatives may lose energy mistakenly.
 
 %----------------------------------------------------------------------------------------
 %	QUESTION 6
 %----------------------------------------------------------------------------------------
 \section*{Question 6}
-\textbf{What will happen to the flow if you run the simulation in question 1 for a very long time? Justify your answer in less than 100 words.}
+%\textbf{What will happen to the flow if you run the simulation in question 1 for a very long time? Justify your answer in less than 100 words.}
 
-Running the simulation for a long period of time would see the decay of any flows. This due to the truncation behaving as a dissipative term and as the simulation is using periodic boundary conditions there is no velocity added as $t \rightarrow \infty$. 
+Running the simulation for a long period of time would see the decay of any flows. As the simulation adds velocity only upon initialising of the domain, the use of periodic boundary condition means there is no velocity input at inlet or outlet. Corollary to this the truncation errors behaves as a dissipative term, hence energy is removed from the domain upon each iteration. In CFD a pressure gradient is often added to periodic boundary condition problems to keep TKE (total kinetic energy) constant within the domain at each timestep.
+
+In regards to the development of the flow, the large coherent structures would break with each interaction of the heating elements. This would cause the development of a fully turbulent flow within the domain, though the grid resolution is under-resolved to capture this. Ergo the flow would simply dissipate for this case.
 
 %---------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
