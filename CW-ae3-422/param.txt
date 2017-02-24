@@ -8,10 +8,10 @@ number of elements: 2
 
 
 Physical Parameters ===========================================================
-youngs modulus (MPa): 210000
+youngs modulus (mpa): 210000
 rho (ton/mm^3): 7850
 
 Beam Dimensions ===============================================================
-beam length (m): 10. 
-cross-sectional width (m): 0.1
-cross-sectional height (m): 0.12 
+beam length (mm): 10000
+cross-sectional width (mm): 100
+cross-sectional height (mm): 12 0

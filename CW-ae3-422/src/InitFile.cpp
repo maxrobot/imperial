@@ -17,21 +17,24 @@ void readParamFile(ifstream& in_run_input_file)
 }
 
 void analyzeLine(string & keyword, const char * value){
-  if (!keyword.compare("number of iterations")){
-    sscanf(value,"%d",&nite_);
+  if (!keyword.compare("number of iterations"))
+  { sscanf(value,"%d",&nite_);
   }
-  if (!keyword.compare("number of elements")){
-    string tmp_value = string(value);
-     sscanf(value,"%d",&Nx_g);
+  if (!keyword.compare("number of elements"))
+  { string tmp_value = string(value);
+    sscanf(value,"%d",&Nx_g);
   }
-  if (!keyword.compare("beam length (m)")){
-    string tmp_value = string(value);
-     sscanf(value,"%lf",&lx_g);
+  if (!keyword.compare("beam length (mm)"))
+  { string tmp_value = string(value);
+    sscanf(value,"%lf",&lx_g);
   }
-  if (!keyword.compare("youngs modulus (MPa)")) sscanf(value,"%lf",&E_);
+  if (!keyword.compare("youngs modulus (mpa)"))
+  { string tmp_value = string(value);
+    sscanf(value,"%lf",&E_);
+  }
   if (!keyword.compare("rho (ton/mm^3)")) sscanf(value,"%lf",&rho_);
-  if (!keyword.compare("cross-sectional width (m)"))  sscanf(value,"%lf",&b_);
-  if (!keyword.compare("cross-sectional height (m)")) sscanf(value,"%lf", &h_);          
+  if (!keyword.compare("cross-sectional width (mm)"))  sscanf(value,"%lf",&b_);
+  if (!keyword.compare("cross-sectional height (mm)")) sscanf(value,"%lf", &h_);          
 }
 
 

@@ -2,6 +2,7 @@
 
 #include "InitFile.hpp"
 #include "Common.hpp"
+#include "BuildFunction.hpp"
 #include "GlobalVars.hpp"
 
 using namespace std;
@@ -33,11 +34,21 @@ int main(int argc, char *argv[])
 	}   
 
 	readParamFile(param_file);
+	initVars();
+	// ================ Initialise Local Vars. ===============//
+	double K_e[6*6] = {};
+	double F_e[6] = {};
+	double lx_e = lx_g/Nx_g;		// Local element length
+	cout << A_ << " " << E_ <<  " " << Nx_g << " " << lx_g << endl;
 
 	// ============= Create Elemental K Matrix ===============//
-	double lx_e = lx_g/Nx_g;
-	double K_e[6*6] = {};
-	ShowMatrix(K_e, 6);
+	showMatrix(K_e, 6);
+	buildKele(K_e, lx_e);
+	cout << endl;
+	showMatrix(K_e, 6);
+	// ============= Create Elemental F Matrix ===============//
+	// buildFele(F_e, lx_e)
+
 
 	return 0;
 }

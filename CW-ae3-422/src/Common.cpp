@@ -8,13 +8,16 @@
 
 using namespace std;
 
-void ShowMatrix(double *M, int N)
+void showVector(double *M, int N)
 { for (int i = 0; i < N; ++i)
-  {
-    for (int j = 0; j < N; ++j)
-    { 
-      int pnt = i*N + j;
-      cout << M[pnt] << " ";
+    cout << setprecision(5) << setw(5)  << M[i] << setw(5);
+}
+
+void showMatrix(double *M, int N)
+{ for (int i = 0; i < N; ++i)
+  { for (int j = 0; j < N; ++j)
+    { int pnt = i*N + j;
+      cout << setprecision(5) << setw(12)  << M[pnt] << setw(12);
     }
     cout << endl;
   }
