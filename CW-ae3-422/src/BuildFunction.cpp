@@ -6,7 +6,28 @@
 
 using namespace std;
 
+void buildKglb(double *Kg, double *ke)
+{	for (int i = 0; i < Nx_g; ++i)
+	{	for (int j = 0; j < 6; ++j)
+		{	for (int k = 0; k < 6; ++k)
+			{	int pnt = j*6 + k;
+				int pnt2 = j*9 + k + i*(3*9 + 3);
+				Kg[pnt2] += ke[pnt];
+			}
+		}
+	}
+}
+void buildFglb(double *Kg, double *ke)
+{	for (int i = 0; i < Nx_g; ++i)
+	{	for (int j = 0; j < 6; ++j)
+		{	int pnt = i*3 + j;
+			Kg[pnt] += ke[j];
+		}
+	}
+}
+
 void buildKele(double *K, double lx_e)
+// {	double a(1), b(1), c(1), d(1), e(1);
 {	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
 			c(6*EI/pow(lx_e, 2)), d(12*EI/lx_e), e(2*EI/lx_e);
 	int N = 6;

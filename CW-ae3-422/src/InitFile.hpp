@@ -1,7 +1,6 @@
 #ifndef PARAMFILE_HPP_INCLUDED
 #define PARAMFILE_HPP_INCLUDED
 
-
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -15,12 +14,12 @@ void readParamFile(ifstream& in_run_input_file);
  * \brief utility function for converting strings to uppercase
  * \param[in, out] str - string we want to convert
  */
-inline void StringToLowerCase(string & str) {
-  transform(str.begin(), str.end(), str.begin(), ::tolower);
+inline void StringToLowerCase(string & str)
+{ transform(str.begin(), str.end(), str.begin(), ::tolower);
 }
 
-inline void StringToUpperCase(string & str) {
-  transform(str.begin(), str.end(), str.begin(), ::toupper);
+inline void StringToUpperCase(string & str)
+{ transform(str.begin(), str.end(), str.begin(), ::toupper);
 }
 /*!
  * \brief utility function for converting strings to uppercase

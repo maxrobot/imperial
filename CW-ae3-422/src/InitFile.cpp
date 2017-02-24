@@ -112,6 +112,7 @@ string replaceTabsAndReturns(string & str)
 }
 
 void initVars()
-{  A_ = b_*h_;
-   I_ = (b_*pow(h_,3.))/12;
+{ A_ = b_*h_;                   // Cross-sectional Area Calculation
+  I_ = (b_*pow(h_,3.))/12;      // Second Moments of area calculation
+  Nvars_ = (Nx_g+1)*3;          // Number of variables in global matrices
 }

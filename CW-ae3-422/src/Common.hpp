@@ -7,8 +7,8 @@
 #include <sstream>
 #include <iomanip>
 
-void showVector(double *M, int N);
+void showVec(double *M, int N);
 
-void showMatrix(double *M, int N);
+void showMat(double *M, int N);
 
 #endif // COMMON_HPP_INCLUDED

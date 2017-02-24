@@ -8,12 +8,12 @@
 
 using namespace std;
 
-void showVector(double *M, int N)
+void showVec(double *M, int N)
 { for (int i = 0; i < N; ++i)
     cout << setprecision(5) << M[i] << endl;
 }
 
-void showMatrix(double *M, int N)
+void showMat(double *M, int N)
 { for (int i = 0; i < N; ++i)
   { for (int j = 0; j < N; ++j)
     { int pnt = i*N + j;

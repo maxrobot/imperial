@@ -45,6 +45,11 @@ double **allocateDbl(int Nx, int Ny)
   return data;
 }
 
+double *allocateDbl(int Ny)
+{ double *data  = new double[Ny];
+  return data;
+}
+
 void deallocateInt(int Ny, int **t)
 { for (int i=0; i < Ny; i++)
   { delete[] t[i];

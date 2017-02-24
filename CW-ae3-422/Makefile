@@ -1,6 +1,7 @@
 # Declaration of variables
 CC = g++
 CC_FLAGS = -O3
+LD_FLAGS = -llapack -lblas
 
 COTEXT  = "\033[1;31m Compiling\033[0m\033[1m $(<F)\033[0m\n"
 LITEXT  = "\033[1;31m Building \033[0m\033[1m $@\033[0m\n"
@@ -18,7 +19,7 @@ OBJ_FILES = $(addprefix $(OBJDIR), $(notdir $(CPP_FILES:.cpp=.o)))
 $(EXEC): mes compil_info $(MKDIRS) $(OBJ_FILES) 
 	@echo
 	@printf $(LITEXT) 
-	@$(CC) $(LD_FLAGS) $(OBJ_FILES) -o $(EXEC)
+	@$(CC) $(OBJ_FILES) -o $(EXEC) $(LD_FLAGS)
 
 # To obtain object files
 $(OBJDIR)%.o: $(SRCDIR)%.cpp 
