@@ -69,9 +69,17 @@ int main(int argc, char *argv[])
 	buildFele(F_e, lx_e);
 	buildKglb(K_g, K_e);
 	buildFglb(F_g, F_e);
-	// double test[9] = {3,1,1,2};
-	// double test2[3] = {9,8};
-	// double test3[3] = {0,0};
+
+    const int nrhs = 1;
+    int info = 0;
+    int*    ipiv = new int[Nvars_];
+
+    showMat(K_e, 6);
+
+	showVec(F_g, Nvars_);
+	F77NAME(dgesv)(Nvars_, nrhs, K_g, Nvars_, ipiv, F_g, Nvars_, info);
+	cout << endl;
+	showVec(F_g, Nvars_);
 
 	return 0;
 }

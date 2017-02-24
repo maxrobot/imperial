@@ -27,9 +27,9 @@ void buildFglb(double *Kg, double *ke)
 }
 
 void buildKele(double *K, double lx_e)
-// {	double a(1), b(1), c(1), d(1), e(1);
-{	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
-			c(6*EI/pow(lx_e, 2)), d(12*EI/lx_e), e(2*EI/lx_e);
+{	double a(1), b(1), c(1), d(1), e(1);
+// {	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
+// 			c(6*EI/pow(lx_e, 2)), d(12*EI/lx_e), e(2*EI/lx_e);
 	int N = 6;
 	{ for (int i = 0; i < N; ++i)
 	  {	if (i == 0)
@@ -70,3 +70,5 @@ void buildFele(double *K, double lx_e)
 	K[1] = K[4] = qy_/2;
 	K[2] = K[5] = qy_*lx_e/12;
 }
+
+void

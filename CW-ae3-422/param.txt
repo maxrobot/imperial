@@ -4,7 +4,7 @@ Input file
 
 Simulation Parameters =========================================================
 number of iterations: 10
-number of elements: 2
+number of elements: 3
 
 
 Physical Parameters ===========================================================
