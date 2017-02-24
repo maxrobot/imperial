@@ -34,7 +34,9 @@ void analyzeLine(string & keyword, const char * value){
   }
   if (!keyword.compare("rho (ton/mm^3)")) sscanf(value,"%lf",&rho_);
   if (!keyword.compare("cross-sectional width (mm)"))  sscanf(value,"%lf",&b_);
-  if (!keyword.compare("cross-sectional height (mm)")) sscanf(value,"%lf", &h_);          
+  if (!keyword.compare("cross-sectional height (mm)")) sscanf(value,"%lf", &h_);      
+  if (!keyword.compare("axial uniform load (n/mm)")) sscanf(value,"%lf", &qx_);     
+  if (!keyword.compare("traverse uniform load (n/mm)")) sscanf(value,"%lf", &qy_); 
 }
 
 

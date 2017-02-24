@@ -45,5 +45,7 @@ void buildKele(double *K, double lx_e)
 }
 
 void buildFele(double *K, double lx_e)
-{		
+{	K[0] = K[3] = qx_/2;
+	K[1] = K[4] = qy_/2;
+	K[2] = K[5] = qy_*lx_e/12;
 }

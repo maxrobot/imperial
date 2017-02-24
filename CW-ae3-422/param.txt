@@ -10,6 +10,8 @@ number of elements: 2
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000
 rho (ton/mm^3): 7850
+axial uniform load (n/mm): 0
+traverse uniform load (n/mm): 1
 
 Beam Dimensions ===============================================================
 beam length (mm): 10000

@@ -10,7 +10,7 @@ using namespace std;
 
 void showVector(double *M, int N)
 { for (int i = 0; i < N; ++i)
-    cout << setprecision(5) << setw(5)  << M[i] << setw(5);
+    cout << setprecision(5) << M[i] << endl;
 }
 
 void showMatrix(double *M, int N)

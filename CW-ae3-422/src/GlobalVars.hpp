@@ -15,6 +15,8 @@
   extern double rho_;       // Density
   extern double I_;         // Second moment area
   extern double E_;         // Youngs modulus
+  extern double qx_;        // Axial uniform load
+  extern double qy_;        // Traverse uniform load
   extern double b_;         // Cross-sectional width
   extern double h_;         // Cross-sectional height
   extern double A_;         // Cross-sectional area

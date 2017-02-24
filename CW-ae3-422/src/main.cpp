@@ -4,6 +4,7 @@
 #include "Common.hpp"
 #include "BuildFunction.hpp"
 #include "GlobalVars.hpp"
+#include "Memory.hpp"
 
 using namespace std;
 
@@ -17,6 +18,8 @@ double dx_(0);        		// Mesh size
 double rho_(0);       		// Density
 double I_(0);         		// Second moment area
 double E_(0);         		// Youngs modulus
+double qx_(0);			        // Axial uniform load
+double qy_(0);        			// Traverse uniform load
 double b_(0);         		// Cross-sectional width
 double h_(0);         		// Cross-sectional height
 double A_(0);         		// Cross-sectional area
@@ -35,20 +38,17 @@ int main(int argc, char *argv[])
 
 	readParamFile(param_file);
 	initVars();
-	// ================ Initialise Local Vars. ===============//
+	// ===================== Build Tables =====================//
+
+
+	// ================ Initialise Local Vars. ================//
 	double K_e[6*6] = {};
 	double F_e[6] = {};
 	double lx_e = lx_g/Nx_g;		// Local element length
-	cout << A_ << " " << E_ <<  " " << Nx_g << " " << lx_g << endl;
 
-	// ============= Create Elemental K Matrix ===============//
-	showMatrix(K_e, 6);
+	// ============== Create Elemental K Matrix ===============//
 	buildKele(K_e, lx_e);
-	cout << endl;
-	showMatrix(K_e, 6);
-	// ============= Create Elemental F Matrix ===============//
-	// buildFele(F_e, lx_e)
-
+	buildFele(F_e, lx_e);
 
 	return 0;
 }
