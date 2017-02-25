@@ -8,7 +8,7 @@
 
   extern int Nx_g;          // Number of global elements
   extern int nite_;         // Number of time steps
-  extern int Nvars_;        // Number of variables in domain
+  extern int Nvar_;        // Number of variables in domain
   extern double lx_g;       // Length of global domain
   extern double dt_;        // Time step
   extern double dx_;        // Mesh size

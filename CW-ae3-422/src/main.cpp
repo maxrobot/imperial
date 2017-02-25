@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdio.h>
+#include <string.h>
 
 #include "InitFile.hpp"
 #include "Common.hpp"
@@ -26,7 +28,7 @@ extern "C" {
 // Global Variables #############################################
 int nite_(0);         		// Number of time steps
 int Nx_g(0);          		// Number of global elements
-int Nvars_(0);				// Number of variables in domain
+int Nvar_(0);				// Number of variables in domain
 double lx_g(0);       		// Length of global domain
 double dt_(0);        		// Time step
 double dx_(0);        		// Mesh size
@@ -53,16 +55,20 @@ int main(int argc, char *argv[])
 	}   
 
 	readParamFile(param_file);
-	initVars();
 	// ===================== Build Tables =====================//
-	double *K_g			= allocateDbl(Nvars_*Nvars_);
-	double *F_g			= allocateDbl(Nvars_);
-	double *U_g			= allocateDbl(Nvars_);
+	double *K_g	 		= allocateDbl(Nvar_*Nvar_);
+	double *F_g			= allocateDbl(Nvar_);
+	double *U_g			= allocateDbl(Nvar_);
 
 	// ================ Initialise Local Vars. ================//
 	double K_e[6*6] = {};
 	double F_e[6] = {};
 	double lx_e = lx_g/Nx_g;		// Local element length
+
+	initVars();
+	zeroMat(K_g, Nvar_*Nvar_);
+	zeroMat(F_g, Nvar_);
+	zeroMat(U_g, Nvar_);
 
 	// ============== Create Elemental K Matrix ===============//
 	buildKele(K_e, lx_e);
@@ -70,16 +76,19 @@ int main(int argc, char *argv[])
 	buildKglb(K_g, K_e);
 	buildFglb(F_g, F_e);
 
-    const int nrhs = 1;
-    int info = 0;
-    int*    ipiv = new int[Nvars_];
 
-    showMat(K_e, 6);
+ //    const int nrhs = 1;
+ //    int info = 0;
+ //    int*    ipiv = new int[Nvar_];
 
-	showVec(F_g, Nvars_);
-	F77NAME(dgesv)(Nvars_, nrhs, K_g, Nvars_, ipiv, F_g, Nvars_, info);
-	cout << endl;
-	showVec(F_g, Nvars_);
+
+
+
+
+	// showVec(F_g, Nvar_);
+	// F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
+	// cout << endl;
+	// showVec(F_g, Nvar_);
 
 	return 0;
 }

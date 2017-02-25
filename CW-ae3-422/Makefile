@@ -1,6 +1,6 @@
 # Declaration of variables
 CC = g++
-CC_FLAGS = -O3
+CC_FLAGS = -O3 -std=c++11
 LD_FLAGS = -llapack -lblas
 
 COTEXT  = "\033[1;31m Compiling\033[0m\033[1m $(<F)\033[0m\n"

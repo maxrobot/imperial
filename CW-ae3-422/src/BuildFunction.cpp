@@ -11,7 +11,7 @@ void buildKglb(double *Kg, double *ke)
 	{	for (int j = 0; j < 6; ++j)
 		{	for (int k = 0; k < 6; ++k)
 			{	int pnt = j*6 + k;
-				int pnt2 = j*9 + k + i*(3*9 + 3);
+				int pnt2 = j*Nvar_ + k + i*(3*Nvar_ + 3);
 				Kg[pnt2] += ke[pnt];
 			}
 		}
@@ -71,4 +71,6 @@ void buildFele(double *K, double lx_e)
 	K[2] = K[5] = qy_*lx_e/12;
 }
 
-void
+void zeroMat(double *K, int N)
+{	fill(K, K+N, 0);
+}
