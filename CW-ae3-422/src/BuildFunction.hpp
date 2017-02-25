@@ -4,11 +4,11 @@
 #include <iostream>
 #include <cmath>
 
-void buildKglb(double *Kg, double *ke);
-void buildFglb(double *Kg, double *ke);
+void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g);
+void buildFglb(double *Kg, double *ke, int Nx_g);
 
-void buildKele(double *K, double lx_e);
-void buildFele(double *K, double lx_e);
+void buildKele(double *K, double lx_e, double A_, double E_, double I_);
+void buildFele(double *K, double lx_e, double qx_, double qy_);
 
 void zeroMat(double *K, int N);
 

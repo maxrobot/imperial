@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void buildKglb(double *Kg, double *ke)
+void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 {	for (int i = 0; i < Nx_g; ++i)
 	{	for (int j = 0; j < 6; ++j)
 		{	for (int k = 0; k < 6; ++k)
@@ -18,7 +18,7 @@ void buildKglb(double *Kg, double *ke)
 		}
 	}
 }
-void buildFglb(double *Kg, double *ke)
+void buildFglb(double *Kg, double *ke, int Nx_g)
 {	for (int i = 0; i < Nx_g; ++i)
 	{	for (int j = 0; j < 6; ++j)
 		{	int pnt = i*3 + j;
@@ -27,7 +27,7 @@ void buildFglb(double *Kg, double *ke)
 	}
 }
 
-void buildKele(double *K, double lx_e)
+void buildKele(double *K, double lx_e, double A_, double E_, double I_)
 // {	double a(1), b(1), c(1), d(1), e(1);
 {	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
 			c(6*EI/pow(lx_e, 2)), d(12*EI/lx_e), e(2*EI/lx_e);
@@ -66,7 +66,7 @@ void buildKele(double *K, double lx_e)
 	}
 }
 
-void buildFele(double *K, double lx_e)
+void buildFele(double *K, double lx_e, double qx_, double qy_)
 {	K[0] = K[3] = qx_/2;
 	K[1] = K[4] = qy_/2;
 	K[2] = K[5] = qy_*lx_e/12;

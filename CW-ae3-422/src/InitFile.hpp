@@ -8,7 +8,8 @@
 
 using namespace std;
 
-void readParamFile(ifstream& in_run_input_file);
+void readParamFile(ifstream &in_run_input_file, int nite_, int Nx_g, double lx_g,
+      double E_, double rho_, double b_, double h_, double qx_, double qy_);
 
 /*!
  * \brief utility function for converting strings to uppercase
@@ -34,12 +35,13 @@ inline void StringToUpperCase(string & str)
 
 bool readLine(string & str, string & option_name, string & option_value);
 
-void analyzeLine(string & keyword, const char * value);
+void analyzeLine(string & keyword, const char *value, int nite_, int Nx_g, double lx_g,
+      double E_, double rho_, double b_, double h_, double qx_, double qy_);
 
 string trim(string & str);
 
 string replaceTabsAndReturns(string & str);
 
-void initVars();
+void initVars(double b_, double h_, double A_, double I_, int Nvar_, int Nx_g);
 
 #endif // PARAMFILE_HPP_INCLUDED

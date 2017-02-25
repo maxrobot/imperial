@@ -3,7 +3,8 @@
 
 using namespace std;
 
-void readParamFile(ifstream& in_run_input_file)
+void readParamFile(ifstream &in_run_input_file, int nite_, int Nx_g, double lx_g,
+      double E_, double rho_, double b_, double h_, double qx_, double qy_)
 { 
   string text_line;
   string keyword, value;
@@ -11,12 +12,14 @@ void readParamFile(ifstream& in_run_input_file)
   // Now read in parameters
   while (getline (in_run_input_file, text_line)) {
     if (readLine(text_line, keyword, value)){
-      analyzeLine(keyword, value.c_str());
+      analyzeLine(keyword, value.c_str(), nite_, Nx_g, lx_g, 
+        E_, rho_, b_, h_, qx_, qy_);
     }
   }
 }
 
-void analyzeLine(string & keyword, const char * value){
+void analyzeLine(string & keyword, const char *value, int nite_, int Nx_g, double lx_g,
+      double E_, double rho_, double b_, double h_, double qx_, double qy_){
   if (!keyword.compare("number of iterations"))
   { sscanf(value,"%d",&nite_);
   }
@@ -34,9 +37,9 @@ void analyzeLine(string & keyword, const char * value){
   }
   if (!keyword.compare("rho (ton/mm^3)")) sscanf(value,"%lf",&rho_);
   if (!keyword.compare("cross-sectional width (mm)"))  sscanf(value,"%lf",&b_);
-  if (!keyword.compare("cross-sectional height (mm)")) sscanf(value,"%lf", &h_);      
-  if (!keyword.compare("axial uniform load (n/mm)")) sscanf(value,"%lf", &qx_);     
-  if (!keyword.compare("traverse uniform load (n/mm)")) sscanf(value,"%lf", &qy_); 
+  if (!keyword.compare("cross-sectional height (mm)")) sscanf(value,"%lf",&h_);
+  if (!keyword.compare("axial uniform load (n/mm)")) sscanf(value,"%lf",&qx_);     
+  if (!keyword.compare("traverse uniform load (n/mm)")) sscanf(value,"%lf",&  qy_); 
 }
 
 
@@ -112,7 +115,7 @@ string replaceTabsAndReturns(string & str)
 }
 
 // Initialise local and global arrays...
-void initVars()
+void initVars(double b_, double h_, double A_, double I_, int Nvar_, int Nx_g)
 { A_ = b_*h_;                   // Cross-sectional Area Calculation
   I_ = (b_*pow(h_,3.))/12;      // Second Moments of area calculation
   Nvar_ = (Nx_g+1)*3;          // Number of variables in global matrices

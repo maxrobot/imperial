@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	const double Al_(1./12);  	// Constant Alpha
 	// End of Global Variables ######################################
 
-	readParamFile(param_file);
+	readParamFile(param_file, nite_, Nx_g, lx_g, E_, rho_, b_, h_, qx_, qy_);
 	// ===================== Build Tables =====================//
 	double *K_g	 		= allocateDbl(Nvar_*Nvar_);
 	double *F_g			= allocateDbl(Nvar_);
@@ -50,16 +50,16 @@ int main(int argc, char *argv[])
 	double F_e[6] = {};
 	double lx_e = lx_g/Nx_g;		// Local element length
 
-	initVars();
+	initVars(b_, h_, A_, I_, Nvar_, Nx_g);
 
 	// ============== Create Elemental K Matrix ===============//
-	buildKele(K_e, lx_e);
-	// buildFele(F_e, lx_e);
-	buildKglb(K_g, K_e);
-	// buildFglb(F_g, F_e);
+	buildKele(K_e, lx_e, A_, E_, I_);
+	buildKglb(K_g, K_e, Nvar_, Nx_g);
+	buildFele(F_e, lx_e, qx_, qy_);
+	buildFglb(F_g, F_e, Nx_g);
 
-	// showMat(K_g, Nvar_);
-	// showVec(F_g, Nvar_);
+	showMat(K_g, Nvar_);
+	showVec(K_e, Nvar_);
 
 	return 0;
 }
