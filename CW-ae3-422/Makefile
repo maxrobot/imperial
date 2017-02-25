@@ -1,7 +1,9 @@
 # Declaration of variables
 CC = g++
-CC_FLAGS = -O3 -std=c++11
+CC_FLAGS = -DDEBUG -g -std=c++11
+# CC_FLAGS = -O3 -std=c++11
 LD_FLAGS = -llapack -lblas
+DEBUG_FLAGS = -g
 
 COTEXT  = "\033[1;31m Compiling\033[0m\033[1m $(<F)\033[0m\n"
 LITEXT  = "\033[1;31m Building \033[0m\033[1m $@\033[0m\n"
@@ -16,7 +18,7 @@ CPP_FILES = $(wildcard $(SRCDIR)*.cpp)
 OBJ_FILES = $(addprefix $(OBJDIR), $(notdir $(CPP_FILES:.cpp=.o)))
 
 # Main target
-$(EXEC): mes compil_info $(MKDIRS) $(OBJ_FILES) 
+$(EXEC): author compile_info $(MKDIRS) $(OBJ_FILES) 
 	@echo
 	@printf $(LITEXT) 
 	@$(CC) $(OBJ_FILES) -o $(EXEC) $(LD_FLAGS)
@@ -42,13 +44,13 @@ tar: clean
 $(MKDIRS): 
 	@mkdir -p $@
 
-compil_info:
+compile_info:
 	@printf "\033[1;31m Compiler used \033[0m \033[1m    [$(CC)]\033[0m\n"
 	@printf "\033[1;31m Compiling options\033[0m \033[1m [$(CC_FLAGS)]\033[0m\n" 
 	@printf "\033[1;31m Linking options \033[0m \033[1m  [$(LD_FLAGS)]\033[0m\n"
 	@echo
 
-mes:
+author:
 	@echo
 	@echo    "       *************************************************************"
 	@echo    "       *                                                           *"
@@ -64,7 +66,7 @@ mes:
 	@echo
 
 # To print the help message
-help: mes
+help: author
 	@echo
 	@printf "\033[1;31m Make options of solver code\033[0m\n"
 	@echo

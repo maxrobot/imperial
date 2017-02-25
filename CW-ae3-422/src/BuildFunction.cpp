@@ -12,7 +12,8 @@ void buildKglb(double *Kg, double *ke)
 		{	for (int k = 0; k < 6; ++k)
 			{	int pnt = j*6 + k;
 				int pnt2 = j*Nvar_ + k + i*(3*Nvar_ + 3);
-				Kg[pnt2] += ke[pnt];
+				// cout << Kg[pnt2] << " " << &ke[pnt] << endl;
+				Kg[pnt2] = ke[pnt];
 			}
 		}
 	}
