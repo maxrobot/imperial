@@ -10,21 +10,6 @@
 
 using namespace std;
 
-// Define LAPACK Shit ###########################################
-#define F77NAME(x) x##_
-extern "C" {
-    double F77NAME(dnrm2)(const int& N, const double *X, const int& incX);
-    void F77NAME(daxpy)(const int& N, const double& alpha, const double *X,
-                             const int& incX, double *Y, const int& incY);
-    void F77NAME(dgemv)(const char& trans, const int& m, const int& n,
-                    const double& alpha, const double* a, const int& lda,
-                    const double* x, const int& incx, const double& beta,
-                    double* y, const int& incy);
-    void F77NAME(dgesv)(const int& n, const int& nrhs, const double * A,
-                    const int& lda, int * ipiv, double * B, const int& ldb,
-                    int& info);
-}
-
 // Global Variables #############################################
 int nite_(0);         		// Number of time steps
 int Nx_g(0);          		// Number of global elements
@@ -77,18 +62,14 @@ int main(int argc, char *argv[])
 	buildFglb(F_g, F_e);
 
 
- //    const int nrhs = 1;
- //    int info = 0;
- //    int*    ipiv = new int[Nvar_];
+    const int nrhs = 1;
+    int info = 0;
+    int*    ipiv = new int[Nvar_];
 
-
-
-
-
-	// showVec(F_g, Nvar_);
-	// F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
-	// cout << endl;
-	// showVec(F_g, Nvar_);
+	showVec(F_g, Nvar_);
+	F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
+	cout << endl;
+	showVec(F_g, Nvar_);
 
 	return 0;
 }
