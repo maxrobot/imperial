@@ -39,48 +39,34 @@ int main(int argc, char *argv[])
 	const double Al_(1./12);  	// Constant Alpha
 	// End of Global Variables ######################################
 
+	// ================ Initialise Local Vars. ================//
 	readParamFile(param_file, &nite_, &Nx_g, &lx_g, &E_, &rho_, &b_, &h_, &qx_, &qy_);
+	initVars(&b_, &h_, &A_, &I_, &Nvar_, &Nx_g);
+
 	// ===================== Build Tables =====================//
-	// double *K_g	 		= allocateDbl(Nvar_*Nvar_);
-	// double *F_g			= allocateDbl(Nvar_);
-	// double *U_g			= allocateDbl(Nvar_);
+	double *K_g	 		= allocateDbl(Nvar_*Nvar_);
+	double *F_g			= allocateDbl(Nvar_);
+	double *U_g			= allocateDbl(Nvar_);
 
-	// // ================ Initialise Local Vars. ================//
-	// double K_e[6*6] = {};
-	// double F_e[6] = {};
-	// double lx_e = lx_g/Nx_g;		// Local element length
-
-	// initVars(b_, h_, A_, I_, Nvar_, Nx_g);
+	double K_e[6*6] = {};
+	double F_e[6] = {};
+	double lx_e = lx_g/Nx_g;		// Local element length
 
 	// ============== Create Elemental K Matrix ===============//
-	// buildKele(K_e, lx_e, A_, E_, I_);
-	// buildKglb(K_g, K_e, Nvar_, Nx_g);
-	// buildFele(F_e, lx_e, qx_, qy_);
-	// buildFglb(F_g, F_e, Nx_g);
-	// for (int i = 0; i < 10; ++i)
-	// {	cout << K_e[i] << endl;
-	// }
+	buildKele(K_e, lx_e, A_, E_, I_);
+	buildKglb(K_g, K_e, Nvar_, Nx_g);
+	buildFele(F_e, lx_e, qx_, qy_);
+	buildFglb(F_g, F_e, Nx_g);
 
-	// showMat(K_g, Nvar_);
-	// cout << Nvar_ << endl;
-	// showVec(K_e, Nvar_);
+	// =================== Solve System =======================//
+    const int nrhs = 1;
+    int info = 0;
+    int*    ipiv = new int[Nvar_];
+    showVec(F_g, Nvar_);
+	F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
+    showVec(F_g, Nvar_);
+
+	cout << info << endl;
 
 	return 0;
 }
-
-	// for (int i = 0; i < Nx_g; ++i)
-	// {	int pnt = i*3;
-	// 	cout << K_g[pnt] << " " << K_g[pnt+1] << " " << K_g[pnt+2] << " " << endl;
-	// 	cout << pnt << " " << pnt+1 << " " << pnt+2 << " " << endl;
-	// 	// myfile << K_g[pnt] << " " << K_g[pnt+1] << " " << K_g[pnt+2] << endl;
-
-	// }
-
-    // const int nrhs = 1;
-    // int info = 0;
-    // int*    ipiv = new int[Nvar_];
-
-	// showVec(F_g, Nvar_);
-	// F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
-	// cout << endl;
-	// showVec(F_g, Nvar_);

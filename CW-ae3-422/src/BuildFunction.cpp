@@ -12,8 +12,7 @@ void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 		{	for (int k = 0; k < 6; ++k)
 			{	int pnt = j*6 + k;
 				int pnt2 = j*Nvar_ + k + i*(3*Nvar_ + 3);
-				// cout << Kg[pnt2] << " " << &ke[pnt] << endl;
-				Kg[pnt2] = ke[pnt];
+				Kg[pnt2] += ke[pnt];
 			}
 		}
 	}
@@ -61,15 +60,15 @@ void buildKele(double *K, double lx_e, double A_, double E_, double I_)
 		if (i == 5)
 		{	K[i*N+5] = c;
 		}
-
 	  }
 	}
 }
 
 void buildFele(double *K, double lx_e, double qx_, double qy_)
-{	K[0] = K[3] = qx_/2;
-	K[1] = K[4] = qy_/2;
-	K[2] = K[5] = qy_*lx_e/12;
+{	K[0] = K[3] = lx_e*qx_/2;
+	K[1] = K[4] = lx_e*qy_/2;
+	K[2] = (qy_*lx_e*lx_e)/12;
+	K[5] = -(qy_*lx_e*lx_e)/12;
 }
 
 void zeroMat(double *K, int N)

@@ -10,7 +10,7 @@ using namespace std;
 
 void showVec(double *M, int N)
 {	for (int i = 0; i < N; ++i)
-	    cout << setprecision(5) << M[i] << endl;
+	    cout << setprecision(5) << setw(12) << M[i] << endl;
 	cout << endl;
 }
 

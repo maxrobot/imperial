@@ -42,6 +42,6 @@ string trim(string & str);
 
 string replaceTabsAndReturns(string & str);
 
-void initVars(double b_, double h_, double A_, double I_, int Nvar_, int Nx_g);
+void initVars(double *b_, double *h_, double *A_, double *I_, int *Nvar_, int *Nx_g);
 
 #endif // PARAMFILE_HPP_INCLUDED
