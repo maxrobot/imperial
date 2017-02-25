@@ -39,27 +39,31 @@ int main(int argc, char *argv[])
 	const double Al_(1./12);  	// Constant Alpha
 	// End of Global Variables ######################################
 
-	readParamFile(param_file, nite_, Nx_g, lx_g, E_, rho_, b_, h_, qx_, qy_);
+	readParamFile(param_file, &nite_, &Nx_g, &lx_g, &E_, &rho_, &b_, &h_, &qx_, &qy_);
 	// ===================== Build Tables =====================//
-	double *K_g	 		= allocateDbl(Nvar_*Nvar_);
-	double *F_g			= allocateDbl(Nvar_);
-	double *U_g			= allocateDbl(Nvar_);
+	// double *K_g	 		= allocateDbl(Nvar_*Nvar_);
+	// double *F_g			= allocateDbl(Nvar_);
+	// double *U_g			= allocateDbl(Nvar_);
 
-	// ================ Initialise Local Vars. ================//
-	double K_e[6*6] = {};
-	double F_e[6] = {};
-	double lx_e = lx_g/Nx_g;		// Local element length
+	// // ================ Initialise Local Vars. ================//
+	// double K_e[6*6] = {};
+	// double F_e[6] = {};
+	// double lx_e = lx_g/Nx_g;		// Local element length
 
-	initVars(b_, h_, A_, I_, Nvar_, Nx_g);
+	// initVars(b_, h_, A_, I_, Nvar_, Nx_g);
 
 	// ============== Create Elemental K Matrix ===============//
-	buildKele(K_e, lx_e, A_, E_, I_);
-	buildKglb(K_g, K_e, Nvar_, Nx_g);
-	buildFele(F_e, lx_e, qx_, qy_);
-	buildFglb(F_g, F_e, Nx_g);
+	// buildKele(K_e, lx_e, A_, E_, I_);
+	// buildKglb(K_g, K_e, Nvar_, Nx_g);
+	// buildFele(F_e, lx_e, qx_, qy_);
+	// buildFglb(F_g, F_e, Nx_g);
+	// for (int i = 0; i < 10; ++i)
+	// {	cout << K_e[i] << endl;
+	// }
 
-	showMat(K_g, Nvar_);
-	showVec(K_e, Nvar_);
+	// showMat(K_g, Nvar_);
+	// cout << Nvar_ << endl;
+	// showVec(K_e, Nvar_);
 
 	return 0;
 }
