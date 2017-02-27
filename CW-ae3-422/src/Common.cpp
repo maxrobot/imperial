@@ -13,8 +13,20 @@ void showMat(double *M, int N)
 {	for (int i = 0; i < N; ++i)
   	{ for (int j = 0; j < N; ++j)
 	    { int pnt = i*N + j;
-	      // cout  << setw(15)  << M[pnt] << setw(15);
-	      cout << setprecision(5) << setw(12)  << M[pnt] << setw(12);
+	      cout << setprecision(3) << setw(9)  << M[pnt] << setw(9);
+	      // cout << setprecision(5) << setw(12)  << M[pnt] << setw(12);
+	    }
+	    cout << endl;
+	}
+	cout << endl;
+}
+
+void showMat(double *M, int N, int O)
+{	for (int i = 0; i < O; ++i)
+  	{ 	for (int j = 0; j < N; ++j)
+	    { 	int pnt = i*N + j;
+			cout << setprecision(3) << setw(9)  << M[pnt] << setw(9);
+			// cout << setprecision(5) << setw(12)  << M[pnt] << setw(12);
 	    }
 	    cout << endl;
 	}

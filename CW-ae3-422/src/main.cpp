@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 	double A_(0);         		// Cross-sectional area
 
 	const double Al_(1./12);  	// Constant Alpha
+	const double buf(4);	  	// Buffer
 	// End of Global Variables ######################################
 
 	// ================ Initialise Local Vars. ================//
@@ -43,6 +44,7 @@ int main(int argc, char *argv[])
 	
 	// ===================== Build Tables =====================//
 	double *K_g	 		= allocateDbl(Nvar_*Nvar_);
+	double *K_gs 		= allocateDbl(Nvar_*(9+buf));
 	double *F_g			= allocateDbl(Nvar_);
 	double *U_g			= allocateDbl(Nvar_);
 
@@ -50,18 +52,33 @@ int main(int argc, char *argv[])
 	double F_e[6] = {};
 	double lx_e = lx_g/Nx_g;		// Local element length
 
+
 	// ============== Create Elemental K Matrix ===============//
 	buildKele(K_e, lx_e, A_, E_, I_);
 	buildKglb(K_g, K_e, Nvar_, Nx_g);
+	// showMat(K_e, 6);
+	// showMat(K_g, Nvar_);
+	buildKglbSparse(K_gs, K_e, Nvar_, Nx_g, buf);
 	buildFele(F_e, lx_e, qx_, qy_);
 	buildFglb(F_g, F_e, Nx_g);
+	// showMat(K_gs, Nvar_, 9+buf);
 
 	// =================== Solve System =======================//
     const int nrhs = 1;
     int info = 0;
     int*    ipiv = new int[Nvar_];
-	F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
-	writeVec(F_g, Nx_g, "output");
+    int kl = 4;
+    int ku = 4;
+    int ldab = 1 + 2*kl + ku;
+    int ldb = Nvar_;
+	// F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
+	// writeVec(F_g, Nx_g, "output");
+	// showVec(F_g, Nvar_);
+	// cout << Nvar_ << endl;
+	F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K_gs, ldab, ipiv, F_g, ldb, info);
+	// showVec(F_g, Nvar_);
+	// writeVec(F_g, Nx_g, "output");
+	cout << info << endl;
 
 	return 0;
 }

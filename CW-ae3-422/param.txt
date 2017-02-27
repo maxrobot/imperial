@@ -6,7 +6,6 @@ Simulation Parameters =========================================================
 number of iterations: 10
 number of elements: 24
 
-
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000
 rho (ton/mm^3): 7850

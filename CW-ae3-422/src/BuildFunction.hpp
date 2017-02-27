@@ -5,6 +5,7 @@
 #include <cmath>
 
 void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g);
+void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
 void buildFglb(double *Kg, double *ke, int Nx_g);
 
 void buildKele(double *K, double lx_e, double A_, double E_, double I_);

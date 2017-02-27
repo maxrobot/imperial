@@ -32,6 +32,70 @@ void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 		}
 	}
 }
+
+void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
+{	// LHS Boundary
+	for (int i = 0; i < 3; ++i)
+	{	// Build Diagonals
+		int pnt = (i+3)*6 + (i+3);
+		int pnt2 = (4+buf)*Nvar_+(i);
+	 	Kg[pnt2] += ke[pnt];	
+	 	if (i==1)
+	 	{	pnt = (i+3)*6 + (i+3+1);
+			pnt2 = (4+buf+1)*Nvar_+(i);
+		 	Kg[pnt2] += ke[pnt];	
+	 	}
+	 	if (i==2)
+	 	{	pnt = (i+3-1)*6 + (i+3);
+			pnt2 = (5+buf-i)*Nvar_+(i);
+		 	Kg[pnt2] += ke[pnt];	
+	 	}
+	}
+	
+	// Central Elements
+	for (int i = 0; i < Nx_g-2; ++i)
+	{	
+		for (int j = 0; j < 6; ++j)
+		{	// Build Diagonal
+			int pnt = j*6 + j;
+			int pnt2 = (4+buf)*Nvar_ + j + i*3;
+		 	Kg[pnt2] += ke[pnt];
+		 	int max = 6-j;
+		 	int bnd = 5;
+		 	// Build Upper
+		 	if (max < bnd)
+		 	{	bnd = max;
+		 	}
+			for (int k = 1; k < bnd; ++k)
+			{	int pos = (4+buf+k)*Nvar_+j + i*3;
+			 	Kg[pos] += ke[pnt+k];	
+			}
+		 	// Build Lower
+			for (int k = 1; k <= j; ++k)
+			{	int pos = (4+buf-k)*Nvar_+j + i*3;
+				Kg[pos] += ke[pnt-k];
+			}
+		}
+	}
+	// RHS Boundary
+	for (int i = Nvar_-3; i < Nvar_; ++i)
+	{	// Build Diagonals
+		int pnt = (i - (Nvar_-3))*6 + (i - (Nvar_-3));
+		int pnt2 = (4+buf)*Nvar_+(i);
+	 	Kg[pnt2] += ke[pnt];	
+	 	if (i==1)
+	 	{	pnt = (i)*6 + (i+1);
+			pnt2 = (4+buf+1)*Nvar_+(i+3);
+		 	Kg[pnt2] += ke[pnt];	
+	 	}
+	 	if (i==2)
+	 	{	pnt = (i-1)*6 + (i);
+			pnt2 = (5+buf-i)*Nvar_+(i+3);
+		 	Kg[pnt2] += ke[pnt];	
+	 	}
+	}
+}
+
 void buildFglb(double *Kg, double *ke, int Nx_g)
 {	for (int i = 0; i < Nx_g; ++i)
 	{	for (int j = 0; j < 6; ++j)
