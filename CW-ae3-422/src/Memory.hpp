@@ -2,8 +2,8 @@
 #define MEMORY_HPP_INCLUDED
 
 double *allocateDbl(int Ny)
-{ double *data  = 0;
-  data = new double[Ny];
+{ double *data;
+  data = new double[Ny]();
   return data;
 }
 

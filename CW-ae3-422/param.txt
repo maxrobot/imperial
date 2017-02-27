@@ -4,16 +4,16 @@ Input file
 
 Simulation Parameters =========================================================
 number of iterations: 10
-number of elements: 24
+number of elements: 500
 
 
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000
 rho (ton/mm^3): 7850
 axial uniform load (n/mm): 0
-traverse uniform load (n/mm): 1
+traverse uniform load (n/mm): 1000
 
 Beam Dimensions ===============================================================
-beam length (mm): 10000
-cross-sectional width (mm): 100
-cross-sectional height (mm): 120
+beam length (mm): 10
+cross-sectional width (mm): 0.1
+cross-sectional height (mm): 0.12

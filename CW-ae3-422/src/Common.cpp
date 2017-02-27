@@ -18,6 +18,7 @@ void showMat(double *M, int N)
 {	for (int i = 0; i < N; ++i)
   	{ for (int j = 0; j < N; ++j)
 	    { int pnt = i*N + j;
+	      // cout  << setw(15)  << M[pnt] << setw(15);
 	      cout << setprecision(5) << setw(12)  << M[pnt] << setw(12);
 	    }
 	    cout << endl;

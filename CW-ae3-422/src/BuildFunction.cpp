@@ -7,13 +7,30 @@
 using namespace std;
 
 void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
-{	for (int i = 0; i < Nx_g; ++i)
+{	// LHS Boundary
+	for (int j = 3; j < 6; ++j)
+	{	for (int k = 3; k < 6; ++k)
+		{	int pnt = j*6 + k;
+			int pnt2 = (j-3)*Nvar_ + (k-3);
+			Kg[pnt2] += ke[pnt];
+		}
+	}
+	// Central Elements
+	for (int i = 1; i < Nx_g-1; ++i)
 	{	for (int j = 0; j < 6; ++j)
 		{	for (int k = 0; k < 6; ++k)
 			{	int pnt = j*6 + k;
-				int pnt2 = j*Nvar_ + k + i*(3*Nvar_ + 3);
+				int pnt2 = j*Nvar_ + (i-1)*(3*Nvar_) + k + (i-1)*3;
 				Kg[pnt2] += ke[pnt];
 			}
+		}
+	}
+	// RHS Boundary
+	for (int j = Nvar_-3; j < Nvar_; ++j)
+	{	for (int k = Nvar_-3; k < Nvar_; ++k)
+		{	int pnt = (j-(Nvar_-3))*6 + (k-(Nvar_-3)) ;
+			int pnt2 = j*Nvar_ + k;
+			Kg[pnt2] += ke[pnt];
 		}
 	}
 }
@@ -27,9 +44,8 @@ void buildFglb(double *Kg, double *ke, int Nx_g)
 }
 
 void buildKele(double *K, double lx_e, double A_, double E_, double I_)
-// {	double a(1), b(1), c(1), d(1), e(1);
-{	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
-			c(6*EI/pow(lx_e, 2)), d(12*EI/lx_e), e(2*EI/lx_e);
+{	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 2)), 
+			c(6*EI/pow(lx_e, 2)), d(4*EI/lx_e), e(2*EI/lx_e);
 	int N = 6;
 	{ for (int i = 0; i < N; ++i)
 	  {	if (i == 0)
@@ -40,7 +56,11 @@ void buildKele(double *K, double lx_e, double A_, double E_, double I_)
 		if (i == 1)
 		{	K[i*N+1] = b;
 			K[i*N+2] = c;
+			K[i*N+4] = -b;
+			K[i*N+5] = c;
 			K[2*N+i] = c;
+			K[4*N+i] = -b;
+			K[5*N+i] = c;
 		}
 		if (i == 2)
 		{	K[i*N+2] = d;
@@ -58,7 +78,7 @@ void buildKele(double *K, double lx_e, double A_, double E_, double I_)
 			K[5*N+i] = -c;
 		}
 		if (i == 5)
-		{	K[i*N+5] = c;
+		{	K[i*N+5] = d;
 		}
 	  }
 	}

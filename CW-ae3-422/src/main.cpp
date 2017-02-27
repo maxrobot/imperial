@@ -10,6 +10,19 @@
 
 using namespace std;
 
+#include "cblas.h"
+
+void writeVec(double *M, int N, string test)
+{	ofstream myfile;
+	myfile.open ("./output/data/" + test +".txt");
+	for (int i = 0; i < N-1; ++i)
+	{	int pnt = i*3;
+		myfile << setprecision(10) << M[pnt] << setw(20) << M[pnt+1] <<  setw(20) << M[pnt+2] << endl;
+	}
+	myfile.close();
+
+}
+
 int main(int argc, char *argv[])
 {	// ================ Reading of Inputs =====================//
 	ifstream param_file;
@@ -41,8 +54,8 @@ int main(int argc, char *argv[])
 
 	// ================ Initialise Local Vars. ================//
 	readParamFile(param_file, &nite_, &Nx_g, &lx_g, &E_, &rho_, &b_, &h_, &qx_, &qy_);
-	initVars(&b_, &h_, &A_, &I_, &Nvar_, &Nx_g);
-
+	initVars(&b_, &h_, &A_, &I_, &E_, &Nvar_, &Nx_g);
+	
 	// ===================== Build Tables =====================//
 	double *K_g	 		= allocateDbl(Nvar_*Nvar_);
 	double *F_g			= allocateDbl(Nvar_);
@@ -62,11 +75,9 @@ int main(int argc, char *argv[])
     const int nrhs = 1;
     int info = 0;
     int*    ipiv = new int[Nvar_];
-    showVec(F_g, Nvar_);
+    // showVec(F_g, Nvar_);
 	F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
-    showVec(F_g, Nvar_);
-
-	cout << info << endl;
+	writeVec(F_g, Nx_g, "output");
 
 	return 0;
 }

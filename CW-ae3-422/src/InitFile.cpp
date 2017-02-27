@@ -113,8 +113,9 @@ string replaceTabsAndReturns(string & str)
 }
 
 // Initialise local and global arrays...
-void initVars(double *b_, double *h_, double *A_, double *I_, int *Nvar_, int *Nx_g)
+void initVars(double *b_, double *h_, double *A_, double *I_, double *E_, int *Nvar_, int *Nx_g)
 { *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
   *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
-  *Nvar_ = (*Nx_g+1) * 3;          // Number of variables in global matrices
+  *Nvar_ = (*Nx_g+1) * 3 - 6;          // Number of variables in global matrices excluding boundaries
+  *E_ = *E_ * 10E6;
 }
