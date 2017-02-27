@@ -1,5 +1,3 @@
-#include <iostream>
-#include <cmath>
 #include "Common.hpp"
 #include "BuildFunction.hpp"
 #include "GlobalVars.hpp"

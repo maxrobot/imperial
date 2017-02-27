@@ -1,6 +1,4 @@
 #include <iostream>
-#include <stdio.h>
-#include <string.h>
 
 #include "InitFile.hpp"
 #include "Common.hpp"
@@ -9,19 +7,6 @@
 #include "Memory.hpp"
 
 using namespace std;
-
-#include "cblas.h"
-
-void writeVec(double *M, int N, string test)
-{	ofstream myfile;
-	myfile.open ("./output/data/" + test +".txt");
-	for (int i = 0; i < N-1; ++i)
-	{	int pnt = i*3;
-		myfile << setprecision(10) << M[pnt] << setw(20) << M[pnt+1] <<  setw(20) << M[pnt+2] << endl;
-	}
-	myfile.close();
-
-}
 
 int main(int argc, char *argv[])
 {	// ================ Reading of Inputs =====================//
@@ -75,7 +60,6 @@ int main(int argc, char *argv[])
     const int nrhs = 1;
     int info = 0;
     int*    ipiv = new int[Nvar_];
-    // showVec(F_g, Nvar_);
 	F77NAME(dgesv)(Nvar_, nrhs, K_g, Nvar_, ipiv, F_g, Nvar_, info);
 	writeVec(F_g, Nx_g, "output");
 

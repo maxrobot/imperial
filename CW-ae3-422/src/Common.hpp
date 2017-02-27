@@ -6,6 +6,9 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+// #include <stdio.h>
+
+// #include <string.h>
 
 // Define LAPACK Shit ###########################################
 #define F77NAME(x) x##_
@@ -25,5 +28,7 @@ extern "C" {
 void showVec(double *M, int N);
 
 void showMat(double *M, int N);
+
+void writeVec(double *M, int N, std::string test);
 
 #endif // COMMON_HPP_INCLUDED
