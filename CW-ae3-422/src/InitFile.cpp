@@ -3,25 +3,38 @@
 
 using namespace std;
 
-void readParamFile(ifstream &in_run_input_file, int *nite_, int *Nx_g, double *lx_g,
-      double *E_, double *rho_, double *b_, double *h_, double *qx_, double *qy_)
+void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
+    double *lx_g, double *E_, double *rho_, double *b_, double *h_, double *qx_,
+    double *qy_, string *eq_)
 { 
   string text_line;
   string keyword, value;
   // Now read in parameters
   while (getline (in_run_input_file, text_line)) {
     if (readLine(text_line, keyword, value)){
-      // analyzeLine(keyword, value.c_str(), *nite_, *Nx_g, *lx_g, 
-      //   *E_, *rho_, *b_, *h_, *qx_, *qy_);
-      analyzeLine(keyword, value.c_str(), nite_, Nx_g, lx_g, 
-        E_, rho_, b_, h_, qx_, qy_);
+      analyzeLine(keyword, value.c_str(), T_, nite_, Nx_g, lx_g, E_,
+        rho_, b_, h_, qx_, qy_, eq_);
     }
   }
 }
 
-void analyzeLine(string & keyword, const char *value, int *nite_, int *Nx_g, double *lx_g,
-      double *E_, double *rho_, double *b_, double *h_, double *qx_, double *qy_)
-{ if (!keyword.compare("number of iterations"))
+void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *Nx_g,
+    double *lx_g, double *E_, double *rho_, double *b_, double *h_, double *qx_,
+    double *qy_, string *eq_)
+{ 
+  if (!keyword.compare("equation")){
+    string tmp_value = string(value);
+    if (tmp_value.compare("STATIC") and tmp_value.compare("DYNAMIC")){
+      cout << "Error no equation type specified." << endl;
+      exit(EXIT_FAILURE);
+    }
+    StringToUpperCase(tmp_value);
+    *eq_ = string(tmp_value.c_str());
+  }
+  if (!keyword.compare("simulation time (s)"))
+  { sscanf(value,"%d",T_);
+  }
+  if (!keyword.compare("number of iterations"))
   { sscanf(value,"%d",nite_);
   }
   if (!keyword.compare("number of elements"))

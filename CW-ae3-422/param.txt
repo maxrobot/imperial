@@ -3,6 +3,8 @@ Input file
 ===============================================================================
 
 Simulation Parameters =========================================================
+equation: STATIC
+simulation time (s): 1
 number of iterations: 10
 number of elements: 100
 

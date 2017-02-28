@@ -18,6 +18,9 @@ int main(int argc, char *argv[])
 	}   
 
 	// Global Variables #############################################
+	string eq_("NONE");			// Type of eq., statis or dynamic
+
+	int T_(0);	         		// Simulation length (s)
 	int nite_(0);         		// Number of time steps
 	int Nx_g(0);          		// Number of global elements
 	int Nvar_(0);				// Number of variables in domain
@@ -39,9 +42,14 @@ int main(int argc, char *argv[])
 	// End of Global Variables ######################################
 
 	// ================ Initialise Local Vars. ================//
-	readParamFile(param_file, &nite_, &Nx_g, &lx_g, &E_, &rho_, &b_, &h_, &qx_, &qy_);
+	readParamFile(param_file, &T_, &nite_, &Nx_g, &lx_g, &E_,
+		&rho_, &b_, &h_, &qx_, &qy_, &eq_);
 	initVars(&b_, &h_, &A_, &I_, &E_, &Nvar_, &Nx_g);
 	
+	if (eq_=="STATIC")
+	{	cout << "It works" << endl;
+	}
+
 	// ===================== Build Tables =====================//
 	double *K_g	 		= allocateDbl(Nvar_*Nvar_);
 	double *K_gs 		= allocateDbl(Nvar_*(9+buf));
