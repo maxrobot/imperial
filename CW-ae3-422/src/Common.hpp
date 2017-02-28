@@ -6,9 +6,6 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-// #include <stdio.h>
-
-// #include <string.h>
 
 // Define LAPACK Shit ###########################################
 #define F77NAME(x) x##_

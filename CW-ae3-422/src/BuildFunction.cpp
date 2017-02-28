@@ -34,20 +34,21 @@ void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 }
 
 void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
-{	// LHS Boundary
+{	const int jmp =  9 + buf;
+	// LHS Boundary
 	for (int i = 0; i < 3; ++i)
 	{	// Build Diagonals
 		int pnt = (i+3)*6 + (i+3);
-		int pnt2 = (4+buf)*Nvar_+(i);
-	 	Kg[pnt2] += ke[pnt];	
+		int pnt2 = (i*jmp) +4+buf;
+	 	Kg[pnt2] += ke[pnt];
 	 	if (i==1)
 	 	{	pnt = (i+3)*6 + (i+3+1);
-			pnt2 = (4+buf+1)*Nvar_+(i);
+			pnt2 = (i*jmp+4)+1+buf;
 		 	Kg[pnt2] += ke[pnt];	
 	 	}
 	 	if (i==2)
 	 	{	pnt = (i+3-1)*6 + (i+3);
-			pnt2 = (5+buf-i)*Nvar_+(i);
+			pnt2 = (i*jmp+4)-1+buf;
 		 	Kg[pnt2] += ke[pnt];	
 	 	}
 	}
@@ -58,7 +59,7 @@ void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 		for (int j = 0; j < 6; ++j)
 		{	// Build Diagonal
 			int pnt = j*6 + j;
-			int pnt2 = (4+buf)*Nvar_ + j + i*3;
+			int pnt2 = (j*jmp + 4+buf) + i*(jmp*3);
 		 	Kg[pnt2] += ke[pnt];
 		 	int max = 6-j;
 		 	int bnd = 5;
@@ -67,12 +68,12 @@ void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 		 	{	bnd = max;
 		 	}
 			for (int k = 1; k < bnd; ++k)
-			{	int pos = (4+buf+k)*Nvar_+j + i*3;
+			{	int pos = (j*jmp + 4+buf) + i*(jmp*3) + k;
 			 	Kg[pos] += ke[pnt+k];	
 			}
 		 	// Build Lower
 			for (int k = 1; k <= j; ++k)
-			{	int pos = (4+buf-k)*Nvar_+j + i*3;
+			{	int pos = (j*jmp + 4+buf) + i*(jmp*3) - k;
 				Kg[pos] += ke[pnt-k];
 			}
 		}
@@ -81,16 +82,16 @@ void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	for (int i = Nvar_-3; i < Nvar_; ++i)
 	{	// Build Diagonals
 		int pnt = (i - (Nvar_-3))*6 + (i - (Nvar_-3));
-		int pnt2 = (4+buf)*Nvar_+(i);
+		int pnt2 = (i*jmp) +(4+buf);
 	 	Kg[pnt2] += ke[pnt];	
-	 	if (i==1)
-	 	{	pnt = (i)*6 + (i+1);
-			pnt2 = (4+buf+1)*Nvar_+(i+3);
+	 	if (i==Nvar_-2)
+	 	{	pnt += 1;
+			pnt2 += 1;
 		 	Kg[pnt2] += ke[pnt];	
 	 	}
-	 	if (i==2)
-	 	{	pnt = (i-1)*6 + (i);
-			pnt2 = (5+buf-i)*Nvar_+(i+3);
+	 	if (i==Nvar_-1)
+	 	{	pnt += -1;
+			pnt2 += -1;
 		 	Kg[pnt2] += ke[pnt];	
 	 	}
 	}
@@ -106,7 +107,7 @@ void buildFglb(double *Kg, double *ke, int Nx_g)
 }
 
 void buildKele(double *K, double lx_e, double A_, double E_, double I_)
-{	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 2)), 
+{	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
 			c(6*EI/pow(lx_e, 2)), d(4*EI/lx_e), e(2*EI/lx_e);
 	int N = 6;
 	{ for (int i = 0; i < N; ++i)

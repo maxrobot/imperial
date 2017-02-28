@@ -1,7 +1,6 @@
 # Declaration of variables
 CC = g++
-CC_FLAGS = -DDEBUG -g -std=c++11
-# CC_FLAGS = -O3 -std=c++11
+CC_FLAGS = -O3 -std=c++11
 LD_FLAGS = -llapack -lblas
 DEBUG_FLAGS = -g
 
