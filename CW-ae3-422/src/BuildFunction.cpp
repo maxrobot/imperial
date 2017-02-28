@@ -4,9 +4,6 @@
 
 using namespace std;
 
-void buildMele(double *M, double A_, double rho_, double lx_e, double Al_)
-{      cout << "Mass matrix" << endl;
-}
 
 void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 {	// LHS Boundary
@@ -102,12 +99,24 @@ void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 }
 
 void buildFglb(double *Kg, double *ke, int Nx_g)
-{	for (int i = 0; i < Nx_g; ++i)
+{	// Build Center	
+	for (int i = 0; i < Nx_g-1; ++i)
 	{	for (int j = 0; j < 6; ++j)
-		{	int pnt = i*3 + j;
-			Kg[pnt] += ke[j];
+		{	if (i==Nx_g-2 && j>=4)
+			{	break;
+			}
+			else
+			{	int pnt = i*3 + j;
+				Kg[pnt] += ke[j];
+			}
 		}
 	}
+}
+
+void buildMele(double *M, double A_, double rho_, double lx_e, double Al_)
+{	const double p =  rho_*A_*lx_e;
+	M[0] = M[1] = M[3] = M[4] = p*.5;
+	M[2] = M[5] = p*A_*pow(lx_e,2);
 }
 
 void buildKele(double *K, double lx_e, double A_, double E_, double I_)

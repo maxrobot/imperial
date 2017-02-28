@@ -1,6 +1,6 @@
 #include "Solvers.hpp"
 
-void solveStatic(double *A, double* b, int Nvar_)
+void solveStatic(double *A, double *b, int Nvar_)
 {	// =================== Solve System =======================//
     const int nrhs = 1;
     int info = 0;

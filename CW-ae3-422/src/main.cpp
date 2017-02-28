@@ -5,6 +5,9 @@
 #include "BuildFunction.hpp"
 #include "GlobalVars.hpp"
 #include "Memory.hpp"
+#include "Solvers.hpp"
+
+#include <cblas.h>
 
 using namespace std;
 
@@ -40,22 +43,22 @@ int main(int argc, char *argv[])
 	const double Al_(1./12);  	// Constant Alpha
 	const double buf(4);	  	// Buffer
 	// End of Global Variables ######################################
-
-	// ================ Initialise Local Vars. ================//
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_);
-	initVars(&b_, &h_, &A_, &I_, &E_, &Nvar_, &Nx_g);
-	double lx_e = lx_g/Nx_g;		// Local element length
 	
-	if (eq_=="STATIC")
+	if (eq_=="static")
 	{	
+		// ================ Initialise Local Vars. ================//
+		initVars(&b_, &h_, &A_, &I_, &E_, &Nvar_, &Nx_g);
+		double lx_e = lx_g/Nx_g;		// Local element length
+		
 		// ===================== Build Tables =====================//
 		double *K_g 		= allocateDbl(Nvar_*(9+buf));
 		double *F_g			= allocateDbl(Nvar_);
 		double *U_g			= allocateDbl(Nvar_);
 
-		double K_e[6*6] = {};
-		double F_e[6] = {};
+		double *K_e			= allocateDbl(6*6);
+		double *F_e	 		= allocateDbl(6);
 
 
 		// ============== Create Elemental K Matrix ===============//
@@ -72,10 +75,51 @@ int main(int argc, char *argv[])
 	    int ku = 4;
 	    int ldab = 1 + 2*kl + ku;
 	    int ldb = Nvar_;
-		// showVec(F_g, Nvar_);
 		F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K_g, ldab, ipiv, F_g, ldb, info);
-		// showVec(F_g, Nvar_);
 		writeVec(F_g, Nx_g, "output");
+	}
+	else if (eq_=="dynamic")
+	{	// Solve Mu^{n+1} =  
+		// ================ Initialise Local Vars. ================//
+		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_, &nite_);
+		double lx_e = lx_g/Nx_g;		// Local element length
+		// ===================== Build Tables =====================//
+		double *K_g 		= allocateDbl(Nvar_*(9+buf));
+		double *F_g			= allocateDbl(Nvar_);
+		double *M_g			= allocateDbl(Nvar_);
+		double *U_g			= allocateDbl(Nvar_);
+		double *S_g			= allocateDbl(Nvar_);
+
+		double *M_e			= allocateDbl(6);
+		double *K_e			= allocateDbl(6*6);
+		double *F_e	 		= allocateDbl(6);
+
+		// ============== Create Elemental K Matrix ===============//
+		buildMele(M_e, A_, rho_, lx_e, Al_);
+		buildKele(K_e, lx_e, A_, E_, I_);
+		buildFele(F_e, lx_e, qx_, qy_);
+
+		buildKglb(K_g, K_e, Nvar_, Nx_g);
+		buildFglb(F_g, F_e, Nx_g);
+		buildFglb(M_g, M_e, Nx_g);
+		buildFglb(U_g, M_e, Nx_g);
+
+		showVec(M_g, Nvar_);
+		showVec(U_g, Nvar_);
+		// F77NAME(dgemv)(Nvar_, kl, ku, nrhs, K_g, ldab, ipiv, F_g, ldb, info);
+		showVec(M_g, Nvar_);
+		showVec(U_g, Nvar_);
+
+		// =================== Create S Matrix ====================//
+		double *L_a			= allocateDbl(Nvar_);
+		double *L_b			= allocateDbl(Nvar_);
+		double *L_c			= allocateDbl(Nvar_);
+
+		// Make L_b
+		
+
+		// Make L_c
+		*L_c = F77NAME(ddot)(Nvar_, M_g, 1, U_g, 1);
 	}
 	else
 	{
