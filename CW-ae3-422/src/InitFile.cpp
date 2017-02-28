@@ -24,11 +24,11 @@ void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *N
 { 
   if (!keyword.compare("equation")){
     string tmp_value = string(value);
-    if (tmp_value.compare("STATIC") and tmp_value.compare("DYNAMIC")){
-      cout << "Error no equation type specified." << endl;
-      exit(EXIT_FAILURE);
-    }
-    StringToUpperCase(tmp_value);
+    // if (tmp_value.compare("STATIC") and tmp_value.compare("DYNAMIC")){
+    //   cout << "Error no equation type specified." << endl;
+    //   exit(EXIT_FAILURE);
+    // }
+    // StringToUpperCase(tmp_value);
     *eq_ = string(tmp_value.c_str());
   }
   if (!keyword.compare("simulation time (s)"))

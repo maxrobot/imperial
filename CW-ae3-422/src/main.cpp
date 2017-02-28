@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 	}   
 
 	// Global Variables #############################################
-	string eq_("NONE");			// Type of eq., statis or dynamic
+	string eq_("none");			// Type of eq., static or dynamic
 
 	int T_(0);	         		// Simulation length (s)
 	int nite_(0);         		// Number of time steps
@@ -45,41 +45,42 @@ int main(int argc, char *argv[])
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_);
 	initVars(&b_, &h_, &A_, &I_, &E_, &Nvar_, &Nx_g);
+	double lx_e = lx_g/Nx_g;		// Local element length
 	
 	if (eq_=="STATIC")
-	{	cout << "It works" << endl;
+	{	
+		// ===================== Build Tables =====================//
+		double *K_g 		= allocateDbl(Nvar_*(9+buf));
+		double *F_g			= allocateDbl(Nvar_);
+		double *U_g			= allocateDbl(Nvar_);
+
+		double K_e[6*6] = {};
+		double F_e[6] = {};
+
+
+		// ============== Create Elemental K Matrix ===============//
+		buildKele(K_e, lx_e, A_, E_, I_);
+		buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf);
+		buildFele(F_e, lx_e, qx_, qy_);
+		buildFglb(F_g, F_e, Nx_g);
+
+		// =================== Solve System =======================//
+	    const int nrhs = 1;
+	    int info = 0;
+	    int*    ipiv = new int[Nvar_];
+	    int kl = 4;
+	    int ku = 4;
+	    int ldab = 1 + 2*kl + ku;
+	    int ldb = Nvar_;
+		// showVec(F_g, Nvar_);
+		F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K_g, ldab, ipiv, F_g, ldb, info);
+		// showVec(F_g, Nvar_);
+		writeVec(F_g, Nx_g, "output");
+	}
+	else
+	{
+		exit(EXIT_FAILURE);
 	}
 
-	// ===================== Build Tables =====================//
-	double *K_g	 		= allocateDbl(Nvar_*Nvar_);
-	double *K_gs 		= allocateDbl(Nvar_*(9+buf));
-	double *F_g			= allocateDbl(Nvar_);
-	double *U_g			= allocateDbl(Nvar_);
-
-	double K_e[6*6] = {};
-	double F_e[6] = {};
-	double lx_e = lx_g/Nx_g;		// Local element length
-
-
-	// ============== Create Elemental K Matrix ===============//
-	buildKele(K_e, lx_e, A_, E_, I_);
-	buildKglb(K_g, K_e, Nvar_, Nx_g);
-	buildKglbSparse(K_gs, K_e, Nvar_, Nx_g, buf);
-	buildFele(F_e, lx_e, qx_, qy_);
-	buildFglb(F_g, F_e, Nx_g);
-
-	// =================== Solve System =======================//
-    const int nrhs = 1;
-    int info = 0;
-    int*    ipiv = new int[Nvar_];
-    int kl = 4;
-    int ku = 4;
-    int ldab = 1 + 2*kl + ku;
-    int ldb = Nvar_;
-
-	// showVec(F_g, Nvar_);
-	F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K_gs, ldab, ipiv, F_g, ldb, info);
-	// showVec(F_g, Nvar_);
-	writeVec(F_g, Nx_g, "output");
 	return 0;
 }

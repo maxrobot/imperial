@@ -4,6 +4,10 @@
 
 using namespace std;
 
+void buildMele(double *M, double A_, double rho_, double lx_e, double Al_)
+{      cout << "Mass matrix" << endl;
+}
+
 void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 {	// LHS Boundary
 	for (int j = 3; j < 6; ++j)
