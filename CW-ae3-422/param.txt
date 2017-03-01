@@ -5,12 +5,12 @@ Input file
 Simulation Parameters =========================================================
 equation: dynamic
 simulation time (s): 1
-number of iterations: 10
-number of elements: 4
+number of iterations: 1000
+number of elements: 40
 
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000
-rho (ton/mm^3): 7850
+rho (ton/mm^3): 7850E-12
 axial uniform load (n/mm): 0
 traverse uniform load (n/mm): 1
 

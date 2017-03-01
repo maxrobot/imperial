@@ -4,6 +4,11 @@
 
 using namespace std;
 
+void buildEye(double *K, int Nvar_)
+{	for (int i = 0; i < Nvar_; ++i)
+	{	K[(i*Nvar_)+i] = 1;
+	}
+}
 
 void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 {	// LHS Boundary
@@ -113,18 +118,37 @@ void buildFglb(double *Kg, double *ke, int Nx_g)
 	}
 }
 
-void buildMele(double *M, double A_, double rho_, double lx_e, double Al_)
-{	const double p =  rho_*A_*lx_e;
-	M[0] = M[1] = M[3] = M[4] = p*.5;
-	M[2] = M[5] = p*A_*pow(lx_e,2);
+void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, double dt_)
+{	const double p =  rho_*A_*lx_e*dt_*dt_;
+	int N = 6;
+	for (int i = 0; i < N; ++i)
+	{	if (i == 0)
+		{	K[i*N+0] = p*.5;
+		}
+		if (i == 1)
+		{	K[i*N+1] = p*.5;
+		}
+		if (i == 2)
+		{	K[i*N+2] = p*A_*pow(lx_e,2);
+		}
+		if (i == 3)
+		{	K[i*N+3] = p*.5;
+		}
+		if (i == 4)
+		{	K[i*N+4] = p*.5;
+		}
+		if (i == 5)
+		{	K[i*N+5] = p*A_*pow(lx_e,2);
+		}
+	}
 }
 
 void buildKele(double *K, double lx_e, double A_, double E_, double I_)
 {	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
 			c(6*EI/pow(lx_e, 2)), d(4*EI/lx_e), e(2*EI/lx_e);
 	int N = 6;
-	{ for (int i = 0; i < N; ++i)
-	  {	if (i == 0)
+	for (int i = 0; i < N; ++i)
+	{	if (i == 0)
 		{	K[i*N+0] = a;
 			K[i*N+3] = -a;
 			K[3*N] = -a;
@@ -156,7 +180,6 @@ void buildKele(double *K, double lx_e, double A_, double E_, double I_)
 		if (i == 5)
 		{	K[i*N+5] = d;
 		}
-	  }
 	}
 }
 
@@ -167,6 +190,6 @@ void buildFele(double *K, double lx_e, double qx_, double qy_)
 	K[5] = -(qy_*lx_e*lx_e)/12;
 }
 
-void zeroMat(double *K, int N)
-{	fill(K, K+N, 0);
+void assignArr(double *K, double V, int N)
+{	fill(K, K+N, V);
 }

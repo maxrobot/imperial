@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	// End of Global Variables ######################################
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_);
-	
+
 	if (eq_=="static")
 	{	
 		// ================ Initialise Local Vars. ================//
@@ -53,7 +53,10 @@ int main(int argc, char *argv[])
 		double lx_e = lx_g/Nx_g;		// Local element length
 		
 		// ===================== Build Tables =====================//
+		// Matrices
 		double *K_g 		= allocateDbl(Nvar_*(9+buf));
+
+		// Vectors
 		double *F_g			= allocateDbl(Nvar_);
 		double *U_g			= allocateDbl(Nvar_);
 
@@ -84,42 +87,79 @@ int main(int argc, char *argv[])
 		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_, &nite_);
 		double lx_e = lx_g/Nx_g;		// Local element length
 		// ===================== Build Tables =====================//
-		double *K_g 		= allocateDbl(Nvar_*(9+buf));
+		// Matrices
+		double *K_g 		= allocateDbl(Nvar_*Nvar_);
+		double *M_g			= allocateDbl(Nvar_*Nvar_);
+		double *eye			= allocateDbl(Nvar_*Nvar_);
+
+		// Vectors
 		double *F_g			= allocateDbl(Nvar_);
-		double *M_g			= allocateDbl(Nvar_);
 		double *U_g			= allocateDbl(Nvar_);
+		double *Un_g		= allocateDbl(Nvar_);
 		double *S_g			= allocateDbl(Nvar_);
 
-		double *M_e			= allocateDbl(6);
+		double *M_e			= allocateDbl(6*6);
 		double *K_e			= allocateDbl(6*6);
 		double *F_e	 		= allocateDbl(6);
 
 		// ============== Create Elemental K Matrix ===============//
-		buildMele(M_e, A_, rho_, lx_e, Al_);
+		buildEye(eye, Nvar_);
+		buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
 		buildKele(K_e, lx_e, A_, E_, I_);
 		buildFele(F_e, lx_e, qx_, qy_);
 
 		buildKglb(K_g, K_e, Nvar_, Nx_g);
 		buildFglb(F_g, F_e, Nx_g);
-		buildFglb(M_g, M_e, Nx_g);
-		buildFglb(U_g, M_e, Nx_g);
+		buildKglb(M_g, M_e, Nvar_, Nx_g);
 
-		showVec(M_g, Nvar_);
-		showVec(U_g, Nvar_);
-		// F77NAME(dgemv)(Nvar_, kl, ku, nrhs, K_g, ldab, ipiv, F_g, ldb, info);
-		showVec(M_g, Nvar_);
-		showVec(U_g, Nvar_);
+		showMat(M_e, 6);	
+
+		/*double *L_c		= allocateDbl(Nvar_);
+		double *M_gt	= allocateDbl(Nvar_*Nvar_);
+		double *F_gt	= allocateDbl(Nvar_);
+
+	    int info = 0;
+	    int *ipiv = new int[Nvar_];
 
 		// =================== Create S Matrix ====================//
-		double *L_a			= allocateDbl(Nvar_);
-		double *L_b			= allocateDbl(Nvar_);
-		double *L_c			= allocateDbl(Nvar_);
+		// Start marching through time...
+		// for (int i = 0; i < 1; ++i)
+		for (int i = 0; i < nite_; ++i)
+		{	// Make C: output = L_c
+			// showMat	(M_g, Nvar_);
+			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M_g, Nvar_, Un_g, 1, 0, L_c, 1);
+			// showMat(M_g, Nvar_);
 
-		// Make L_b
-		
+			// Make B: output = M_gt
+			F77NAME(dcopy)(Nvar_*Nvar_, M_g, 1, M_gt, 1);
+			// showMat(M_gt, Nvar_);
+			F77NAME(dgemm)('n', 'n', Nvar_, Nvar_, Nvar_, dt_*dt_, eye, Nvar_, K_g,
+					Nvar_, -2, M_gt, Nvar_);
+			// showMat(M_gt, Nvar_);
 
-		// Make L_c
-		*L_c = F77NAME(ddot)(Nvar_, M_g, 1, U_g, 1);
+			// Combine B and C: output = L_c
+			// showMat(M_gt, Nvar_);
+			// showVec(L_c, Nvar_);
+			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M_gt, Nvar_, U_g, 1, -1, L_c, 1);
+			
+			// Make L_a: output = L_c
+			F77NAME(dcopy)(Nvar_, F_g, 1, F_gt, 1);
+			// showVec(F_gt, Nvar_);
+			// showVec(L_c, Nvar_);
+			F77NAME(dgemv)('n', Nvar_, Nvar_, dt_*dt_, eye, Nvar_, F_gt, 1, -1, L_c, 1);
+			// showVec(L_c, Nvar_);
+
+			// Calculate updated U_g
+			// showVec(U_g	, Nvar_);
+			F77NAME(dgesv)(Nvar_, 1, M_g, Nvar_, ipiv, L_c, Nvar_, info);
+			if (i%5==0)
+			{	showVec(L_c, Nvar_);
+				}
+
+			// Now update vars for repeat
+			F77NAME(dcopy)(Nvar_, U_g, 1, Un_g, 1);
+
+		}*/
 	}
 	else
 	{
