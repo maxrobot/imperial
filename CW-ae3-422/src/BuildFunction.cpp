@@ -119,7 +119,8 @@ void buildFglb(double *Kg, double *ke, int Nx_g)
 }
 
 void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, double dt_)
-{	const double p =  rho_*A_*lx_e*dt_*dt_;
+// Brought the time integration into the mass matrix
+{	const double p =  (rho_*A_*lx_e)/(dt_*dt_);
 	int N = 6;
 	for (int i = 0; i < N; ++i)
 	{	if (i == 0)
@@ -129,7 +130,7 @@ void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, doubl
 		{	K[i*N+1] = p*.5;
 		}
 		if (i == 2)
-		{	K[i*N+2] = p*A_*pow(lx_e,2);
+		{	K[i*N+2] = p*Al_*pow(lx_e,2);
 		}
 		if (i == 3)
 		{	K[i*N+3] = p*.5;
@@ -138,7 +139,7 @@ void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, doubl
 		{	K[i*N+4] = p*.5;
 		}
 		if (i == 5)
-		{	K[i*N+5] = p*A_*pow(lx_e,2);
+		{	K[i*N+5] = p*Al_*pow(lx_e,2);
 		}
 	}
 }
@@ -192,4 +193,13 @@ void buildFele(double *K, double lx_e, double qx_, double qy_)
 
 void assignArr(double *K, double V, int N)
 {	fill(K, K+N, V);
+}
+
+void updateVars(double *F, double lx_e, double qx_,
+				double qy_, int Nx_g, int step, int nite_)
+{	double coef = double(step)/nite_;
+	double *fe = new double[6]();
+	buildFele(fe, lx_e, coef*qx_, coef*qy_);
+	buildFglb(F, fe, Nx_g);
+	delete [] fe;
 }

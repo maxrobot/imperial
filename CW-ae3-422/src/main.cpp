@@ -4,8 +4,8 @@
 #include "Common.hpp"
 #include "BuildFunction.hpp"
 #include "GlobalVars.hpp"
-#include "Memory.hpp"
 #include "Solvers.hpp"
+#include "Memory.hpp"
 
 #include <cblas.h>
 
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 	double h_(0);         		// Cross-sectional height
 	double A_(0);         		// Cross-sectional area
 
-	const double Al_(1./12);  	// Constant Alpha
+	const double Al_(1./24);  	// Constant Alpha
 	const double buf(4);	  	// Buffer
 	// End of Global Variables ######################################
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &lx_g, &E_,
@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
 		buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf);
 		buildFele(F_e, lx_e, qx_, qy_);
 		buildFglb(F_g, F_e, Nx_g);
+		// showVec(F_g, Nvar_);
 
 		// =================== Solve System =======================//
 	    const int nrhs = 1;
@@ -82,8 +83,7 @@ int main(int argc, char *argv[])
 		writeVec(F_g, Nx_g, "output");
 	}
 	else if (eq_=="dynamic")
-	{	// Solve Mu^{n+1} =  
-		// ================ Initialise Local Vars. ================//
+	{	// ================ Initialise Local Vars. ================//
 		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_, &nite_);
 		double lx_e = lx_g/Nx_g;		// Local element length
 		// ===================== Build Tables =====================//
@@ -100,66 +100,53 @@ int main(int argc, char *argv[])
 
 		double *M_e			= allocateDbl(6*6);
 		double *K_e			= allocateDbl(6*6);
-		double *F_e	 		= allocateDbl(6);
 
 		// ============== Create Elemental K Matrix ===============//
 		buildEye(eye, Nvar_);
 		buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
 		buildKele(K_e, lx_e, A_, E_, I_);
-		buildFele(F_e, lx_e, qx_, qy_);
 
 		buildKglb(K_g, K_e, Nvar_, Nx_g);
-		buildFglb(F_g, F_e, Nx_g);
 		buildKglb(M_g, M_e, Nvar_, Nx_g);
 
-		showMat(M_e, 6);	
-
-		/*double *L_c		= allocateDbl(Nvar_);
-		double *M_gt	= allocateDbl(Nvar_*Nvar_);
-		double *F_gt	= allocateDbl(Nvar_);
+		double *MK_o	= allocateDbl(Nvar_*Nvar_);
+		double *MKU_o		= allocateDbl(Nvar_);
+		double *MU_o	= allocateDbl(Nvar_);
 
 	    int info = 0;
 	    int *ipiv = new int[Nvar_];
 
+	    for (int i = 0; i < Nvar_*Nvar_; ++i)
+		{	MK_o[i] = 2*M_g[i] - K_g[i];
+		}
+		
 		// =================== Create S Matrix ====================//
 		// Start marching through time...
-		// for (int i = 0; i < 1; ++i)
-		for (int i = 0; i < nite_; ++i)
+		for (int i = 0; i <= nite_; ++i)
 		{	// Make C: output = L_c
-			// showMat	(M_g, Nvar_);
-			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M_g, Nvar_, Un_g, 1, 0, L_c, 1);
-			// showMat(M_g, Nvar_);
+			assignArr(F_g, 0., Nvar_);
+			updateVars(F_g, lx_e, qx_, qy_, Nx_g, i, nite_);
 
-			// Make B: output = M_gt
-			F77NAME(dcopy)(Nvar_*Nvar_, M_g, 1, M_gt, 1);
-			// showMat(M_gt, Nvar_);
-			F77NAME(dgemm)('n', 'n', Nvar_, Nvar_, Nvar_, dt_*dt_, eye, Nvar_, K_g,
-					Nvar_, -2, M_gt, Nvar_);
-			// showMat(M_gt, Nvar_);
+			// Calculate M*U{n-1}
+			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M_g, Nvar_, Un_g, 1, 0, MU_o, 1);
 
-			// Combine B and C: output = L_c
-			// showMat(M_gt, Nvar_);
-			// showVec(L_c, Nvar_);
-			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M_gt, Nvar_, U_g, 1, -1, L_c, 1);
-			
-			// Make L_a: output = L_c
-			F77NAME(dcopy)(Nvar_, F_g, 1, F_gt, 1);
-			// showVec(F_gt, Nvar_);
-			// showVec(L_c, Nvar_);
-			F77NAME(dgemv)('n', Nvar_, Nvar_, dt_*dt_, eye, Nvar_, F_gt, 1, -1, L_c, 1);
-			// showVec(L_c, Nvar_);
+			// Calculate MK_o*U{n}
+			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U_g, 1, 0, MKU_o, 1);
 
-			// Calculate updated U_g
-			// showVec(U_g	, Nvar_);
-			F77NAME(dgesv)(Nvar_, 1, M_g, Nvar_, ipiv, L_c, Nvar_, info);
-			if (i%5==0)
-			{	showVec(L_c, Nvar_);
-				}
+			for (int i = 0; i < Nvar_; ++i)
+			{	S_g[i] = F_g[i] + MKU_o[i] - MU_o[i];
+			}
+
+			// Calculate updated M*U{n+1} = S
+			F77NAME(dgesv)(Nvar_, 1, M_g, Nvar_, ipiv, S_g, Nvar_, info);
 
 			// Now update vars for repeat
-			F77NAME(dcopy)(Nvar_, U_g, 1, Un_g, 1);
-
-		}*/
+			F77NAME(dcopy)(Nvar_, U_g, 1, Un_g, 1); // Save Un-1
+			F77NAME(dcopy)(Nvar_, S_g, 1, U_g, 1); // Update Un
+			if (i%10==0)
+			{	writeVec(U_g, Nx_g, i, "output");
+			}
+		}
 	}
 	else
 	{

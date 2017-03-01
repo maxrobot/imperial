@@ -16,4 +16,7 @@ void buildFele(double *K, double lx_e, double qx_, double qy_);
 
 void assignArr(double *K, double V, int N);
 
+void updateVars(double *F, double lx_e, double qx_,
+				double qy_, int Nx_g, int step, int nite_);
+
 #endif // BUILDFUNCTION_HPP_INCLUDED

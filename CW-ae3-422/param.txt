@@ -3,10 +3,11 @@ Input file
 ===============================================================================
 
 Simulation Parameters =========================================================
+/equation: static
 equation: dynamic
 simulation time (s): 1
-number of iterations: 1000
-number of elements: 40
+number of iterations: 10000
+number of elements: 24
 
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000
@@ -15,6 +16,6 @@ axial uniform load (n/mm): 0
 traverse uniform load (n/mm): 1
 
 Beam Dimensions ===============================================================
-beam length (mm): 1000
+beam length (mm): 10000
 cross-sectional width (mm): 100
 cross-sectional height (mm): 120
