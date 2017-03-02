@@ -27,6 +27,10 @@ extern "C" {
                 const int &n, const int &k, const double &alpha, double *A,
                 const int &lda, double *B, const int &ldb, const double &beta,
                 double *C, const int &ldc);
+    void F77NAME(dgbmv)(const char& trans, const int& m, const int& n,
+                const int &kl, const int &ku, const double& alpha, 
+                const double* a, const int& lda, const double* x, const int& incx,
+                const double& beta, double* y, const int& incy);
     void F77NAME(dgesv)(const int& n, const int& nrhs, const double * A,
                 const int& lda, int * ipiv, double * B, const int& ldb,
                 int& info);

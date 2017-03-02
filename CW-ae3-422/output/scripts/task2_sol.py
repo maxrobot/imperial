@@ -7,8 +7,8 @@ import matplotlib.cm as cm
 import numpy as np
 
 # Concetrated Load
-for x in xrange(1,100):
-	pnt = 100*x
+for x in xrange(1,10):
+	pnt = x*10
 	plt.title('Computed Deflection Task 1')
 	plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 	plt.ylabel('Deflection (m)')
