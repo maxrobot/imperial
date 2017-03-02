@@ -1,6 +1,5 @@
-#include "Common.hpp"
 #include "BuildFunction.hpp"
-#include "GlobalVars.hpp"
+#include "Common.hpp"
 
 using namespace std;
 

@@ -3,12 +3,12 @@ Input file
 ===============================================================================
 
 Simulation Parameters =========================================================
-/equation: static
+equation: static
 equation: dynamic
 simulation time (s): 1
-number of iterations: 100
-output spacing: 10
-number of elements: 5
+number of iterations: 10000
+output spacing: 100
+number of elements: 24
 
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000

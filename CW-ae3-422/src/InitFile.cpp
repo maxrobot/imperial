@@ -1,5 +1,4 @@
 #include "InitFile.hpp"
-#include "GlobalVars.hpp"
 
 using namespace std;
 
