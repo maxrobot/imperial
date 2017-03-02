@@ -7,23 +7,55 @@
 #include "Solvers.hpp"
 #include "Memory.hpp"
 
-#include <cblas.h>
-
 using namespace std;
 
-void solve(double *K, double *F, int Nvar_, int ldab, int Nx_)
-{	const int nrhs = 1;
+void solveDynamic(double *K, double *M, double *F, double *U, double lx_e,
+	double qx_, double qy_, int Nvar_, int Nx_g, int nite_, int nout_, std::string test)
+{	
+	double *eye			= allocateDbl(Nvar_*Nvar_);
+	double *Un_g		= allocateDbl(Nvar_);
+	double *S			= allocateDbl(Nvar_);
+	double *MK_o	= allocateDbl(Nvar_*Nvar_);
+	double *MKU_o	= allocateDbl(Nvar_);
+	double *MU_o	= allocateDbl(Nvar_);
+
+	buildEye(eye, Nvar_);
+
     int info = 0;
     int *ipiv = new int[Nvar_];
-    int kl = 4;
-    int ku = 4;
-    int ldb = Nvar_;
 
-    // Use blas to solve system...
-    F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K, ldab, ipiv, F, ldb, info);
-	writeVec(F, Nx_, "output");
+    for (int i = 0; i < Nvar_*Nvar_; ++i)
+	{	MK_o[i] = 2*M[i] - K[i];
+	}
 
-	delete[] ipiv;
+	// =================== Create S Matrix ====================//
+	// Start marching through time...
+	for (int i = 0; i <= nite_; ++i)
+	{	// Make C: output = L_c
+		assignArr(F, 0., Nvar_);
+		updateVars(F, lx_e, qx_, qy_, Nx_g, i, nite_);
+
+		// Calculate M*U{n-1}
+		F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M, Nvar_, Un_g, 1, 0, MU_o, 1);
+
+		// Calculate MK_o*U{n}
+		F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U, 1, 0, MKU_o, 1);
+
+		for (int i = 0; i < Nvar_; ++i)
+		{	S[i] = F[i] + MKU_o[i] - MU_o[i];
+		}
+
+		// Calculate updated M*U{n+1} = S
+		F77NAME(dgesv)(Nvar_, 1, M, Nvar_, ipiv, S, Nvar_, info);
+
+		// Now update vars for repeat
+		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
+		F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
+		if ((i%nout_)==0)
+			writeVec(U, Nx_g, i, test);
+		// showVec(U, Nvar_);
+		// }
+	}
 }
 
 int main(int argc, char *argv[])
@@ -40,6 +72,7 @@ int main(int argc, char *argv[])
 
 	int T_(0);	         		// Simulation length (s)
 	int nite_(0);         		// Number of time steps
+	int nout_(0);         		// Number of output interval
 	int Nx_g(0);          		// Number of global elements
 	int Nvar_(0);				// Number of variables in domain
 	double lx_g(0);       		// Length of global domain
@@ -58,9 +91,8 @@ int main(int argc, char *argv[])
 	const double Al_(1./24);  	// Constant Alpha
 	const double buf(4);	  	// Buffer
 	// End of Global Variables ######################################
-	readParamFile(param_file, &T_, &nite_, &Nx_g, &lx_g, &E_,
+	readParamFile(param_file, &T_, &nite_, &Nx_g, &nout_, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_);
-
 	if (eq_=="static")
 	{	
 		// ================ Initialise Local Vars. ================//
@@ -84,87 +116,81 @@ int main(int argc, char *argv[])
 		buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf);
 		buildFele(F_e, lx_e, qx_, qy_);
 		buildFglb(F_g, F_e, Nx_g);
-		// showVec(F_g, Nvar_);
-		// showMat(K_g,9+buf,Nvar_);
 
+		// ================== Clean up Space ======================//
+		delete[] K_e;
+		delete[] F_e;
 
 		// =================== Solve System =======================//
-		solve(K_g, F_g, Nvar_, 9+buf, Nx_g);
-	    // const int nrhs = 1;
-	    // int info = 0;
-	    // int*    ipiv = new int[Nvar_];
-	    // int kl = 4;
-	    // int ku = 4;
-	    // int ldab = 1 + 2*kl + ku;
-	    // int ldb = Nvar_;
-		// F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K_g, ldab, ipiv, F_g, ldb, info);
-		// writeVec(F_g, Nx_g, "output");
+		solveStatic(K_g, F_g, Nvar_, 9+buf, Nx_g, "output");
 	}
 	else if (eq_=="dynamic")
 	{	// ================ Initialise Local Vars. ================//
-		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_, &nite_);
+		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_,
+			&nite_);
 		double lx_e = lx_g/Nx_g;		// Local element length
 		// ===================== Build Tables =====================//
 		// Matrices
 		double *K_g 		= allocateDbl(Nvar_*Nvar_);
 		double *M_g			= allocateDbl(Nvar_*Nvar_);
-		double *eye			= allocateDbl(Nvar_*Nvar_);
 
 		// Vectors
 		double *F_g			= allocateDbl(Nvar_);
 		double *U_g			= allocateDbl(Nvar_);
-		double *Un_g		= allocateDbl(Nvar_);
-		double *S_g			= allocateDbl(Nvar_);
+
 
 		double *M_e			= allocateDbl(6*6);
 		double *K_e			= allocateDbl(6*6);
 
 		// ============== Create Elemental K Matrix ===============//
-		buildEye(eye, Nvar_);
 		buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
 		buildKele(K_e, lx_e, A_, E_, I_);
 
 		buildKglb(K_g, K_e, Nvar_, Nx_g);
 		buildKglb(M_g, M_e, Nvar_, Nx_g);
 
-		double *MK_o	= allocateDbl(Nvar_*Nvar_);
-		double *MKU_o		= allocateDbl(Nvar_);
-		double *MU_o	= allocateDbl(Nvar_);
+		// ================== Clean up Space ======================//
+		delete[] M_e;
+		delete[] K_e;
+		// double *MK_o	= allocateDbl(Nvar_*Nvar_);
+		// double *MKU_o	= allocateDbl(Nvar_);
+		// double *MU_o	= allocateDbl(Nvar_);
 
-	    int info = 0;
-	    int *ipiv = new int[Nvar_];
+	 //    int info = 0;
+	 //    int *ipiv = new int[Nvar_];
 
-	    for (int i = 0; i < Nvar_*Nvar_; ++i)
-		{	MK_o[i] = 2*M_g[i] - K_g[i];
-		}
+	 //    for (int i = 0; i < Nvar_*Nvar_; ++i)
+		// {	MK_o[i] = 2*M_g[i] - K_g[i];
+		// }
 		
-		// =================== Create S Matrix ====================//
-		// Start marching through time...
-		for (int i = 0; i <= nite_; ++i)
-		{	// Make C: output = L_c
-			assignArr(F_g, 0., Nvar_);
-			updateVars(F_g, lx_e, qx_, qy_, Nx_g, i, nite_);
+		// // =================== Create S Matrix ====================//
+		// // Start marching through time...
+		// for (int i = 0; i <= nite_; ++i)
+		// {	// Make C: output = L_c
+		// 	assignArr(F_g, 0., Nvar_);
+		// 	updateVars(F_g, lx_e, qx_, qy_, Nx_g, i, nite_);
 
-			// Calculate M*U{n-1}
-			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M_g, Nvar_, Un_g, 1, 0, MU_o, 1);
+		// 	// Calculate M*U{n-1}
+		// 	F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M_g, Nvar_, Un_g, 1, 0, MU_o, 1);
 
-			// Calculate MK_o*U{n}
-			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U_g, 1, 0, MKU_o, 1);
+		// 	// Calculate MK_o*U{n}
+		// 	F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U_g, 1, 0, MKU_o, 1);
 
-			for (int i = 0; i < Nvar_; ++i)
-			{	S_g[i] = F_g[i] + MKU_o[i] - MU_o[i];
-			}
+		// 	for (int i = 0; i < Nvar_; ++i)
+		// 	{	S_g[i] = F_g[i] + MKU_o[i] - MU_o[i];
+		// 	}
 
-			// Calculate updated M*U{n+1} = S
-			F77NAME(dgesv)(Nvar_, 1, M_g, Nvar_, ipiv, S_g, Nvar_, info);
+		// 	// Calculate updated M*U{n+1} = S
+		// 	F77NAME(dgesv)(Nvar_, 1, M_g, Nvar_, ipiv, S_g, Nvar_, info);
 
-			// Now update vars for repeat
-			F77NAME(dcopy)(Nvar_, U_g, 1, Un_g, 1); // Save Un-1
-			F77NAME(dcopy)(Nvar_, S_g, 1, U_g, 1); // Update Un
-			if (i%10==0)
-			{	writeVec(U_g, Nx_g, i, "output");
-			}
-		}
+		// 	// Now update vars for repeat
+		// 	F77NAME(dcopy)(Nvar_, U_g, 1, Un_g, 1); // Save Un-1
+		// 	F77NAME(dcopy)(Nvar_, S_g, 1, U_g, 1); // Update Un
+		// 	if (i%nout_==0)
+		// 	{	writeVec(U_g, Nx_g, i, "output");
+		// 	}
+		// }
+		solveDynamic(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_, Nx_g, nite_, nout_, "output");
 	}
 	else
 	{

@@ -1,1 +1,2 @@
-rm *.png
+rm ./images/*.png
+rm ./data/*.txt

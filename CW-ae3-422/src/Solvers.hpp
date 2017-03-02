@@ -1,6 +1,8 @@
 #ifndef SOLVERS_HPP_INCLUDED
 #define SOLVERS_HPP_INCLUDED
 
+#include <iostream>
+
 // Define LAPACK Shit ###########################################
 #define F77NAME(x) x##_
 extern "C" {
@@ -19,6 +21,6 @@ extern "C" {
                     const double *b, const int &ldb, const int &info);
 }
 
-void solveStatic(double *A, double* b, int Nvar_);
+void solveStatic(double *K, double *F, int Nvar_, int ldab, int Nx_, std::string test);
 
 #endif // SOLVERS_HPP_INCLUDED

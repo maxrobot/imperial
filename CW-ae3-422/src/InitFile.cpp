@@ -4,23 +4,23 @@
 using namespace std;
 
 void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
-    double *lx_g, double *E_, double *rho_, double *b_, double *h_, double *qx_,
-    double *qy_, string *eq_)
+    int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
+    double *qx_, double *qy_, string *eq_)
 { 
   string text_line;
   string keyword, value;
   // Now read in parameters
   while (getline (in_run_input_file, text_line)) {
     if (readLine(text_line, keyword, value)){
-      analyzeLine(keyword, value.c_str(), T_, nite_, Nx_g, lx_g, E_,
+      analyzeLine(keyword, value.c_str(), T_, nite_, Nx_g, nout_, lx_g, E_,
         rho_, b_, h_, qx_, qy_, eq_);
     }
   }
 }
 
 void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *Nx_g,
-    double *lx_g, double *E_, double *rho_, double *b_, double *h_, double *qx_,
-    double *qy_, string *eq_)
+    int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
+    double *qx_, double *qy_, string *eq_)
 { 
   if (!keyword.compare("equation")){
     string tmp_value = string(value);
@@ -33,6 +33,9 @@ void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *N
   }
   if (!keyword.compare("simulation time (s)"))
   { sscanf(value,"%d",T_);
+  }
+  if (!keyword.compare("output spacing"))
+  { sscanf(value,"%d",nout_);
   }
   if (!keyword.compare("number of iterations"))
   { sscanf(value,"%d",nite_);
