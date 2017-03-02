@@ -11,6 +11,21 @@
 
 using namespace std;
 
+void solve(double *K, double *F, int Nvar_, int ldab, int Nx_)
+{	const int nrhs = 1;
+    int info = 0;
+    int *ipiv = new int[Nvar_];
+    int kl = 4;
+    int ku = 4;
+    int ldb = Nvar_;
+
+    // Use blas to solve system...
+    F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K, ldab, ipiv, F, ldb, info);
+	writeVec(F, Nx_, "output");
+
+	delete[] ipiv;
+}
+
 int main(int argc, char *argv[])
 {	// ================ Reading of Inputs =====================//
 	ifstream param_file;
@@ -70,17 +85,20 @@ int main(int argc, char *argv[])
 		buildFele(F_e, lx_e, qx_, qy_);
 		buildFglb(F_g, F_e, Nx_g);
 		// showVec(F_g, Nvar_);
+		// showMat(K_g,9+buf,Nvar_);
+
 
 		// =================== Solve System =======================//
-	    const int nrhs = 1;
-	    int info = 0;
-	    int*    ipiv = new int[Nvar_];
-	    int kl = 4;
-	    int ku = 4;
-	    int ldab = 1 + 2*kl + ku;
-	    int ldb = Nvar_;
-		F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K_g, ldab, ipiv, F_g, ldb, info);
-		writeVec(F_g, Nx_g, "output");
+		solve(K_g, F_g, Nvar_, 9+buf, Nx_g);
+	    // const int nrhs = 1;
+	    // int info = 0;
+	    // int*    ipiv = new int[Nvar_];
+	    // int kl = 4;
+	    // int ku = 4;
+	    // int ldab = 1 + 2*kl + ku;
+	    // int ldb = Nvar_;
+		// F77NAME(dgbsv)(Nvar_, kl, ku, nrhs, K_g, ldab, ipiv, F_g, ldb, info);
+		// writeVec(F_g, Nx_g, "output");
 	}
 	else if (eq_=="dynamic")
 	{	// ================ Initialise Local Vars. ================//

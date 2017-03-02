@@ -1,2 +1,3 @@
 rm ./output/data/output.txt
+rm ./output/images/*.png
 rm *.png
