@@ -1,1 +1,2 @@
 rm ./output/images/*
+rm ./output/data/*

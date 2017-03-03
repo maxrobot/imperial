@@ -18,5 +18,5 @@ for x in xrange(1,4):
 	D = np.loadtxt(crs)
 	x2 = np.linspace(0,10,len(D))
 	plt.plot(x2,D[:,1],'k')
-	plt.savefig('./output/images/computed_load'+str(pnt),bbox_inches='tight')
-	plt.clf()
+	plt.savefig('./output/images/computed_load',bbox_inches='tight')
+	# plt.clf()

@@ -143,6 +143,32 @@ void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, doubl
 	}
 }
 
+void buildMele(double *K, double A_, double rho_, double lx_e, double Al_)
+// Brought the time integration into the mass matrix
+{	const double p =  (rho_*A_*lx_e);
+	int N = 6;
+	for (int i = 0; i < N; ++i)
+	{	if (i == 0)
+		{	K[i*N+0] = p*.5;
+		}
+		if (i == 1)
+		{	K[i*N+1] = p*.5;
+		}
+		if (i == 2)
+		{	K[i*N+2] = p*Al_*pow(lx_e,2);
+		}
+		if (i == 3)
+		{	K[i*N+3] = p*.5;
+		}
+		if (i == 4)
+		{	K[i*N+4] = p*.5;
+		}
+		if (i == 5)
+		{	K[i*N+5] = p*Al_*pow(lx_e,2);
+		}
+	}
+}
+
 void buildKele(double *K, double lx_e, double A_, double E_, double I_)
 {	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
 			c(6*EI/pow(lx_e, 2)), d(4*EI/lx_e), e(2*EI/lx_e);

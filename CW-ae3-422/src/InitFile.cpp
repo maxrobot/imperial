@@ -4,7 +4,7 @@ using namespace std;
 
 void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
     int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
-    double *qx_, double *qy_, string *eq_)
+    double *qx_, double *qy_, string *eq_, string *scheme_)
 { 
   string text_line;
   string keyword, value;
@@ -12,23 +12,22 @@ void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
   while (getline (in_run_input_file, text_line)) {
     if (readLine(text_line, keyword, value)){
       analyzeLine(keyword, value.c_str(), T_, nite_, Nx_g, nout_, lx_g, E_,
-        rho_, b_, h_, qx_, qy_, eq_);
+        rho_, b_, h_, qx_, qy_, eq_, scheme_);
     }
   }
 }
 
 void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *Nx_g,
     int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
-    double *qx_, double *qy_, string *eq_)
+    double *qx_, double *qy_, string *eq_, string *scheme_)
 { 
   if (!keyword.compare("equation")){
     string tmp_value = string(value);
-    // if (tmp_value.compare("STATIC") and tmp_value.compare("DYNAMIC")){
-    //   cout << "Error no equation type specified." << endl;
-    //   exit(EXIT_FAILURE);
-    // }
-    // StringToUpperCase(tmp_value);
     *eq_ = string(tmp_value.c_str());
+  }
+  if (!keyword.compare("integration")){
+    string tmp_value = string(value);
+    *scheme_ = string(tmp_value.c_str());
   }
   if (!keyword.compare("simulation time (s)"))
   { sscanf(value,"%d",T_);
