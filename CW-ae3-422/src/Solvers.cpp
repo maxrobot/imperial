@@ -18,7 +18,7 @@ void solveStatic(double *K, double *F, int Nvar_, int ldab, int Nx_, std::string
 	delete[] ipiv;
 }
 
-void solveDynamic(double *K, double *M, double *F, double *U, double lx_e,
+void solveExplicit(double *K, double *M, double *F, double *U, double lx_e,
 	double qx_, double qy_, int Nvar_, int Nx_g, int nite_, int nout_,
 	std::string test)
 {	
@@ -63,6 +63,93 @@ void solveDynamic(double *K, double *M, double *F, double *U, double lx_e,
 		F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
 		if ((i%nout_)==0)
 		{	writeVec(U, Nx_g, i, test);
+		}
+	}
+}
+
+void solveImplicit(double *K, double *M, double *F, double *U, double lx_e,
+    double qx_, double qy_, double dt_, int Nvar_, int Nx_g, int nite_, int nout_,
+    std::string test)
+{	// ===================== Build Tables =====================//
+	double *K_eff 		= new double[Nvar_ * Nvar_]();
+	double *Ud			= new double[Nvar_]();
+	double *Udd			= new double[Nvar_]();
+	double *tmp			= new double[Nvar_]();
+	double *tmp2		= new double[Nvar_]();
+	double *S			= new double[Nvar_]();
+
+	// Constanst and coefficients
+	const double beta_(.25);
+	const double gamma_(.5);
+	const double co1_(1/(beta_*(dt_*dt_)));
+	const double co2_(1/(beta_*dt_));
+	const double co3_((1/(2*beta_))-1);
+	const double co4_(dt_*(1-gamma_));
+	const double co5_(dt_*gamma_);
+
+
+	// Build Keff
+	for (int i = 0; i < Nvar_*Nvar_; ++i)
+	{	double sum = (co1_*M[i]) + K[i];
+		K_eff[i] = sum;
+		K[i] = sum;
+	}
+
+    int info = 0;
+    int *ipiv = new int[Nvar_];
+
+	F77NAME(daxpy)(Nvar_*Nvar_, co1_, M, 1, K, 1);
+
+	for (int i = 0; i < nite_; ++i)
+	{	// Create Dynamic Force
+		assignArr(F, 0., Nvar_);
+		assignArr(S, 0., Nvar_);
+		assignArr(tmp, 0., Nvar_);
+		assignArr(tmp2, 0., Nvar_);
+		updateVars(F, lx_e, qx_, qy_, Nx_g, i, nite_);
+
+
+		// Sum U, Ud and, Udd with coefficients
+		for (int i = 0; i < Nvar_; ++i)
+		{	double sum = (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]);
+			tmp2[i] = sum;
+		}
+
+		// Multiple mass by sum
+		F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M, Nvar_, tmp2, 1, 0, S, 1);
+
+		// Add forces to sum...
+		for (int i = 0; i < Nvar_; ++i)
+		{	double sum = S[i] + F[i];
+			S[i] = sum;
+		}
+
+		// Solve Keff*U_{n+1} = S
+		F77NAME(dgesv)(Nvar_, 1, K, Nvar_, ipiv, S, Nvar_, info);
+
+		// Update K to contain only the K_eff as desgv overwrites...
+		for (int i = 0; i < Nvar_*Nvar_; ++i)
+		{	K[i] = K_eff[i];
+		}
+
+		// Now update Udd
+		F77NAME(dcopy)(Nvar_, Udd, 1, tmp, 1);   
+		for (int i = 0; i < Nvar_; ++i)
+		{	double sum = (co1_*(S[i]-U[i])) - (co2_*Ud[i]) -
+				(co3_*Udd[i]);
+			Udd[i] = sum;
+		}
+
+		// Now update Ud
+		for (int i = 0; i < Nvar_; ++i)
+		{	double sum = U[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
+			Ud[i] = sum;
+		}
+
+		// Now update U
+		F77NAME(dcopy)(Nvar_, S, 1, U, 1);
+		if (i%nout_==0)
+		{	writeVec(U, Nx_g, i, "output");
 		}
 	}
 }

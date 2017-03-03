@@ -107,7 +107,8 @@ int main(int argc, char *argv[])
 		// ================== Clean up Space ======================//
 		delete[] M_e;
 		delete[] K_e;
-		solveDynamic(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_,
+		
+		solveExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_,
 			Nx_g, nite_, nout_, "output");
 	}
 	else if (eq_=="dynamic" && scheme_=="implicit")
@@ -117,33 +118,17 @@ int main(int argc, char *argv[])
 		double lx_e = lx_g/Nx_g;		// Local element length
 		const double Al_(1./24);  	// Constant Alpha
 
-		// ===================== Build Tables =====================//
 		// Matrices
 		double *K_g 		= allocateDbl(Nvar_*Nvar_);
-		double *K_eff 		= allocateDbl(Nvar_*Nvar_);
 		double *M_g			= allocateDbl(Nvar_*Nvar_);
 
 		// Vectors
 		double *F_g			= allocateDbl(Nvar_);
 		double *U_g			= allocateDbl(Nvar_);
-		double *Ud_g		= allocateDbl(Nvar_);
-		double *Udd_g		= allocateDbl(Nvar_);
-		double *tmp			= allocateDbl(Nvar_);
-		double *tmp2		= allocateDbl(Nvar_);
-		double *S_g			= allocateDbl(Nvar_);
 
 		double *M_e			= allocateDbl(6*6);
 		double *K_e			= allocateDbl(6*6);
-
-		// Constanst and coefficients
-		const double beta_(.25);
-		const double gamma_(.5);
-		const double co1_(1/(beta_*(dt_*dt_)));
-		const double co2_(1/(beta_*dt_));
-		const double co3_((1/(2*beta_))-1);
-		const double co4_(dt_*(1-gamma_));
-		const double co5_(dt_*gamma_);
-
+		
 		// ============== Create Elemental K Matrix ===============//
 		buildMele(M_e, A_, rho_, lx_e, Al_);
 		buildKele(K_e, lx_e, A_, E_, I_);
@@ -151,71 +136,14 @@ int main(int argc, char *argv[])
 		buildKglb(K_g, K_e, Nvar_, Nx_g);
 		buildKglb(M_g, M_e, Nvar_, Nx_g);
 
-		// Build Keff
-		for (int i = 0; i < Nvar_*Nvar_; ++i)
-		{	double sum = (co1_*M_g[i]) + K_g[i];
-			K_eff[i] = sum;
-			K_g[i] = sum;
-		}
+		// ================== Clean up Space ======================//
+		delete[] M_e;
+		delete[] K_e;
 
-	    int info = 0;
-	    int *ipiv = new int[Nvar_];
-
-		F77NAME(daxpy)(Nvar_*Nvar_, co1_, M_g, 1, K_g, 1);
-
-		for (int i = 0; i < nite_; ++i)
-		{	// Create Dynamic Force
-			assignArr(F_g, 0., Nvar_);
-			assignArr(S_g, 0., Nvar_);
-			assignArr(tmp, 0., Nvar_);
-			assignArr(tmp2, 0., Nvar_);
-			updateVars(F_g, lx_e, qx_, qy_, Nx_g, i, nite_);
-
-
-			// Sum U, Ud and, Udd with coefficients
-			for (int i = 0; i < Nvar_; ++i)
-			{	double sum = (co1_*U_g[i]) + (co2_*Ud_g[i]) + (co3_*Udd_g[i]);
-				tmp2[i] = sum;
-			}
-
-			// Multiple mass by sum
-			F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M_g, Nvar_, tmp2, 1, 0, S_g, 1);
-
-			// Add forces to sum...
-			for (int i = 0; i < Nvar_; ++i)
-			{	double sum = S_g[i] + F_g[i];
-				S_g[i] = sum;
-			}
-
-			// Solve Keff*U_{n+1} = S
-			F77NAME(dgesv)(Nvar_, 1, K_g, Nvar_, ipiv, S_g, Nvar_, info);
-
-			// Update K_g to contain only the K_eff as desgv overwrites...
-			for (int i = 0; i < Nvar_*Nvar_; ++i)
-			{	K_g[i] = K_eff[i];
-			}
-
-			// Now update Udd
-			F77NAME(dcopy)(Nvar_, Udd_g, 1, tmp, 1);   
-			for (int i = 0; i < Nvar_; ++i)
-			{	double sum = (co1_*(S_g[i]-U_g[i])) - (co2_*Ud_g[i]) -
-					(co3_*Udd_g[i]);
-				Udd_g[i] = sum;
-			}
-
-			// Now update Ud
-			for (int i = 0; i < Nvar_; ++i)
-			{	double sum = U_g[i] + (co4_*tmp[i]) + (co5_*Udd_g[i]);
-				Ud_g[i] = sum;
-			}
-
-			// Now update U
-			F77NAME(dcopy)(Nvar_, S_g, 1, U_g, 1);
-			if (i%nout_==0)
-			{	writeVec(U_g, Nx_g, i, "output");
-			}
-		}
-
+		// ================= = Run Solverpace =====================//
+		solveImplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, dt_, Nvar_,
+			Nx_g, nite_, nout_, "output");
+		
 	}
 	if (eq_=="dynamic" && scheme_=="none")
 	{	cout << "Please Choose Integration Scheme. (explicit/implicit)" << endl;
