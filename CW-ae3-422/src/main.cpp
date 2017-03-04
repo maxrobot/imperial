@@ -101,18 +101,21 @@ int main(int argc, char *argv[])
 		buildKele(K_e, lx_e, A_, E_, I_);
 
 		double *K_g 		= allocateDbl(Nvar_*(9+buf_));
-		double *M_g			= allocateDbl(Nvar_);
 		double *K_ 			= allocateDbl(Nvar_*Nvar_);
-		double *M_ 			= allocateDbl(Nvar_*Nvar_);
+		double *M_g			= allocateDbl(Nvar_);
+		double *o1			= allocateDbl(Nvar_);
+		double *o2			= allocateDbl(Nvar_);
 
 
 
-
-		buildKglb(K_, K_e, Nvar_, Nx_g);
-		buildKglb(M_, M_e, Nvar_, Nx_g);
+		// buildKglb(K_, K_e, Nvar_, Nx_g);
 		buildKglbSparseT(K_g, K_e, Nvar_, Nx_g, buf_);
 		buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
 
+		// cout << Nvar_ << "   " << (9+buf_) << endl;
+		showMat(K_, Nvar_);
+		showMat(K_g, (9+buf_), Nvar_);
+		showVec(M_g, Nvar_);
 		// F77NAME(dgemv)('n', Nvar_, Nvar_, 1, K_, Nvar_, M_g, 1, 0, o1, 1);
 		// showVec(o1, Nvar_);
 		// showVec(M_g, Nvar_);
@@ -123,6 +126,7 @@ int main(int argc, char *argv[])
 
 		solveExplicit(K_, M_, F_g, U_g, lx_e, qx_, qy_, Nvar_,
 			Nx_g, nite_, nout_, buf_,"task2_");
+
 
 		// ================== Clean up Space ======================//
 		delete[] M_e;

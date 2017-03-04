@@ -37,32 +37,41 @@ void solveExplicit(double *K, double *M, double *F, double *U, double lx_e,
     for (int i = 0; i < Nvar_*Nvar_; ++i)
     {	MK_o[i] = K[i] - (2*M[i]);
     }    	
+
+	F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U, 1, 0, MKU_o, 1);
+	showMat(MK_o, Nvar_);
+	showVec(U, Nvar_);
+	showVec(MKU_o, Nvar_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	for (int i = 0; i <= nite_; ++i)
+	// for (int i = 0; i <= nite_; ++i)
 	// for (int i = 0; i <= 5; ++i)
-	{	// Make C: output = L_c
-		assignArr(F, 0., Nvar_);
-		updateVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
+	// {	// Make C: output = L_c
+	// 	assignArr(F, 0., Nvar_);
+	// 	updateVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
-		// Calculate M*U{n-1}
-		F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M, Nvar_, Un_g, 1, 0, MU_o, 1);
+	// 	// Calculate M*U{n-1}
+	// 	F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M, Nvar_, Un_g, 1, 0, MU_o, 1);
 
-		// Calculate MK_o*U{n}
-		F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U, 1, 0, MKU_o, 1);
-		for (int i = 0; i < Nvar_; ++i)
-		{	S[i] = F[i] - MKU_o[i] - MU_o[i];
-		}
+	// 	// Calculate MK_o*U{n}
+	// 	F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U, 1, 0, MKU_o, 1);
+	// 	for (int i = 0; i < Nvar_; ++i)
+	// 	{	S[i] = F[i] - MKU_o[i] - MU_o[i];
+	// 	}
+	// 	// showMat(MK_o, Nvar_);
+	// 	showVec(F, Nvar_);
+	// 	showVec(S, Nvar_);
 
-		// Calculate updated M*U{n+1} = S
-		F77NAME(dgesv)(Nvar_, 1, M, Nvar_, ipiv, S, Nvar_, info);
+	// 	// Calculate updated M*U{n+1} = S
+	// 	F77NAME(dgesv)(Nvar_, 1, M, Nvar_, ipiv, S, Nvar_, info);
 
-		// Now update vars for repeat
-		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
-		F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
-	}
-	writeVec(U, Nx_g, 1, test);
+	// 	// Now update vars for repeat
+	// 	F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
+	// 	F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
+	// }
+	// writeVec(U, Nx_g, 1, test);
 }
+
 void solveSparseExplicit(double *K, double *M, double *F, double *U, double lx_e,
 	double qx_, double qy_, int Nvar_, int Nx_g, int nite_, int nout_,
 	int buf_, std::string test)
@@ -86,10 +95,6 @@ void solveSparseExplicit(double *K, double *M, double *F, double *U, double lx_e
 			int pnt2 = j + (i*9);
 			MK_o[pnt2] = K[pnt];
 		}
-	}
-
-	for (int i = 0; i < Nvar_; ++i)
-	{	U[i] = 2;
 	}
 
     for (int i = 0; i < Nvar_; ++i)
