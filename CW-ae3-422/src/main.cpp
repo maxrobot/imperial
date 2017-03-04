@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 		buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
 		buildKele(K_e, lx_e, A_, E_, I_);
 
-		int sw = 1;
+		int sw = 2;
 
 		if (sw==1)
 		{
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 			buildKglb(K_g, K_e, Nvar_, Nx_g);
 			buildKglb(M_g, M_e, Nvar_, Nx_g);
 
-			solveExplicit(K_, M_, F_g, U_g, lx_e, qx_, qy_, Nvar_,
+			solveExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_,
 				Nx_g, nite_, nout_, buf_,"task2_");
 		}
 		else if (sw==2)
