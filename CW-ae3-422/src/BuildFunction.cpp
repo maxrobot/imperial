@@ -38,8 +38,9 @@ void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 	}
 }
 
-void buildKglbSparseT(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
-{	const int jmp =  9 + buf;
+void buildSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
+{	const int jmp = 9 + buf_;
+	const int cnt = 4 + buf_;
 	
 	// Central Elements
 	for (int i = 0; i < Nx_g-2; ++i)
@@ -47,7 +48,7 @@ void buildKglbSparseT(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 		for (int j = 0; j < 6; ++j)
 		{	// Build Diagonal
 			int pnt = j*6 + j;
-			int pnt2 = 4 + (j+(i*3))*jmp;
+			int pnt2 = cnt + (j+(i*3))*jmp;
 		 	Kg[pnt2] += ke[pnt];
 		 	int max = 6-j;
 		 	int bnd = 5;
@@ -56,12 +57,12 @@ void buildKglbSparseT(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 		 	{	bnd = max;
 		 	}
 			for (int k = 1; k < bnd; ++k)
-			{	int pos = (4+k) + (j+(i*3))*jmp;
+			{	int pos = (cnt+k) + (j+(i*3))*jmp;
 			 	Kg[pos] += ke[pnt+k];	
 			}
 		 	// Build Lower
 			for (int k = 1; k <= j; ++k)
-			{	int pos = (4-k) + (j+(i*3))*jmp;
+			{	int pos = (cnt-k) + (j+(i*3))*jmp;
 				Kg[pos] += ke[pnt-k];
 			}
 		}
@@ -70,7 +71,7 @@ void buildKglbSparseT(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	for (int i = 0; i < 3; ++i)
 	{	// Build Diagonals
 		int pnt = (i+3)*6 + (i+3);
-		int pnt2 = 4 + i*jmp;
+		int pnt2 = cnt + i*jmp;
 	 	Kg[pnt2] += ke[pnt];
 	 	if (i==1)
 	 	{	pnt = (i+4)*(6) + (i+3);
@@ -87,7 +88,7 @@ void buildKglbSparseT(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	for (int i = Nvar_-3; i < Nvar_; ++i)
 	{	// Build Diagonals
 		int pnt = (i - (Nvar_-3))*6 + (i - (Nvar_-3));
-		int pnt2 = 4 + i*jmp;
+		int pnt2 = cnt + i*jmp;
 	 	Kg[pnt2] += ke[pnt];	
 	 	if (i==Nvar_-2)
 	 	{	pnt += 6;

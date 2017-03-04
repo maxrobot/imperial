@@ -10,7 +10,7 @@ using namespace std;
 
 void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
     int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
-    double *qx_, double *qy_, string *eq_, string *scheme_);
+    double *qx_, double *qy_, string *eq_, string *scheme_, string *sparse_);
 
 /*!
  * \brief utility function for converting strings to uppercase
@@ -38,7 +38,7 @@ bool readLine(string & str, string & option_name, string & option_value);
 
 void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *Nx_g,
     int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
-    double *qx_, double *qy_, string *eq_, string *scheme_);
+    double *qx_, double *qy_, string *eq_, string *scheme_, string *sparse_);
 
 string trim(string & str);
 

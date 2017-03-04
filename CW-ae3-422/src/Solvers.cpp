@@ -33,46 +33,34 @@ void solveExplicit(double *K, double *M, double *F, double *U, double lx_e,
     int info = 0;
     int *ipiv = new int[Nvar_];
 
-	// F77NAME(dcopy)(Nvar_*Nvar_, K, 1, MK_o, 1);
     for (int i = 0; i < Nvar_*Nvar_; ++i)
     {	MK_o[i] = K[i] - (2*M[i]);
     }    	
 
-	// F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U, 1, 0, MKU_o, 1);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	// for (int i = 0; i <= nite_; ++i)
-	for (int i = 0; i <= 1; ++i)
+	for (int i = 0; i <= nite_; ++i)
 	{	// Calculate MK_o*U{n}
-		showMat(MK_o, Nvar_);
-		showVec(U, Nvar_);
 		F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U, 1, 0, MKU_o, 1);
-		showVec(MKU_o, Nvar_);
 		
 		assignArr(F, 0., Nvar_);
 		updateVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
 		// Calculate M*U{n-1}
-		// F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M, Nvar_, Un_g, 1, 0, MU_o, 1);
 		for (int i = 0; i < Nvar_; ++i)
 		{	int pnt = i*Nvar_ + i;
 			MU_o[i] = M[pnt]*Un_g[i];
 		}
-		showVec(MU_o, Nvar_);
 
 		for (int i = 0; i < Nvar_; ++i)
 		{	S[i] = F[i] - MKU_o[i] - MU_o[i];
 		}
-		showVec(S, Nvar_);
 
 		// Calculate updated M*U{n+1} = S
 		F77NAME(dgesv)(Nvar_, 1, M, Nvar_, ipiv, S, Nvar_, info);
-		showVec(S, Nvar_);
 		// Now update vars for repeat
 		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
-		showVec(Un_g, Nvar_);
 		F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
-		showVec(U, Nvar_);
 	}
 	writeVec(U, Nx_g, 1, test);
 }
@@ -108,9 +96,8 @@ void solveImplicit(double *K, double *M, double *F, double *U, double lx_e,
     int info = 0;
     int *ipiv = new int[Nvar_];
 
-	F77NAME(daxpy)(Nvar_*Nvar_, co1_, M, 1, K, 1);
-
-	for (int i = 0; i < nite_; ++i)
+	for (int i = 0; i < 2; ++i)
+	// for (int i = 0; i < nite_; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
 		assignArr(S, 0., Nvar_);
@@ -127,7 +114,6 @@ void solveImplicit(double *K, double *M, double *F, double *U, double lx_e,
 
 		// Multiple mass by sum
 		F77NAME(dgemv)('n', Nvar_, Nvar_, 1, M, Nvar_, tmp2, 1, 0, S, 1);
-
 		// Add forces to sum...
 		for (int i = 0; i < Nvar_; ++i)
 		{	double sum = S[i] + F[i];
@@ -158,8 +144,6 @@ void solveImplicit(double *K, double *M, double *F, double *U, double lx_e,
 
 		// Now update U
 		F77NAME(dcopy)(Nvar_, S, 1, U, 1);
-		if (i%nout_==0)
-		{	writeVec(U, Nx_g, i, "output");
-		}
 	}
+	writeVec(U, Nx_g, 1, test);
 }

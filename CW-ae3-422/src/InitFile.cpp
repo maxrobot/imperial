@@ -5,7 +5,7 @@ using namespace std;
 
 void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
     int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
-    double *qx_, double *qy_, string *eq_, string *scheme_)
+    double *qx_, double *qy_, string *eq_, string *scheme_, string *sparse_)
 { 
   string text_line;
   string keyword, value;
@@ -13,14 +13,14 @@ void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
   while (getline (in_run_input_file, text_line))
   { if (readLine(text_line, keyword, value)){
       analyzeLine(keyword, value.c_str(), T_, nite_, Nx_g, nout_, lx_g, E_,
-        rho_, b_, h_, qx_, qy_, eq_, scheme_);
+        rho_, b_, h_, qx_, qy_, eq_, scheme_, sparse_);
     }
   }
 }
 
 void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *Nx_g,
     int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
-    double *qx_, double *qy_, string *eq_, string *scheme_)
+    double *qx_, double *qy_, string *eq_, string *scheme_, string *sparse_)
 { 
   if (!keyword.compare("equation")){
     string tmp_value = string(value);
@@ -29,6 +29,10 @@ void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *N
   if (!keyword.compare("integration")){
     string tmp_value = string(value);
     *scheme_ = string(tmp_value.c_str());
+  }
+  if (!keyword.compare("matrix format")){
+    string tmp_value = string(value);
+    *sparse_ = string(tmp_value.c_str());
   }
   if (!keyword.compare("simulation time (s)"))
   { sscanf(value,"%d",T_);
