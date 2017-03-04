@@ -47,4 +47,6 @@ void showMat(double *M, int N, int O);
 void writeVec(double *M, int N, std::string test);
 void writeVec(double *M, int N, int step, std::string test);
 
+void printMessage(std::string message);
+
 #endif // COMMON_HPP_INCLUDED

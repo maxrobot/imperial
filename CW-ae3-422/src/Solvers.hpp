@@ -26,7 +26,11 @@ void solveStatic(double *K, double *F, int Nvar_, int ldab, int Nx_,
 
 void solveExplicit(double *K, double *M, double *F, double *U, double lx_e,
     double qx_, double qy_, int Nvar_, int Nx_g, int nite_, int nout_,
-    std::string test);
+    int buf_, std::string test);
+
+void solveSparseExplicit(double *K, double *M, double *F, double *U, double lx_e,
+    double qx_, double qy_, int Nvar_, int Nx_g, int nite_, int nout_,
+    int buf_, std::string test);
 
 void solveImplicit(double *K, double *M, double *F, double *U, double lx_e,
     double qx_, double qy_, double dt_, int Nvar_, int Nx_g, int nite_, int nout_,

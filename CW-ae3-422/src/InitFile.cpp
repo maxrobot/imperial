@@ -1,4 +1,5 @@
 #include "InitFile.hpp"
+#include "Common.hpp"
 
 using namespace std;
 
@@ -9,8 +10,8 @@ void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
   string text_line;
   string keyword, value;
   // Now read in parameters
-  while (getline (in_run_input_file, text_line)) {
-    if (readLine(text_line, keyword, value)){
+  while (getline (in_run_input_file, text_line))
+  { if (readLine(text_line, keyword, value)){
       analyzeLine(keyword, value.c_str(), T_, nite_, Nx_g, nout_, lx_g, E_,
         rho_, b_, h_, qx_, qy_, eq_, scheme_);
     }
@@ -41,6 +42,10 @@ void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *N
   if (!keyword.compare("number of elements"))
   { string tmp_value = string(value);
     sscanf(value,"%d",Nx_g);
+    if (*Nx_g % 2)
+    { printMessage("Please choose even number of elements!");
+      exit(EXIT_FAILURE);
+    }
   }
   if (!keyword.compare("beam length (mm)"))
   { string tmp_value = string(value);

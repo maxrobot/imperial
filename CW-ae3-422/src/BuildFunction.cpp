@@ -38,6 +38,70 @@ void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 	}
 }
 
+void buildKglbSparseT(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
+{	const int jmp =  9 + buf;
+	
+	// Central Elements
+	for (int i = 0; i < Nx_g-2; ++i)
+	{	
+		for (int j = 0; j < 6; ++j)
+		{	// Build Diagonal
+			int pnt = j*6 + j;
+			int pnt2 = 4 + (j+(i*3))*jmp;
+		 	Kg[pnt2] += ke[pnt];
+		 	int max = 6-j;
+		 	int bnd = 5;
+		 	// Build Upper
+		 	if (max < bnd)
+		 	{	bnd = max;
+		 	}
+			for (int k = 1; k < bnd; ++k)
+			{	int pos = (4+k) + (j+(i*3))*jmp;
+			 	Kg[pos] += ke[pnt+k];	
+			}
+		 	// Build Lower
+			for (int k = 1; k <= j; ++k)
+			{	int pos = (4-k) + (j+(i*3))*jmp;
+				Kg[pos] += ke[pnt-k];
+			}
+		}
+	}
+	// LHS Boundary
+	for (int i = 0; i < 3; ++i)
+	{	// Build Diagonals
+		int pnt = (i+3)*6 + (i+3);
+		int pnt2 = 4 + i*jmp;
+	 	Kg[pnt2] += ke[pnt];
+	 	if (i==1)
+	 	{	pnt = (i+4)*(6) + (i+3);
+			pnt2 += 1;
+		 	Kg[pnt2] += ke[pnt];	
+	 	}
+	 	if (i==2)
+	 	{	pnt = (i+2)*6 + (i+3);
+			pnt2 -= 1;
+		 	Kg[pnt2] += ke[pnt];	
+	 	}
+	}
+	// RHS Boundary
+	for (int i = Nvar_-3; i < Nvar_; ++i)
+	{	// Build Diagonals
+		int pnt = (i - (Nvar_-3))*6 + (i - (Nvar_-3));
+		int pnt2 = 4 + i*jmp;
+	 	Kg[pnt2] += ke[pnt];	
+	 	if (i==Nvar_-2)
+	 	{	pnt += 6;
+			pnt2 += 1;
+		 	Kg[pnt2] += ke[pnt];
+	 	}
+	 	if (i==Nvar_-1)
+	 	{	pnt -= 6;
+			pnt2 -= 1;
+		 	Kg[pnt2] += ke[pnt];	
+	 	}
+	}
+}
+
 void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 {	const int jmp =  9 + buf;
 	// LHS Boundary
@@ -102,7 +166,35 @@ void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
-void buildFglb(double *Kg, double *ke, int Nx_g)
+void buildMglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
+{	const int jmp =  9 + buf;
+	// LHS Boundary
+	for (int i = 0; i < 3; ++i)
+	{	// Build Diagonals
+		int pnt = i*6 + i;
+		int pnt2 = i;
+	 	Kg[pnt2] += ke[pnt];
+	}	
+	// Central Elements
+	for (int i = 0; i < Nx_g-2; ++i)
+	{	
+		for (int j = 0; j < 6; ++j)
+		{	// Build Diagonal
+			int pnt = j*6 + j;
+			int pnt2 = j + 3*i;
+		 	Kg[pnt2] += ke[pnt];
+		}
+	}
+	// RHS Boundary
+	for (int i = Nvar_-3; i < Nvar_; ++i)
+	{	// Build Diagonals
+		int pnt = (i - (Nvar_-3))*6 + (i - (Nvar_-3));
+		int pnt2 = i;
+	 	Kg[pnt2] += ke[pnt];	
+	}
+}
+
+void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
 {	// Build Center	
 	for (int i = 0; i < Nx_g-1; ++i)
 	{	for (int j = 0; j < 6; ++j)
@@ -115,6 +207,7 @@ void buildFglb(double *Kg, double *ke, int Nx_g)
 			}
 		}
 	}
+	Kg[(Nvar_-1)/2] +=1000;
 }
 
 void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, double dt_)
@@ -144,7 +237,7 @@ void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, doubl
 }
 
 void buildMele(double *K, double A_, double rho_, double lx_e, double Al_)
-// Brought the time integration into the mass matrix
+// Brought no time in the mass matrix
 {	const double p =  (rho_*A_*lx_e);
 	int N = 6;
 	for (int i = 0; i < N; ++i)
@@ -221,10 +314,10 @@ void assignArr(double *K, double V, int N)
 }
 
 void updateVars(double *F, double lx_e, double qx_,
-				double qy_, int Nx_g, int step, int nite_)
+				double qy_, int Nx_g, int Nvar_, int step, int nite_)
 {	double coef = double(step)/nite_;
 	double *fe = new double[6]();
 	buildFele(fe, lx_e, coef*qx_, coef*qy_);
-	buildFglb(F, fe, Nx_g);
+	buildFglb(F, fe, Nx_g, Nvar_);
 	delete [] fe;
 }

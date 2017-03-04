@@ -50,11 +50,11 @@ int main(int argc, char *argv[])
 		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_,
 			&nite_);
 		double lx_e = lx_g/Nx_g;		// Local element length
-		const double buf(4);	  	// Buffer
+		const double buf_(4);	  	// Buffer
 		
 		// ===================== Build Tables =====================//
 		// Matrices
-		double *K_g 		= allocateDbl(Nvar_*(9+buf));
+		double *K_g 		= allocateDbl(Nvar_*(9+buf_));
 
 		// Vectors
 		double *F_g			= allocateDbl(Nvar_);
@@ -66,16 +66,17 @@ int main(int argc, char *argv[])
 
 		// ============== Create Elemental K Matrix ===============//
 		buildKele(K_e, lx_e, A_, E_, I_);
-		buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf);
 		buildFele(F_e, lx_e, qx_, qy_);
-		buildFglb(F_g, F_e, Nx_g);
+
+		buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf_);
+		buildFglb(F_g, F_e, Nx_g, Nvar_);
 
 		// ================== Clean up Space ======================//
 		delete[] K_e;
 		delete[] F_e;
 
 		// =================== Solve System =======================//
-		solveStatic(K_g, F_g, Nvar_, 9+buf, Nx_g, "output");
+		solveStatic(K_g, F_g, Nvar_, 9+buf_, Nx_g, "task1");
 	}
 	else if (eq_=="dynamic" && scheme_=="explicit")
 	{	// ================ Initialise Local Vars. ================//
@@ -83,16 +84,14 @@ int main(int argc, char *argv[])
 			&nite_);
 		double lx_e = lx_g/Nx_g;
 		const double Al_(1./24);  	// Constant Alpha
+		const double buf_(0);	  	// Buffer
 
 		// ===================== Build Tables =====================//
 		// Matrices
-		double *K_g 		= allocateDbl(Nvar_*Nvar_);
-		double *M_g			= allocateDbl(Nvar_*Nvar_);
 
 		// Vectors
 		double *F_g			= allocateDbl(Nvar_);
 		double *U_g			= allocateDbl(Nvar_);
-
 
 		double *M_e			= allocateDbl(6*6);
 		double *K_e			= allocateDbl(6*6);
@@ -101,15 +100,61 @@ int main(int argc, char *argv[])
 		buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
 		buildKele(K_e, lx_e, A_, E_, I_);
 
-		buildKglb(K_g, K_e, Nvar_, Nx_g);
-		buildKglb(M_g, M_e, Nvar_, Nx_g);
+		double *K_g 		= allocateDbl(Nvar_*(9+buf_));
+		double *K_ 			= allocateDbl(Nvar_*Nvar_);
+		double *M_g			= allocateDbl(Nvar_);
+		double *o1			= allocateDbl(Nvar_);
+		double *o2			= allocateDbl(Nvar_);
+
+
+
+		// buildKglb(K_, K_e, Nvar_, Nx_g);
+		buildKglbSparseT(K_g, K_e, Nvar_, Nx_g, buf_);
+		buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
+
+		// cout << Nvar_ << "   " << (9+buf_) << endl;
+		showMat(K_, Nvar_);
+		showMat(K_g, (9+buf_), Nvar_);
+		showVec(M_g, Nvar_);
+		// F77NAME(dgemv)('n', Nvar_, Nvar_, 1, K_, Nvar_, M_g, 1, 0, o1, 1);
+		// showVec(o1, Nvar_);
+		// showVec(M_g, Nvar_);
+		// F77NAME(dgbmv)('n', Nvar_, Nvar_, 4, 4, 1, K_g, 9, M_g, 1, 0, o2, 1);
+		// showVec(o2, Nvar_);
+
+
+		// for (int i = 0; i < 9+buf_; ++i)
+	 //  	 	for (int j = 0; j < Nvar_; ++j)
+	 //  	 	{	int pnt = i*(Nvar_) + j;
+	 //  	 		K_g[pnt] = pnt;
+	 //  	 	}
+
+		// for (int i = 0; i < 9+buf_; ++i)
+	 //  	{ 	for (int j = 0; j < Nvar_; ++j)
+		//     { 	int pnt = i*(Nvar_) + j ;
+		//     	// cout << pnt << endl;
+		// 		cout << setprecision(3) << setw(9)  << K_g[pnt] << setw(9);
+		// 		// cout << setprecision(5) << setw(12)  << M[pnt] << setw(12);
+		//     }
+		//     cout << endl;
+		// }
+		// cout << endl;
+
+		buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
+		solveSparseExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
+			Nvar_, Nx_g, nite_, nout_, buf_,"task2_");
+
+		// double *K_g 		= allocateDbl(Nvar_*Nvar_);
+		// double *M_g 		= allocateDbl(Nvar_*Nvar_);
+		// buildKglb(K_g, K_e, Nvar_, Nx_g);
+		// buildKglb(M_g, M_e, Nvar_, Nx_g);
+		// solveExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_,
+		// 	Nx_g, nite_, nout_, buf_,"task2_");
 
 		// ================== Clean up Space ======================//
 		delete[] M_e;
 		delete[] K_e;
 		
-		solveExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_,
-			Nx_g, nite_, nout_, "output");
 	}
 	else if (eq_=="dynamic" && scheme_=="implicit")
 	{	// ================ Initialise Local Vars. ================//
@@ -128,7 +173,6 @@ int main(int argc, char *argv[])
 
 		double *M_e			= allocateDbl(6*6);
 		double *K_e			= allocateDbl(6*6);
-		
 		// ============== Create Elemental K Matrix ===============//
 		buildMele(M_e, A_, rho_, lx_e, Al_);
 		buildKele(K_e, lx_e, A_, E_, I_);
@@ -140,13 +184,13 @@ int main(int argc, char *argv[])
 		delete[] M_e;
 		delete[] K_e;
 
-		// ================= = Run Solverpace =====================//
+		// ==================== Run Solver ========================//
 		solveImplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, dt_, Nvar_,
-			Nx_g, nite_, nout_, "output");
+			Nx_g, nite_, nout_, "task3");
 		
 	}
 	if (eq_=="dynamic" && scheme_=="none")
-	{	cout << "Please Choose Integration Scheme. (explicit/implicit)" << endl;
+	{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");
 		exit(EXIT_FAILURE);
 	}
 	else
