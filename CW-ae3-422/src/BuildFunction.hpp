@@ -8,7 +8,10 @@ void buildEye(double *K, int 	Nvar_);
 
 void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g);
 void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
-void buildFglb(double *Kg, double *ke, int Nx_g);
+void buildKglbSparseT(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
+void buildMglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
+void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_);
+
 
 void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, double dt_);
 void buildMele(double *K, double A_, double rho_, double lx_e, double Al_);
@@ -18,6 +21,6 @@ void buildFele(double *K, double lx_e, double qx_, double qy_);
 void assignArr(double *K, double V, int N);
 
 void updateVars(double *F, double lx_e, double qx_,
-				double qy_, int Nx_g, int step, int nite_);
+				double qy_, int Nx_g, int Nvar_, int step, int nite_);
 
 #endif // BUILDFUNCTION_HPP_INCLUDED

@@ -21,9 +21,10 @@ void showMat(double *M, int N)
 }
 
 void showMat(double *M, int N, int O)
-{	for (int i = 0; i < O; ++i)
-  	{ 	for (int j = 0; j < N; ++j)
-	    { 	int pnt = i*N + j;
+{	for (int i = 0; i < N; ++i)
+  	{ 	for (int j = 0; j < O; ++j)
+	    { 	int pnt = j*N + i;
+	    	// cout << pnt << endl;
 			cout << setprecision(3) << setw(9)  << M[pnt] << setw(9);
 			// cout << setprecision(5) << setw(12)  << M[pnt] << setw(12);
 	    }
@@ -57,5 +58,8 @@ void writeVec(double *M, int N, int step, std::string test)
 	}
 	myfile << setprecision(10) << 0. << setw(20) << 0.  <<  setw(20) << 0.  << endl;
 	myfile.close();
+}
 
+void printMessage(std::string message)
+{	std::cout << message << std::endl;
 }
