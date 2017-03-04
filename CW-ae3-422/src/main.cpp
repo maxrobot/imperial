@@ -100,33 +100,31 @@ int main(int argc, char *argv[])
 		buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
 		buildKele(K_e, lx_e, A_, E_, I_);
 
-		double *K_g 		= allocateDbl(Nvar_*(9+buf_));
-		double *K_ 			= allocateDbl(Nvar_*Nvar_);
-		double *M_g			= allocateDbl(Nvar_);
-		double *o1			= allocateDbl(Nvar_);
-		double *o2			= allocateDbl(Nvar_);
+		int sw = 1;
 
+		if (sw==1)
+		{
+			double *K_g 		= allocateDbl(Nvar_*Nvar_);
+			double *K_ 			= allocateDbl(Nvar_*Nvar_);
+			double *M_g			= allocateDbl(Nvar_*Nvar_);
+			buildKglb(K_g, K_e, Nvar_, Nx_g);
+			buildKglb(M_g, M_e, Nvar_, Nx_g);
 
+			solveExplicit(K_, M_, F_g, U_g, lx_e, qx_, qy_, Nvar_,
+				Nx_g, nite_, nout_, buf_,"task2_");
+		}
+		else if (sw==2)
+		{
+			double *K_g 		= allocateDbl(Nvar_*(9+buf_));
+			double *K_ 			= allocateDbl(Nvar_*Nvar_);
+			double *M_g			= allocateDbl(Nvar_);
+			
+			buildKglbSparseT(K_g, K_e, Nvar_, Nx_g, buf_);
+			buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
+			solveSparseExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
+				Nvar_, Nx_g, nite_, nout_, buf_,"task2_");
 
-		// buildKglb(K_, K_e, Nvar_, Nx_g);
-		buildKglbSparseT(K_g, K_e, Nvar_, Nx_g, buf_);
-		buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
-
-		// cout << Nvar_ << "   " << (9+buf_) << endl;
-		showMat(K_, Nvar_);
-		showMat(K_g, (9+buf_), Nvar_);
-		showVec(M_g, Nvar_);
-		// F77NAME(dgemv)('n', Nvar_, Nvar_, 1, K_, Nvar_, M_g, 1, 0, o1, 1);
-		// showVec(o1, Nvar_);
-		// showVec(M_g, Nvar_);
-		// F77NAME(dgbmv)('n', Nvar_, Nvar_, 4, 4, 1, K_g, 9, M_g, 1, 0, o2, 1);
-		// showVec(o2, Nvar_);
-		// solveSparseExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
-		// 	Nvar_, Nx_g, nite_, nout_, buf_,"task2_");
-
-		solveExplicit(K_, M_, F_g, U_g, lx_e, qx_, qy_, Nvar_,
-			Nx_g, nite_, nout_, buf_,"task2_");
-
+		}
 
 		// ================== Clean up Space ======================//
 		delete[] M_e;
