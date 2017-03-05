@@ -1,14 +1,14 @@
 # Declaration of variables
-CC = g++
+CC = mpicxx
 CC_FLAGS = -O3 -std=c++11
-LD_FLAGS = -llapack -lblas
+LD_FLAGS = -lscalapack-openmpi -lblacs-openmpi -lblacsCinit-openmpi -llapack -lblas
 DEBUG_FLAGS = -g
 
 COTEXT  = "\033[1;31m Compiling\033[0m\033[1m $(<F)\033[0m\n"
 LITEXT  = "\033[1;31m Building \033[0m\033[1m $@\033[0m\n"
 
 # File names
-EXEC    = $(BINDIR)solver
+EXEC    = $(BINDIR)hpc_solver
 SRCDIR = ./src/
 OBJDIR = ./.Obj/
 BINDIR = ./bin/
