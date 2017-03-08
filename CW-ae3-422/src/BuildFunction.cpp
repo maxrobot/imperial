@@ -305,6 +305,22 @@ void buildMglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
+void buildBandFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
+{	// Build Center	
+	for (int i = 0; i < Nx_g-1; ++i)
+	{	for (int j = 0; j < 6; ++j)
+		{	if (i==Nx_g-2 && j>=4)
+			{	break;
+			}
+			else
+			{	int pnt = i*3 + j;
+				Kg[pnt] += ke[j];
+			}
+		}
+	}
+	Kg[(Nvar_-1)/2] +=1000;
+}
+
 void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
 {	// Build Center	
 	for (int i = 0; i < Nx_g-1; ++i)

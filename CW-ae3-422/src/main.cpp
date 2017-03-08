@@ -146,14 +146,15 @@ int main(int argc, char *argv[])
 			else if (MPI::mpi_size>1)
 			{	// Build matrices
 				buildBandSparse(K_g, K_e, Nvar_, Nx_, buf_);
+				buildBandFglb(F_g, F_e, Nx_g, Nvar_);
 				buildMglbSparse(M_g, M_e, Nvar_, Nx_, buf_);
 			}
 
-			if (MPI::mpi_rank==0)
-			{	
-				buildFglb(F_orig, F_e, Nx_g, (Nx_g-1)*3);
-				showVec(F_orig, (Nx_g-1)*3);
-			}
+			// if (MPI::mpi_rank==0)
+			// {	
+			// 	buildFglb(F_orig, F_e, Nx_g, (Nx_g-1)*3);
+			// 	showVec(F_orig, (Nx_g-1)*3);
+			// }
 			// for (int i = 0; i < MPI::mpi_size; ++i)
 			// {	if (MPI::mpi_rank==i)
 			// 	{	showMat(K_g, 9+buf_, Nvar_);
@@ -163,6 +164,7 @@ int main(int argc, char *argv[])
 			for (int i = 0; i < MPI::mpi_size; ++i)
 			{	if (MPI::mpi_rank==i)
 				{	showVec(F_g, Nvar_);
+					showMat(K_g)
 				}
 				MPI_Barrier(MPI::mpi_comm);
 			}
