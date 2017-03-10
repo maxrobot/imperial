@@ -57,10 +57,7 @@ int main(int argc, char *argv[])
 	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nvar_e, &Nx_g,
 		&Nx_, &T_, &nite_);
 	lx_e = lx_g/Nx_g;		// Local element length
-	if (MPI::mpi_rank==0)
-	{
-		cout << Nx_g << "  " << Nx_ << "    " << Nvar_ << "  " << Nvar_e << endl;
-	}
+
 	// ===================== Build Tables =====================//
 	double *F_g	= new double[Nvar_]();
 	double *U_g	= new double[Nvar_]();
@@ -73,12 +70,12 @@ int main(int argc, char *argv[])
 	{	if (scheme_=="explicit")
 		{	const int buf_(0);
 			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-				Nx_g, nite_, nout_, buf_, sparse_);
+				Nvar_e, Nx_g, nite_, nout_, buf_, sparse_);
 		}
 		if (scheme_=="implicit")
 		{	const int buf_(4);
 			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-				Nx_g, nite_, nout_, buf_, sparse_);
+				Nvar_e, Nx_g, nite_, nout_, buf_, sparse_);
 		}
 		if (scheme_=="none")
 		{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");

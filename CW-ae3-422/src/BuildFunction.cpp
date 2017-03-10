@@ -50,7 +50,6 @@ void buildSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
 		{	// Build Diagonal
 			int pnt = j*6 + j;
 			int pnt2 = cnt + (j+(i*3))*jmp;
-			cout << pnt2 << endl;
 		 	Kg[pnt2] += ke[pnt];
 		 	int max = 5-j;
 		 	int bnd = 4;
