@@ -1,5 +1,6 @@
 #include "BuildFunction.hpp"
 #include "Common.hpp"
+#include "CommonMPI.hpp"
 
 using namespace std;
 
@@ -102,6 +103,115 @@ void buildSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
 	 	}
 	}
 }
+void buildBandSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
+{	const int jmp = 9 + buf_;
+	const int cnt = 4 + buf_;
+	
+	if (MPI::mpi_rank==0)
+	{
+		int ind = 0;
+		for (int i = 0; i < Nvar_; ++i)
+		{	// Build Diagonal
+			int pnt = ind*6 + ind;
+			int pnt2 = i*jmp + cnt;
+			Kg[pnt2] += ke[pnt];
+		 	int max = 6-ind;
+		 	int bnd = 5;
+		 	if (max < bnd)
+		 	{	bnd = max;
+		 	}
+		 	// Build Lower
+			for (int k = 1; k < bnd; ++k)
+			{	int pos = pnt2+k;
+			 	Kg[pos] += ke[pnt+k];	
+			}
+		 	// Build Upper
+			for (int k = 1; k <= ind; ++k)
+			{	int pos = pnt2-k;
+				Kg[pos] += ke[pnt-k];
+			}
+			ind += 1;
+			if (ind==6)
+			{	ind = 0;
+				i-=3;
+			}
+		}
+		// Build first boundary
+		for (int i = 3; i < 6; ++i)
+		{	int pnt = i*6 + i;
+			int pnt2 = (i-3)*jmp + cnt;
+			Kg[pnt2] += ke[pnt];
+			if (i==4)
+			{	Kg[pnt2+1] += ke[pnt+1];
+			}
+			if (i==5)
+			{	Kg[pnt2-1] += ke[pnt-1];
+			}
+		}
+	}
+	else if (MPI::mpi_rank==(MPI::mpi_size-1))
+	{
+		int ind = 3;
+		for (int i = 0; i < Nvar_; ++i)
+		{	// Build Diagonal
+			int pnt = ind*6 + ind;
+			int pnt2 = i*jmp + cnt;
+			Kg[pnt2] += ke[pnt];
+		 	int max = 6-ind;
+		 	int bnd = 5;
+		 	if (max < bnd)
+		 	{	bnd = max;
+		 	}
+		 	// Build Lower
+		 	if (i < Nvar_-3)
+		 	{	for (int k = 1; k < bnd; ++k)
+				{	int pos = pnt2+k;
+				 	Kg[pos] += ke[pnt+k];	
+				}
+		 	}
+		 	// Build Upper
+			for (int k = 1; k <= ind; ++k)
+			{	int pos = pnt2-k;
+				Kg[pos] += ke[pnt-k];
+			}
+			ind += 1;
+			if (ind==6)
+			{	ind = 0;
+				i-=3;
+			}
+		}	
+	}
+	else
+	{	// Central Elements
+		int ind = 3;
+		for (int i = 0; i < Nvar_; ++i)
+		{	// Build Diagonal
+			int pnt = ind*6 + ind;
+			int pnt2 = i*jmp + cnt;
+			Kg[pnt2] += ke[pnt];
+		 	int max = 6-ind;
+		 	int bnd = 5;
+		 	if (max < bnd)
+		 	{	bnd = max;
+		 	}
+		 	// Build Lower
+			for (int k = 1; k < bnd; ++k)
+			{	int pos = pnt2+k;
+			 	Kg[pos] += ke[pnt+k];	
+			}
+		 	// Build Upper
+			for (int k = 1; k <= ind; ++k)
+			{	int pos = pnt2-k;
+				Kg[pos] += ke[pnt-k];
+			}
+			ind += 1;
+			if (ind==6)
+			{	ind = 0;
+				i-=3;
+			}
+		}	
+	}
+}
 
 void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 {	const int jmp =  9 + buf;
@@ -193,6 +303,22 @@ void buildMglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 		int pnt2 = i;
 	 	Kg[pnt2] += ke[pnt];	
 	}
+}
+
+void buildBandFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
+{	// Build Center	
+	for (int i = 0; i < Nx_g-1; ++i)
+	{	for (int j = 0; j < 6; ++j)
+		{	if (i==Nx_g-2 && j>=4)
+			{	break;
+			}
+			else
+			{	int pnt = i*3 + j;
+				Kg[pnt] += ke[j];
+			}
+		}
+	}
+	Kg[(Nvar_-1)/2] +=1000;
 }
 
 void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_)

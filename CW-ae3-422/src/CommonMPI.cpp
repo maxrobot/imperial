@@ -1,10 +1,13 @@
- #include <iostream>
+#include <iostream>
 #include <stdio.h> // for gcc >= 4.4 compatibility
 #include "CommonMPI.hpp"
 #include "Common.hpp"
 
-namespace MPI 
+using namespace std;
+
+namespace MPI
 {
+
 // give single processor initial values to these
 // in practice, the user should call initMpiStuff
 // near the start of there code, after MPI_Init(*,*)...

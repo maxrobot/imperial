@@ -175,4 +175,23 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
       }
       MPI_Barrier;
     }
+// void initVars(double *lx_g, double *lx_e, double *b_, double *h_, double *A_,
+//   double *I_,  double *E_, double *dt_, int *Nvar_, int *Nx_, int *Nx_g, int *T_,
+//   int *nite_)
+// { 
+//   *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
+//   *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
+//   // *Nvar_ = (*Nx_g+1) * 3 - 6;        // Number of variables in global matrices excluding boundaries
+//   // *Nvar_ = (*Nx_g+1) * 3 - 6;        // Number of variables in global matrices excluding boundaries
+//   if (MPI::mpi_size==1)
+//   { *Nvar_ = (*Nx_g-1)*3;        // Number of variables in global matrices excluding boundaries
+//   }  
+//   if (MPI::mpi_size>1)
+//   { *Nvar_ = (*Nx_g)*3;
+//     if (MPI::mpi_rank==0)
+//     { *Nvar_ -=  3;
+//     }
+//   }  
+//   *dt_ = double(*T_)/ *nite_;        // time interval
+//   *lx_e = *lx_g/ *Nx_;                  // Local element length
 }

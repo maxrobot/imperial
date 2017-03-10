@@ -39,5 +39,6 @@ extern MPI_Status status;
 
 // call this method if you really are running mpi...
 extern void initMpiStuff();
+
 }
 #endif
