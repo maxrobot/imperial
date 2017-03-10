@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	double lx_e = lx_g/Nx_g;		// Local element length
 	if (MPI::mpi_rank==0)
 	{
-		cout << Nvar_ << "  " << Nvar_e << endl;
+		cout << Nx_g << "  " << Nx_ << "    " << Nvar_ << "  " << Nvar_e << endl;
 	}
 	// ===================== Build Tables =====================//
 	double *F_g	= new double[Nvar_]();

@@ -19,7 +19,7 @@ void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 		}
 	}
 	// Central Elements
-	for (int i = 1; i < Nx_g; ++i)
+	for (int i = 1; i < Nx_g-1; ++i)
 	{	for (int j = 0; j < 6; ++j)
 		{	for (int k = 0; k < 6; ++k)
 			{	int pnt = j*6 + k;
