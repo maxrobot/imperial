@@ -1,4 +1,5 @@
 #include "Common.hpp"
+#include "CommonMPI.hpp"
 
 using namespace std;
 
@@ -61,5 +62,7 @@ void writeVec(double *M, int N, int step, std::string test)
 }
 
 void printMessage(std::string message)
-{	std::cout << message << std::endl;
+{	if (MPI::mpi_rank==0)
+	{	std::cout << message << std::endl;
+	}
 }

@@ -48,6 +48,6 @@ void initVars(double *b_, double *h_, double *A_, double *I_,  double *E_,
 	int *Nvar_,	int *Nx_g);
 
 void initVars(double *b_, double *h_, double *A_, double *I_,  double *E_,
-	double *dt_, int *Nvar_,	int *Nx_g, int *T_, int *nite_);
+	double *dt_, int *Nvar_, int *Nx_g, int *Nx_, int *T_, int *nite_);
 
 #endif // PARAMFILE_HPP_INCLUDED

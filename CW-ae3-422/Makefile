@@ -1,5 +1,5 @@
 # Declaration of variables
-CC = g++
+CC = mpicxx
 CC_FLAGS = -O3 -std=c++11
 LD_FLAGS = -llapack -lblas
 DEBUG_FLAGS = -g

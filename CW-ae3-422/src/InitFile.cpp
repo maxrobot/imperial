@@ -145,7 +145,7 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
 }
 
 void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
-  double *dt_, int *Nvar_, int *Nx_g, int *T_, int *nite_)
+  double *dt_, int *Nvar_, int *Nx_g, int *Nx_, int *T_, int *nite_)
 { *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
   *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
   *Nvar_ = (*Nx_g+1) * 3 - 6;          // Number of variables in global matrices excluding boundaries

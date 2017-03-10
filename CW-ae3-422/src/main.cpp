@@ -1,7 +1,9 @@
 #include <iostream>
+#include <mpi.h>
+#include <time.h>
 
-#include "Memory.hpp"
 #include "Common.hpp"
+#include "CommonMPI.hpp"
 #include "InitFile.hpp"
 #include "BuildFunction.hpp"
 #include "Solvers.hpp"
@@ -9,11 +11,16 @@
 using namespace std;
 
 int main(int argc, char *argv[])
-{	// ================ Reading of Inputs =====================//
+{	// =========== Declaration of all things MPI ==============//
+	int retval = MPI_Init(&argc, &argv);
+
+
+	MPI::initMpiStuff();
+	// ================ Reading of Inputs =====================//
 	ifstream param_file;
 	param_file.open(argv[1], ifstream::in);
 	if (!param_file)
-	{	cout << "Unable to open input file" << endl;
+	{	printMessage("Unable to open input file");
 		exit (EXIT_FAILURE);
 	}   
 
@@ -26,6 +33,7 @@ int main(int argc, char *argv[])
 	int nite_(0);         		// Number of time steps
 	int nout_(0);         		// Number of output interval
 	int Nx_g(0);          		// Number of global elements
+	int Nx_(0);          		// Number of local elements
 	int Nvar_(0);				// Number of variables in domain
 	double lx_g(0);       		// Length of global domain
 	double dt_(0);        		// Time step
@@ -43,14 +51,15 @@ int main(int argc, char *argv[])
 	// End of Global Variables ######################################
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &nout_, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_, &scheme_, &sparse_);
-	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_,
+	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &Nx_, &T_,
 		&nite_);
 	double lx_e = lx_g/Nx_g;		// Local element length
+/*
 
 	// ===================== Build Tables =====================//
-	double *F_g			= allocateDbl(Nvar_);
-	double *U_g			= allocateDbl(Nvar_);
-	double *K_e			= allocateDbl(6*6);
+	double *F_g	= new double[Nvar_]();
+	double *U_g	= new double[Nvar_]();
+	double *K_e	= new double[6*6]();
 	
 	if (eq_=="static")
 	{	runSolver(K_e, U_g, F_g, lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g);
@@ -75,6 +84,7 @@ int main(int argc, char *argv[])
 	{
 		exit(EXIT_FAILURE);
 	}
-
+*/	
+	MPI_Finalize();
 	return 0;
 }
