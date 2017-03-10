@@ -11,12 +11,14 @@ void runSolver(double *K_e, double *U_g, double *F_g, double lx_e,
 	int Nx_g)
 {	// ================ Initialise Local Vars. ================//
 	const int buf_(4);	  	// Buffer
+	if (MPI::mpi_size>1)
+	{	printMessage("ERROR: static is single processor only!");
+	}
 	
 	// Matrices
 	double *K_g	= new double[Nvar_ * (9+buf_)]();
 	double *K_orig	= new double[Nvar_ * Nvar_]();
 	double *F_e	= new double[6]();
-
 
 	// ============== Create Elemental K Matrix ===============//
 	buildKele(K_e, lx_e, A_, E_, I_);
@@ -26,14 +28,6 @@ void runSolver(double *K_e, double *U_g, double *F_g, double lx_e,
 	buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf_);
 	buildFglb(F_g, F_e, Nx_g, Nvar_);
 
-	if (MPI::mpi_rank==0)
-	{	
-		showMat(K_e, 6);
-		showMat(K_orig, Nvar_);
-		showMat(K_g, 9+buf_, Nvar_);
-		// showVec(F_e, 6);
-		MPI_Barrier;
-	}
 	// =================== Solve System =======================//
 	solveStatic(K_g, F_g, Nvar_, 9+buf_, Nx_g, "task1_");
 }
