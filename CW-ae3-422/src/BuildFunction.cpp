@@ -44,29 +44,35 @@ void buildSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
 	const int cnt = 4 + buf_;
 	
 	// Central Elements
-	for (int i = 0; i < Nx_g-1; ++i)
+	for (int i = 0; i < Nx_g-2; ++i)
 	{	
 		for (int j = 0; j < 6; ++j)
 		{	// Build Diagonal
 			int pnt = j*6 + j;
 			int pnt2 = cnt + (j+(i*3))*jmp;
+			cout << pnt2 << endl;
 		 	Kg[pnt2] += ke[pnt];
-		 	int max = 6-j;
-		 	int bnd = 5;
+		 	int max = 5-j;
+		 	int bnd = 4;
 		 	// Build Upper
 		 	if (max < bnd)
 		 	{	bnd = max;
 		 	}
-			for (int k = 1; k < bnd; ++k)
-			{	int pos = (cnt+k) + (j+(i*3))*jmp;
+			for (int k = 1; k <= bnd; ++k)
+			{	int pos = pnt2 + k;
 			 	Kg[pos] += ke[pnt+k];	
 			}
+			bnd = 5;
 		 	// Build Lower
-			for (int k = 1; k <= j; ++k)
-			{	int pos = (cnt-k) + (j+(i*3))*jmp;
-				Kg[pos] += ke[pnt-k];
+		 	if (j < bnd)
+		 	{	bnd = j+1;
+		 	}
+			for (int k = 1; k < bnd; ++k)
+			{	int pos = pnt2 - k;
+				Kg[pnt2-k] += ke[pnt-k];
 			}
 		}
+		// cout << endl;
 	}
 	// LHS Boundary
 	for (int i = 0; i < 3; ++i)

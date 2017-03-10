@@ -17,14 +17,12 @@ void runSolver(double *K_e, double *U_g, double *F_g, double lx_e,
 	
 	// Matrices
 	double *K_g	= new double[Nvar_ * (9+buf_)]();
-	double *K_orig	= new double[Nvar_ * Nvar_]();
 	double *F_e	= new double[6]();
 
 	// ============== Create Elemental K Matrix ===============//
 	buildKele(K_e, lx_e, A_, E_, I_);
 	buildFele(F_e, lx_e, qx_, qy_);
-
-	buildKglb(K_orig, K_e, Nvar_, Nx_g);
+	
 	buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf_);
 	buildFglb(F_g, F_e, Nx_g, Nvar_);
 
@@ -55,7 +53,6 @@ void runSolver(double *K_e, double *U_g, double *F_g, double dt_,
 	if (sparse_=="none")
 	{	// Matrices
 		double *K_g = new double[Nvar_*Nvar_]();
-		double *K_ 	= new double[Nvar_*Nvar_]();
 		double *M_g	= new double[Nvar_*Nvar_]();
 
 	// ===================== Build Tables =====================//
@@ -67,23 +64,41 @@ void runSolver(double *K_e, double *U_g, double *F_g, double dt_,
 	}
 	else if (sparse_=="sparse")
 	{	// Matrices
+		double *K_ 	= new double[Nvar_ * Nvar_]();
 		double *K_g = new double[Nvar_*(9+buf_)]();
-		double *K_ 	= new double[Nvar_*Nvar_]();
 		double *M_g	= new double[Nvar_]();
 		
+		// if (MPI::mpi_rank==0)
+		// {	showMat(K_g, 9+buf_, Nvar_);
+		// 	MPI_Barrier;
+		// }
 	// ===================== Build Tables =====================//
+		buildKglb(K_, K_e, Nvar_, Nx_g);
 		buildSparse(K_g, K_e, Nvar_, Nx_g, buf_);
 		buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
+
+		// if (MPI::mpi_rank==0)
+		// {	showMat(K_e, 6);
+		// 	showMat(K_, Nvar_);
+		// 	showMat(K_g, (9+buf_), Nvar_);
+		// 	MPI_Barrier;
+		// }
+		// for (int i = 0; i < MPI::mpi_size; ++i)
+		// {	if (MPI::mpi_rank==i)
+		// 	{	showMat(K_g, (9+buf_), Nvar_);
+		// 		MPI_Barrier;
+		// 	}
+		// }
 		
 	// ==================== Run Solver ========================//
-		if (buf_==4)
-		{	solveSparseImplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
-				dt_, Nvar_, Nx_g, nite_, nout_, buf_, "task3_");
-		}
-		else
-		{	solveSparseExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
-				Nvar_, Nx_g, nite_, nout_, buf_,"task2_");
-		}
+		// if (buf_==4)
+		// {	solveSparseImplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
+		// 		dt_, Nvar_, Nx_g, nite_, nout_, buf_, "task3_");
+		// }
+		// else
+		// {	solveSparseExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
+		// 		Nvar_, Nx_g, nite_, nout_, buf_,"task2_");
+		// }
 	}
 }
 

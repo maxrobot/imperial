@@ -69,7 +69,6 @@ int main(int argc, char *argv[])
 	if (eq_=="static")
 	{	runSolver(K_e, U_g, F_g, lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g);
 	}
-/*
 	if (eq_=="dynamic")
 	{	if (scheme_=="explicit")
 		{	const int buf_(0);
@@ -81,13 +80,10 @@ int main(int argc, char *argv[])
 			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
 				Nx_g, nite_, nout_, buf_, sparse_);
 		}
-		else
+		if (scheme_=="none")
 		{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");
-			exit(EXIT_FAILURE);
 		}
 	}
-*/
-
 	MPI_Finalize();
 	return 0;
 }

@@ -153,10 +153,6 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
   *Nvar_ = (*Nx_g-1)*3;          // Number of variables in global matrices excluding boundaries
   *E_ = *E_;
   *dt_ = double(*T_)/ *nite_;
-//   *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
-//   *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
-//   // *Nvar_ = (*Nx_g+1) * 3 - 6;        // Number of variables in global matrices excluding boundaries
-//   // *Nvar_ = (*Nx_g+1) * 3 - 6;        // Number of variables in global matrices excluding boundaries
 
   // Initialise domain decomp
   *Nx_ = *Nx_g/(MPI::mpi_size);
@@ -172,23 +168,4 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
   if (MPI::mpi_rank==0 && MPI::mpi_size>1)
   { *Nvar_e += 3;
   }
-    for (int i = 0; i < MPI::mpi_size; ++i)
-    { if (MPI::mpi_rank==i)
-      { //showMat(K_e, 6);
-        cout << MPI::mpi_rank << "  " << *Nx_g << "  " << *Nx_ << "  " << *Nvar_ << "  " << *Nvar_e << endl;
-      }
-      MPI_Barrier;
-    }
-
-//   if (MPI::mpi_size==1)
-//   { *Nvar_ = (*Nx_g-1)*3;        // Number of variables in global matrices excluding boundaries
-//   }  
-//   if (MPI::mpi_size>1)
-//   { *Nvar_ = (*Nx_g)*3;
-//     if (MPI::mpi_rank==0)
-//     { *Nvar_ -=  3;
-//     }
-//   }  
-//   *dt_ = double(*T_)/ *nite_;        // time interval
-//   *lx_e = *lx_g/ *Nx_;                  // Local element length
 }
