@@ -1,5 +1,6 @@
 #include "InitFile.hpp"
 #include "Common.hpp"
+#include "CommonMPI.hpp"
 
 using namespace std;
 
@@ -145,10 +146,33 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
 }
 
 void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
-  double *dt_, int *Nvar_, int *Nx_g, int *Nx_, int *T_, int *nite_)
-{ *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
+  double *dt_, int *Nvar_, int *Nvar_e, int *Nx_g, int *Nx_, int *T_, int *nite_)
+{ // Initialise most value stuffs
+  *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
   *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
-  *Nvar_ = (*Nx_g+1) * 3 - 6;          // Number of variables in global matrices excluding boundaries
+  *Nvar_ = (*Nx_g+1) * 3 -6;          // Number of variables in global matrices excluding boundaries
   *E_ = *E_;
   *dt_ = double(*T_)/ *nite_;
+
+  // Initialise domain decomp
+  *Nx_ = *Nx_g/(MPI::mpi_size);
+  int rem = *Nx_g%(MPI::mpi_size);
+  if (rem!=0)
+  { for (int i = 0; i < rem; ++i)
+    { if (MPI::mpi_rank==i)
+      { *Nx_+=1;
+      }
+    }
+  }
+  *Nvar_e = (*Nx_ -1)*3;
+  if (MPI::mpi_rank==0 || MPI::mpi_rank==(MPI::mpi_size-1))
+  { *Nvar_ += 3;
+  }
+    for (int i = 0; i < MPI::mpi_size; ++i)
+    { if (MPI::mpi_rank==i)
+      { //showMat(K_e, 6);
+        cout << MPI::mpi_rank << "  " << *Nx_g << "  " << *Nx_ << "  " << *Nvar_ << "  " << *Nvar_e << endl;
+      }
+      MPI_Barrier;
+    }
 }

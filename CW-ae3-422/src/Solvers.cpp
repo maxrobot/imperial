@@ -1,5 +1,6 @@
 #include "Solvers.hpp"
 #include "Common.hpp"
+#include "CommonMPI.hpp"
 #include "BuildFunction.hpp"
 
 using namespace std;
@@ -13,19 +14,26 @@ void runSolver(double *K_e, double *U_g, double *F_g, double lx_e,
 	
 	// Matrices
 	double *K_g	= new double[Nvar_ * (9+buf_)]();
+	double *K_orig	= new double[Nvar_ * Nvar_]();
 	double *F_e	= new double[6]();
+
 
 	// ============== Create Elemental K Matrix ===============//
 	buildKele(K_e, lx_e, A_, E_, I_);
 	buildFele(F_e, lx_e, qx_, qy_);
 
+	buildKglb(K_orig, K_e, Nvar_, Nx_g);
 	buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf_);
 	buildFglb(F_g, F_e, Nx_g, Nvar_);
 
-	// ================== Clean up Space ======================//
-	delete[] K_e;
-	delete[] F_e;
-
+	if (MPI::mpi_rank==0)
+	{	
+		showMat(K_e, 6);
+		showMat(K_orig, Nvar_);
+		showMat(K_g, 9+buf_, Nvar_);
+		// showVec(F_e, 6);
+		MPI_Barrier;
+	}
 	// =================== Solve System =======================//
 	solveStatic(K_g, F_g, Nvar_, 9+buf_, Nx_g, "task1_");
 }
