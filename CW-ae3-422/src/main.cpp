@@ -43,144 +43,33 @@ int main(int argc, char *argv[])
 	// End of Global Variables ######################################
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &nout_, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_, &scheme_, &sparse_);
+	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_,
+		&nite_);
+	double lx_e = lx_g/Nx_g;		// Local element length
+
+	// ===================== Build Tables =====================//
+	double *F_g			= allocateDbl(Nvar_);
+	double *U_g			= allocateDbl(Nvar_);
+	double *K_e			= allocateDbl(6*6);
+	
 	if (eq_=="static")
-	{	
-		// ================ Initialise Local Vars. ================//
-		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_,
-			&nite_);
-		double lx_e = lx_g/Nx_g;		// Local element length
-		const double buf_(4);	  	// Buffer
-		
-		// ===================== Build Tables =====================//
-		// Matrices
-		double *K_g 		= allocateDbl(Nvar_*(9+buf_));
-
-		// Vectors
-		double *F_g			= allocateDbl(Nvar_);
-		double *U_g			= allocateDbl(Nvar_);
-
-		double *K_e			= allocateDbl(6*6);
-		double *F_e	 		= allocateDbl(6);
-
-
-		// ============== Create Elemental K Matrix ===============//
-		buildKele(K_e, lx_e, A_, E_, I_);
-		buildFele(F_e, lx_e, qx_, qy_);
-
-		buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf_);
-		buildFglb(F_g, F_e, Nx_g, Nvar_);
-
-		// ================== Clean up Space ======================//
-		delete[] K_e;
-		delete[] F_e;
-
-		// =================== Solve System =======================//
-		solveStatic(K_g, F_g, Nvar_, 9+buf_, Nx_g, "task1");
+	{	runSolver(K_e, U_g, F_g, lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g);
 	}
-	else if (eq_=="dynamic" && scheme_=="explicit")
-	{	// ================ Initialise Local Vars. ================//
-		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_,
-			&nite_);
-		double lx_e = lx_g/Nx_g;
-		const double Al_(1./24);  	// Constant Alpha
-		const double buf_(0);	  	// Buffer
-
-
-		// Vectors
-		double *F_g			= allocateDbl(Nvar_);
-		double *U_g			= allocateDbl(Nvar_);
-
-		double *M_e			= allocateDbl(6*6);
-		double *K_e			= allocateDbl(6*6);
-
-		// ============== Create Elemental K Matrix ===============//
-		buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
-		buildKele(K_e, lx_e, A_, E_, I_);
-
-
-		if (sparse_=="none")
-		{	// Matrices
-			double *K_g 		= allocateDbl(Nvar_*Nvar_);
-			double *K_ 			= allocateDbl(Nvar_*Nvar_);
-			double *M_g			= allocateDbl(Nvar_*Nvar_);
-
-		// ===================== Build Tables =====================//
-			buildKglb(K_g, K_e, Nvar_, Nx_g);
-			buildKglb(M_g, M_e, Nvar_, Nx_g);
-
-			solveExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_,
-				Nx_g, nite_, nout_, buf_,"task2_");
+	if (eq_=="dynamic")
+	{	if (scheme_=="explicit")
+		{	const int buf_(0);
+			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+				Nx_g, nite_, nout_, buf_, sparse_);
 		}
-		else if (sparse_=="sparse")
-		{	// Matrices
-			double *K_g 		= allocateDbl(Nvar_*(9+buf_));
-			double *K_ 			= allocateDbl(Nvar_*Nvar_);
-			double *M_g			= allocateDbl(Nvar_);
-			
-		// ===================== Build Tables =====================//
-			buildSparse(K_g, K_e, Nvar_, Nx_g, buf_);
-			buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
-			
-			solveSparseExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
-				Nvar_, Nx_g, nite_, nout_, buf_,"task2_");
+		if (scheme_=="implicit")
+		{	const int buf_(4);
+			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+				Nx_g, nite_, nout_, buf_, sparse_);
 		}
-
-		
-	}
-	else if (eq_=="dynamic" && scheme_=="implicit")
-	{	// ================ Initialise Local Vars. ================//
-		initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nx_g, &T_,
-			&nite_);
-		double lx_e = lx_g/Nx_g;		// Local element length
-		const double buf_(4);	  	// Buffer
-		const double Al_(1./24);  	// Constant Alpha
-
-		// Vectors
-		double *F_g			= allocateDbl(Nvar_);
-		double *U_g			= allocateDbl(Nvar_);
-
-		double *M_e			= allocateDbl(6*6);
-		double *K_e			= allocateDbl(6*6);
-		// ============== Create Elemental K Matrix ===============//
-		buildMele(M_e, A_, rho_, lx_e, Al_);
-		buildKele(K_e, lx_e, A_, E_, I_);
-
-
-		// ==================== Run Solver ========================//
-		
-		if (sparse_=="none")
-		{	// Matrices
-			double *K_g 		= allocateDbl(Nvar_*Nvar_);
-			double *K_ 			= allocateDbl(Nvar_*Nvar_);
-			double *M_g			= allocateDbl(Nvar_*Nvar_);
-
-		// ===================== Build Tables =====================//
-			buildKglb(K_g, K_e, Nvar_, Nx_g);
-			buildKglb(M_g, M_e, Nvar_, Nx_g);
-
-		// ==================== Run Solver ========================//
-			solveImplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, dt_,
-				Nvar_, Nx_g, nite_, nout_, "task3_");
+		else
+		{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");
+			exit(EXIT_FAILURE);
 		}
-		else if (sparse_=="sparse")
-		{	// Matrices
-			double *K_g 		= allocateDbl(Nvar_*(9+buf_));
-			double *K_ 			= allocateDbl(Nvar_*Nvar_);
-			double *M_g			= allocateDbl(Nvar_);
-
-		// ===================== Build Tables =====================//
-			buildSparse(K_g, K_e, Nvar_, Nx_g, buf_);
-			buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
-
-		// ==================== Run Solver ========================//
-			solveSparseImplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
-				dt_, Nvar_, Nx_g, nite_, nout_, buf_, "task3_");
-		}
-
-	}
-	if (eq_=="dynamic" && scheme_=="none")
-	{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");
-		exit(EXIT_FAILURE);
 	}
 	else
 	{

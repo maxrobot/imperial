@@ -4,6 +4,87 @@
 
 using namespace std;
 
+// Static Solver Launch
+void runSolver(double *K_e, double *U_g, double *F_g, double lx_e,
+	double A_, double E_, double I_, double qx_, double qy_, int Nvar_,
+	int Nx_g)
+{	// ================ Initialise Local Vars. ================//
+	const int buf_(4);	  	// Buffer
+	
+	// Matrices
+	double *K_g	= new double[Nvar_ * (9+buf_)]();
+	double *F_e	= new double[6]();
+
+	// ============== Create Elemental K Matrix ===============//
+	buildKele(K_e, lx_e, A_, E_, I_);
+	buildFele(F_e, lx_e, qx_, qy_);
+
+	buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf_);
+	buildFglb(F_g, F_e, Nx_g, Nvar_);
+
+	// ================== Clean up Space ======================//
+	delete[] K_e;
+	delete[] F_e;
+
+	// =================== Solve System =======================//
+	solveStatic(K_g, F_g, Nvar_, 9+buf_, Nx_g, "task1_");
+}
+
+// Dynamic Explicit Launch
+void runSolver(double *K_e, double *U_g, double *F_g, double dt_, 
+	double lx_e, double A_, double E_, double I_, double rho_,
+	double qx_,	double qy_,	int Nvar_, int Nx_g, int nite_,
+	int nout_, const int buf_, string sparse_)
+{	// ================ Initialise Local Vars. ================//
+	const double Al_(1./24);  	// Constant Alpha
+
+	double *M_e	= new double[6*6]();
+
+	// ============== Create Elemental K Matrix ===============//
+	if (buf_ == 4)
+	{	buildMele(M_e, A_, rho_, lx_e, Al_);
+	}
+	if (buf_ == 0)	
+	{	buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
+	}
+	
+	buildKele(K_e, lx_e, A_, E_, I_);
+
+	if (sparse_=="none")
+	{	// Matrices
+		double *K_g = new double[Nvar_*Nvar_]();
+		double *K_ 	= new double[Nvar_*Nvar_]();
+		double *M_g	= new double[Nvar_*Nvar_]();
+
+	// ===================== Build Tables =====================//
+		buildKglb(K_g, K_e, Nvar_, Nx_g);
+		buildKglb(M_g, M_e, Nvar_, Nx_g);
+
+		solveExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_,
+			Nx_g, nite_, nout_, buf_,"task2_");
+	}
+	else if (sparse_=="sparse")
+	{	// Matrices
+		double *K_g = new double[Nvar_*(9+buf_)]();
+		double *K_ 	= new double[Nvar_*Nvar_]();
+		double *M_g	= new double[Nvar_]();
+		
+	// ===================== Build Tables =====================//
+		buildSparse(K_g, K_e, Nvar_, Nx_g, buf_);
+		buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
+		
+	// ==================== Run Solver ========================//
+		if (buf_==4)
+		{	solveSparseImplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
+				dt_, Nvar_, Nx_g, nite_, nout_, buf_, "task3_");
+		}
+		else
+		{	solveSparseExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
+				Nvar_, Nx_g, nite_, nout_, buf_,"task2_");
+		}
+	}
+}
+
 void solveStatic(double *K, double *F, int Nvar_, int ldab, int Nx_, std::string test)
 {	const int nrhs = 1;
     int info = 0;
