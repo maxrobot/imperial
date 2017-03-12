@@ -11,6 +11,7 @@ void buildBandSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
 void buildSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
 void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
 void buildMglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
+void buildMglbPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
 void buildBandFglb(double *Kg, double *ke, int Nx_g, int Nvar_);
 void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_);
 

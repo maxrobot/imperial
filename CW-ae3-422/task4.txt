@@ -4,12 +4,12 @@ Input file
 
 Simulation Parameters =========================================================
 equation: dynamic
-integration: implicit
+integration: explicit
 matrix format: sparse
 simulation time (s): 1
 number of iterations: 10000
 output spacing: 1000
-number of elements: 10
+number of elements: 4
 
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000

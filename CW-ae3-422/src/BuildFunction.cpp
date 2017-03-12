@@ -310,6 +310,18 @@ void buildMglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
+void buildMglbPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
+{	const int jmp =  9 + buf;
+	int iter = Nvar_/3;
+	for (int i = 0; i < iter; ++i)
+	{	for (int j = 0; j < 3; ++j)
+		{	int pnt = j + 3*i;
+			int pnt2 = j + j*6;
+			Kg[pnt] += 2*ke[pnt2];
+		}	
+	}
+}
+
 void buildBandFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
 {	// Build Center	
 	for (int i = 0; i < Nx_g-1; ++i)
