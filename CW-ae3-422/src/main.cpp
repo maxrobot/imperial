@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	// ===================== Build Tables =====================//
 	double *K_e	= new double[6*6]();
 	
-	
+
     // for (int i = 0; i < MPI::mpi_size; ++i)
     // {	if (MPI::mpi_rank==i)
 	   //  {	cout << MPI::mpi_rank << "  " << MPI::n_rhs << endl;

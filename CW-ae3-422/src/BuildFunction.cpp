@@ -324,18 +324,21 @@ void buildMglbPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 
 void buildBandFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
 {	// Build Center	
-	for (int i = 0; i < Nx_g-1; ++i)
-	{	for (int j = 0; j < 6; ++j)
-		{	if (i==Nx_g-2 && j>=4)
-			{	break;
-			}
-			else
-			{	int pnt = i*3 + j;
-				Kg[pnt] += ke[j];
-			}
+	if (MPI::mpi_rank==0)
+	{	Kg[1] = ke[1]; 
+		Kg[2] = ke[2];
+		for (int i = 1; i < Nvar_/3; ++i)
+		{	int pnt = i*3 + 1;
+			Kg[pnt] =  2*ke[1];
 		}
 	}
-	Kg[(Nvar_-1)/2] +=1000;
+	if (MPI::mpi_rank>0)
+	{	for (int i = 0; i < Nvar_/3; ++i)
+		{	int pnt = i*3 + 1;
+			Kg[pnt] =  2*ke[1];
+		}
+	}
+	// Kg[(Nvar_-1)/2] +=1000;
 }
 
 void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
@@ -457,11 +460,20 @@ void assignArr(double *K, double V, int N)
 {	fill(K, K+N, V);
 }
 
-void updateVars(double *F, double lx_e, double qx_,
-				double qy_, int Nx_g, int Nvar_, int step, int nite_)
+void updateVars(double *F, double lx_e, double qx_, double qy_,
+	int Nx_g, int Nvar_, int step, int nite_)
 {	double coef = double(step)/nite_;
 	double *fe = new double[6]();
 	buildFele(fe, lx_e, coef*qx_, coef*qy_);
 	buildFglb(F, fe, Nx_g, Nvar_);
+	delete [] fe;
+}
+
+void updateParVars(double *F, double lx_e, double qx_, double qy_,
+	int Nx_g, int Nvar_, int step, int nite_)
+{	double coef = double(step)/nite_;
+	double *fe = new double[6]();
+	buildFele(fe, lx_e, coef*qx_, coef*qy_);
+	buildBandFglb(F, fe, Nx_g, Nvar_);
 	delete [] fe;
 }

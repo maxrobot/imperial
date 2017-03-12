@@ -97,6 +97,19 @@ MPI_Status status;
 		}
 	}
 
+	void exchangeVecConts(double *U, int Nghost_)
+	{	double d1 = U[0], d2;
+		exchangeLeftData(&d1, &d2);
+		if (mpi_rank<(MPI::mpi_size-1))
+		{	U[Nghost_-1] += d2;
+		}
+		d1 = U[Nghost_-1];
+		exchangeRightData(&d1, &d2);
+		if (mpi_rank>0)
+		{	U[0]+= d2;
+		}
+	}
+
 	void exchangeLeftData(double *d1, double *d2)
 	{	MPI::getNeighbours();
 		// MPI_Comm_rank(row_comm, &row_rank);

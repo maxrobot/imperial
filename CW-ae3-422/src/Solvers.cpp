@@ -94,7 +94,8 @@ void runSolver(double *K_e, double dt_, double lx_e, double A_,
 			}
 			else
 			{	solveParSparseExplicit(K_g, M_g, F_g, lx_e, qx_,
-				qy_, Nvar_e, Nghost_, Nx_g, nite_, nout_, buf_,"task_4");
+				qy_, Nvar_, Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_,
+				buf_,"task_4");
 			}
 		}
 	}

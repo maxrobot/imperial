@@ -16,14 +16,17 @@ void buildBandFglb(double *Kg, double *ke, int Nx_g, int Nvar_);
 void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_);
 
 
-void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, double dt_);
+void buildMele(double *K, double A_, double rho_, double lx_e, double Al_,
+	double dt_);
 void buildMele(double *K, double A_, double rho_, double lx_e, double Al_);
 void buildKele(double *K, double lx_e, double A_, double E_, double I_);
 void buildFele(double *K, double lx_e, double qx_, double qy_);
 
 void assignArr(double *K, double V, int N);
 
-void updateVars(double *F, double lx_e, double qx_,
-				double qy_, int Nx_g, int Nvar_, int step, int nite_);
+void updateVars(double *F, double lx_e, double qx_,	double qy_, int Nx_g,
+	int Nvar_, int step, int nite_);
+void updateParVars(double *F, double lx_e, double qx_,double qy_, int Nx_g,
+	int Nvar_, int step, int nite_);
 
 #endif // BUILDFUNCTION_HPP_INCLUDED
