@@ -13,6 +13,15 @@ namespace MPI
 // near the start of there code, after MPI_Init(*,*)...
 int mpi_rank;
 int mpi_size = 1;
+int nrow = 1;
+int ncol = 2;
+char order = 'R';
+int ctx;
+int mype;
+int npe;
+int myrow;
+int mycol;
+
 
 MPI_Comm mpi_comm = MPI_COMM_WORLD;
 MPI_Comm row_comm;
@@ -29,6 +38,13 @@ MPI_Status status;
 	  	MPI_Comm_dup(MPI_COMM_WORLD, &mpi_comm);
 	}
 
+	void initCblacsStuff()
+	{   Cblacs_pinfo(&mype, &npe);
+	    Cblacs_get(0, 0, &ctx);
+	    Cblacs_gridinit(&ctx, &order, 1, npe);
+	    Cblacs_gridinfo(ctx, &nrow, &ncol, &myrow, &mycol);
+	}
+	
 	void checkMPI(int retval)
 	{	if(retval!=MPI_SUCCESS) 
 		{	printMessage("An error occurred initialising MPI");

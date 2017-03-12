@@ -27,6 +27,15 @@ namespace MPI {
 
 extern int mpi_rank;
 extern int mpi_size;
+extern int nrow;
+extern int ncol;
+extern char order;
+extern int ctx;
+extern int mype;
+extern int npe;
+extern int myrow;
+extern int mycol;
+
 
 extern MPI_Comm mpi_comm;
 extern MPI_Comm row_comm;
@@ -39,6 +48,7 @@ extern MPI_Status status;
 
 // call this method if you really are running mpi...
 extern void initMpiStuff();
+extern void initCblacsStuff();
 
 }
 #endif

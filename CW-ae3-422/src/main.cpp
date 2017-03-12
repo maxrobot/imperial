@@ -11,11 +11,22 @@
 using namespace std;
 // using namespace MPI;
 
+extern "C" {
+	void Cblacs_barrier(int, char*);
+    void Cblacs_get(int, int, int*);
+	void Cblacs_pinfo(int*, int*);
+	void Cblacs_gridinit(int*, char*, int, int);
+	void Cblacs_gridinfo(int, int*, int*, int*, int*);
+	void Cblacs_exit(int);
+	void Cblacs_gridexit(int);
+}
+
 int main(int argc, char *argv[])
 {	// ======== Declaration of all things good and MPI ======== //
 	MPI_Init(&argc, &argv);
 
 	MPI::initMpiStuff();
+	MPI::initCblacsStuff();
 	// ================ Reading of Inputs =====================//
 
 	ifstream param_file;
@@ -28,7 +39,7 @@ int main(int argc, char *argv[])
 	// Global Variables #############################################
 	string eq_("none");			// Type of eq., static or dynamic
 	string scheme_("none");		// Type of integration, explicit or 
-	string sparse_("none");		// Type of integration, explicit or 
+	string sparse_("none");		// Type of matrices, sparse or 
 
 	int T_(0);	         		// Simulation length (s)
 	int nite_(0);         		// Number of time steps
@@ -51,6 +62,22 @@ int main(int argc, char *argv[])
 	double h_(0);         		// Cross-sectional height
 	double A_(0);         		// Cross-sectional area
 
+ //    int nrow = 1;
+ //    int ncol = 2;
+ //    char order = 'R';
+	// int ctx;
+ //    int mype;
+ //    int npe;
+ //    int myrow;
+ //    int mycol;
+    // Cblacs_pinfo(&mype, &npe);
+    // Cblacs_get( 0, 0, &ctx );
+    // Cblacs_gridinit( &ctx, &order, 1, npe );
+    // Cblacs_gridinfo( ctx, &nrow, &ncol, &myrow, &mycol);
+    // cout << mype << "  " << npe << endl;
+
+
+
 	// End of Global Variables ######################################
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &nout_, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_, &scheme_, &sparse_);
@@ -63,24 +90,24 @@ int main(int argc, char *argv[])
 	double *U_g	= new double[Nvar_]();
 	double *K_e	= new double[6*6]();
 	
-	if (eq_=="static")
-	{	runSolver(K_e, U_g, F_g, lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g);
-	}
-	if (eq_=="dynamic")
-	{	if (scheme_=="explicit")
-		{	const int buf_(0);
-			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-				Nvar_e, Nx_g, nite_, nout_, buf_, sparse_);
-		}
-		if (scheme_=="implicit")
-		{	const int buf_(4);
-			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-				Nvar_e, Nx_g, nite_, nout_, buf_, sparse_);
-		}
-		if (scheme_=="none")
-		{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");
-		}
-	}
+	// if (eq_=="static")
+	// {	runSolver(K_e, U_g, F_g, lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g);
+	// }
+	// if (eq_=="dynamic")
+	// {	if (scheme_=="explicit")
+	// 	{	const int buf_(0);
+	// 		runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+	// 			Nvar_e, Nx_g, nite_, nout_, buf_, sparse_);
+	// 	}
+	// 	if (scheme_=="implicit")
+	// 	{	const int buf_(4);
+	// 		runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+	// 			Nvar_e, Nx_g, nite_, nout_, buf_, sparse_);
+	// 	}
+	// 	if (scheme_=="none")
+	// 	{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");
+	// 	}
+	// }
 	MPI_Finalize();
 	return 0;
 }
