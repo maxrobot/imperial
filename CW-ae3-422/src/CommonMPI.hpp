@@ -27,6 +27,17 @@ namespace MPI {
 
 extern int mpi_rank;
 extern int mpi_size;
+extern int ndims;
+extern int reorder;
+extern int n_rhs;
+extern int n_abv;
+extern int *mpi_coords;
+extern int *n_coords;
+extern int *n_rank;
+extern int *periods;
+extern int *mpi_dims;
+
+// Clbas Variables
 extern int nrow;
 extern int ncol;
 extern char order;
@@ -49,6 +60,10 @@ extern MPI_Status status;
 // call this method if you really are running mpi...
 extern void initMpiStuff();
 extern void initCblacsStuff();
+extern void initMpiDomain();
+extern void getNeighbours();
+extern void exchangeLeftData(double *d1, double *d2);
+extern void exchangeRightData(double *d1, double *d2);
 
 }
 #endif

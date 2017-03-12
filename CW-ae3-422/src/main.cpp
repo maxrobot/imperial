@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 	MPI_Init(&argc, &argv);
 
 	MPI::initMpiStuff();
+	MPI::initMpiDomain();
 	MPI::initCblacsStuff();
 	// ================ Reading of Inputs =====================//
 
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
 	int Nx_(0);          		// Number of local elements
 	int Nvar_(0);				// Number of variables global in domain
 	int Nvar_e(0);				// Number of variables local in domain
+	int Nghost_(0);				// Number of ghost variables local in domain
 	double lx_g(0);       		// Length of global domain
 	double lx_e(0);       		// Length of global domain
 	double dt_(0);        		// Time step
@@ -65,28 +67,36 @@ int main(int argc, char *argv[])
 	// End of Global Variables ######################################
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &nout_, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_, &scheme_, &sparse_);
-	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nvar_e, &Nx_g,
-		&Nx_, &T_, &nite_);
+	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nvar_e, &Nghost_,
+		&Nx_g, &Nx_, &T_, &nite_);
 	lx_e = lx_g/Nx_g;		// Local element length
 
 	// ===================== Build Tables =====================//
-	double *F_g	= new double[Nvar_]();
-	double *U_g	= new double[Nvar_]();
 	double *K_e	= new double[6*6]();
 	
+	
+    // for (int i = 0; i < MPI::mpi_size; ++i)
+    // {	if (MPI::mpi_rank==i)
+	   //  {	cout << MPI::mpi_rank << "  " << MPI::n_rhs << endl;
+	   //  	MPI_Barrier(MPI_COMM_WORLD);
+	   //  }
+    // 	MPI_Barrier(MPI_COMM_WORLD);
+    // }
+
+
 	if (eq_=="static")
-	{	runSolver(K_e, U_g, F_g, lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g);
+	{	runSolver(K_e, lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g);
 	}
 	if (eq_=="dynamic")
 	{	if (scheme_=="explicit")
 		{	const int buf_(0);
-			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-				Nvar_e, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
+			runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+				Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
 		}
 		if (scheme_=="implicit")
 		{	const int buf_(4);
-			runSolver(K_e, U_g, F_g, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-				Nvar_e, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
+			runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+				Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
 		}
 		if (scheme_=="none")
 		{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");

@@ -6,8 +6,8 @@
 using namespace std;
 
 // Static Solver Launch
-void runSolver(double *K_e, double *U_g, double *F_g, double lx_e,
-	double A_, double E_, double I_, double qx_, double qy_, int Nvar_,
+void runSolver(double *K_e, double lx_e, double A_,
+	double E_, double I_, double qx_, double qy_, int Nvar_,
 	int Nx_g)
 {	// ================ Initialise Local Vars. ================//
 	const int buf_(4);	  	// Buffer
@@ -16,6 +16,7 @@ void runSolver(double *K_e, double *U_g, double *F_g, double lx_e,
 	}
 	
 	// Matrices
+	double *F_g	= new double[Nvar_]();
 	double *K_g	= new double[Nvar_ * (9+buf_)]();
 	double *F_e	= new double[6]();
 
@@ -31,13 +32,14 @@ void runSolver(double *K_e, double *U_g, double *F_g, double lx_e,
 }
 
 // Dynamic Explicit Launch
-void runSolver(double *K_e, double *U_g, double *F_g, double dt_, 
-	double lx_e, double A_, double E_, double I_, double rho_,
-	double qx_,	double qy_,	int Nvar_, int Nvar_e, int Nx_g, int Nx_,
-	int nite_, int nout_, const int buf_, string sparse_)
+void runSolver(double *K_e, double dt_, double lx_e, double A_,
+	double E_, double I_, double rho_, double qx_, double qy_,
+	int Nvar_, int Nvar_e, int Nghost_, int Nx_g, int Nx_, int nite_, 
+	int nout_, const int buf_, string sparse_)
 {	// ================ Initialise Local Vars. ================//
 	const double Al_(1./24);  	// Constant Alpha
 
+	double *F_g	= new double[Nvar_e]();
 	double *M_e	= new double[6*6]();
 
 	// ============== Create Elemental K Matrix ===============//
@@ -52,60 +54,48 @@ void runSolver(double *K_e, double *U_g, double *F_g, double dt_,
 
 	if (sparse_=="none")
 	{	// Matrices
-		double *K_g = new double[Nvar_*Nvar_]();
-		double *M_g	= new double[Nvar_*Nvar_]();
+		double *K_g = new double[Nvar_e*Nvar_e]();
+		double *M_g	= new double[Nvar_e*Nvar_e]();
 
 	// ===================== Build Tables =====================//
-		buildKglb(K_g, K_e, Nvar_, Nx_g);
-		buildKglb(M_g, M_e, Nvar_, Nx_g);
+		buildKglb(K_g, K_e, Nvar_e, Nx_g);
+		buildKglb(M_g, M_e, Nvar_e, Nx_g);
 
-		solveExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_, Nvar_,
+		solveExplicit(K_g, M_g, F_g, lx_e, qx_, qy_, Nvar_e,
 			Nx_g, nite_, nout_, buf_, "task_2");
 	}
 	else if (sparse_=="sparse")
 	{	// Matrices
-		double *K_ 	= new double[Nvar_*(9+buf_)]();
 		double *K_g = new double[Nvar_e*(9+buf_)]();
 		double *M_g	= new double[Nvar_e]();
-		double *M_	= new double[Nvar_]();
 		
 	// ===================== Build Tables =====================//
 		if (MPI::mpi_size==1)
-		{	buildSparse(K_g, K_e, Nvar_, Nx_g, buf_);
-			buildMglbSparse(M_g, M_e, Nvar_, Nx_g, buf_);
+		{	buildSparse(K_g, K_e, Nvar_e, Nx_g, buf_);
+			buildMglbSparse(M_g, M_e, Nvar_e, Nx_g, buf_);
+			// ==================== Run Solver ========================//
+			if (buf_==4)
+			{	solveSparseImplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
+					dt_, Nvar_e, Nx_g, nite_, nout_, buf_, "task_3");
+			}
+			else
+			{	solveSparseExplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
+					Nvar_e, Nx_g, nite_, nout_, buf_,"task_2");
+			}
 		}
-		else if (MPI::mpi_size>1)
-		{	buildSparse(K_, K_e, Nvar_, Nx_g, buf_);
-			buildBandSparse(K_g, K_e, Nvar_e, Nx_g, buf_);
-			buildMglbPar(M_g, M_e, Nvar_e, Nx_g, buf_);
-		}
-		MPI:MPI_Barrier(MPI_COMM_WORLD);
 
-		if (MPI::mpi_rank==0)
-		{	//showMat(K_e, 6);
-			// showMat(K_, (9+buf_), Nvar_);
-			// buildMglbSparse(M_, M_e, Nvar_, Nx_g, buf_);
-			showVec(F_g, Nvar_);
-			// showVec(M_, Nvar_);
-			// showMat(K_g, (9+buf_), Nvar_);
-			MPI_Barrier;
-		}
-		// showMat(K_g, (9+buf_), Nvar_e);
-		// for (int i = 0; i < MPI::mpi_size; ++i)
-		// {	if (MPI::mpi_rank==i)
-		// 	{	showMat(K_g, (9+buf_), Nvar_);
-		// 		MPI_Barrier;
-		// 	}
-		// }
-		
-	// ==================== Run Solver ========================//
-		if (buf_==4)
-		{	solveSparseImplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
-				dt_, Nvar_, Nx_g, nite_, nout_, buf_, "task_3");
-		}
-		else
-		{	solveSparseExplicit(K_g, M_g, F_g, U_g, lx_e, qx_, qy_,
-				Nvar_, Nx_g, nite_, nout_, buf_,"task_2");
+		else if (MPI::mpi_size>1)
+		{	buildBandSparse(K_g, K_e, Nvar_e, Nx_g, buf_);
+			buildMglbPar(M_g, M_e, Nvar_e, Nx_g, buf_);
+		// ==================== Run Solver ========================//
+			if (buf_==4)
+			{	solveSparseImplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
+					dt_, Nvar_, Nx_g, nite_, nout_, buf_, "task_5");
+			}
+			else
+			{	solveParSparseExplicit(K_g, M_g, F_g, lx_e, qx_,
+				qy_, Nvar_e, Nghost_, Nx_g, nite_, nout_, buf_,"task_4");
+			}
 		}
 	}
 }
@@ -124,10 +114,12 @@ void solveStatic(double *K, double *F, int Nvar_, int ldab, int Nx_, std::string
 	delete[] ipiv;
 }
 
-void solveExplicit(double *K, double *M, double *F, double *U, double lx_e,
+void solveExplicit(double *K, double *M, double *F, double lx_e,
 	double qx_, double qy_, int Nvar_, int Nx_g, int nite_, int nout_,
 	int buf_, std::string test)
 {	
+	
+	double *U 		= new double[Nvar_]();
 	double *MK_o	= new double[Nvar_ * Nvar_]();
 	double *Un_g	= new double[Nvar_]();
 	double *S		= new double[Nvar_]();
@@ -169,11 +161,12 @@ void solveExplicit(double *K, double *M, double *F, double *U, double lx_e,
 	writeVec(U, Nx_g, 1, test);
 }
 
-void solveImplicit(double *K, double *M, double *F, double *U, double lx_e,
-    double qx_, double qy_, double dt_, int Nvar_, int Nx_g, int nite_, int nout_,
+void solveImplicit(double *K, double *M, double *F, double lx_e, double qx_,
+	double qy_, double dt_, int Nvar_, int Nx_g, int nite_, int nout_,
     std::string test)
 {	// ===================== Build Tables =====================//
 	double *K_eff 		= new double[Nvar_ * Nvar_]();
+	double *U			= new double[Nvar_]();
 	double *Ud			= new double[Nvar_]();
 	double *Udd			= new double[Nvar_]();
 	double *tmp			= new double[Nvar_]();

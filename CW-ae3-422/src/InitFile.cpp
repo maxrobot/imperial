@@ -136,17 +136,9 @@ string replaceTabsAndReturns(string & str)
   return str;
 }
 
-// Initialise local and global arrays...
 void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
-  int *Nvar_, int *Nx_g)
-{ *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
-  *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
-  *Nvar_ = (*Nx_g+1) * 3 - 6;          // Number of variables in global matrices excluding boundaries
-  *E_ = *E_;
-}
-
-void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
-  double *dt_, int *Nvar_, int *Nvar_e, int *Nx_g, int *Nx_, int *T_, int *nite_)
+  double *dt_, int *Nvar_, int *Nvar_e, int *Nghost_, int *Nx_g, int *Nx_,
+  int *T_, int *nite_)
 { // Initialise most value stuffs
   *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
   *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
@@ -155,8 +147,8 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
   *dt_ = double(*T_)/ *nite_;
 
   // Initialise domain decomp
-  *Nx_ = *Nx_g/(MPI::mpi_size);
-  int rem = *Nx_g%(MPI::mpi_size);
+  *Nx_ = (*Nx_g-1)/(MPI::mpi_size);
+  int rem = (*Nx_g-1)%(MPI::mpi_size);
   if (rem!=0)
   { for (int i = 0; i < rem; ++i)
     { if (MPI::mpi_rank==i)
@@ -164,8 +156,18 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
       }
     }
   }
-  *Nvar_e = (*Nx_ -1)*3;
-  if (MPI::mpi_rank==0 && MPI::mpi_size>1)
-  { *Nvar_e += 3;
+  *Nvar_e = *Nx_*3;
+  
+  // Initialise ghost cells
+  if (MPI::mpi_size==1)
+  { *Nghost_ = *Nvar_e;
+  }
+  if (MPI::mpi_size>1)
+  { if (MPI::mpi_rank==0 || MPI::mpi_rank==(MPI::mpi_size-1))
+    { *Nghost_ = *Nvar_e+1;
+    }
+    if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
+    { *Nghost_ = *Nvar_e+2;
+    }
   }
 }
