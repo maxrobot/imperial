@@ -6,78 +6,83 @@
 using namespace std;
 
 void parMatSum(double *K, double *M, double *MK, int Nvar_, int Nghost_)
-{	if (MPI::mpi_rank==0)
+{	int Sghost_ = 3;
+	int cnt = 4;
+	if (MPI::mpi_rank==0)
 	{	// Copy K into MK
 		for (int i = 0; i < Nvar_*9; ++i)
 		{	MK[i] = K[i];
 		}
 		for (int i = 0; i < Nvar_; ++i)
-	    {	int pnt = 4 + (i*9);
+	    {	int pnt = cnt + (i*9);
 	    	MK[pnt] -= 2*M[i];
 	    }    	
 	}
 	else if (MPI::mpi_rank!=0)
 	{	// Copy K into MK
 		for (int i = 0; i < Nvar_*9; ++i)
-		{	MK[i+(3*9)] = K[i];
+		{	MK[i+(Sghost_*9)] = K[i];
 		}
 		for (int i = 0; i < Nvar_; ++i)
-	    {	int pnt = 4 + (i+3)*9 ;
+	    {	int pnt = cnt + (i+Sghost_)*9 ;
 	    	MK[pnt] -= 2*M[i];
 	    }    	
 	}
 }
 
 void parVecCopy(double *M, double *N, int Nvar_)
-{	if (MPI::mpi_rank==0)
+{	int Sghost_ =  3;
+	if (MPI::mpi_rank==0)
 	{	for (int i = 0; i < Nvar_; ++i)
 		{	M[i] = N[i];
 		}
 	}
 	if (MPI::mpi_rank==(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	M[i] = N[i+1];
+		{	M[i] = N[i+Sghost_];
 		}
 	}
 	if (MPI::mpi_rank>0 && MPI::mpi_rank>(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	M[i] = N[i+1];
+		{	M[i] = N[i+Sghost_];
 		}
 	}
 }
 
 void parVecSum(double *M, double *N, double al, int Nvar_)
-{	if (MPI::mpi_rank==0)
+{	int Sghost_ = 3;
+	if (MPI::mpi_rank==0)
 	{	for (int i = 0; i < Nvar_; ++i)
 		{	M[i] += al*N[i];
 		}
 	}
 	if (MPI::mpi_rank==(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	M[i] += al*N[i+1];
+		{	M[i] += al*N[i+Sghost_];
 		}
 	}
 	if (MPI::mpi_rank>0 && MPI::mpi_rank>(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	M[i] += al*N[i+1];
+		{	M[i] += al*N[i+Sghost_];
 		}
 	}
 }
 
-void parMatSolve(double *M, double *N, double *S, int Nvar_)
-{	if (MPI::mpi_rank==0)
+void parMatSolve(double *M, double *S, double *U, int Nvar_)
+{	int Sghost_ = 3;
+	if (MPI::mpi_rank==0)
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	S[i] = M[i]*N[i];
+		{	U[i] = M[i]*S[i];
 		}
 	}
 	if (MPI::mpi_rank==(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	S[i+1] += M[i]*N[i];
+		{	U[i+Sghost_] = M[i]*S[i];
 		}
 	}
 	if (MPI::mpi_rank>0 && MPI::mpi_rank>(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	S[i+1] += M[i]*N[i];
+		{	U[i+Sghost_] = M[i]*S[i];
 		}
 	}
 }
@@ -109,17 +114,15 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	// for (int i = 0; i <= nite_; ++i)
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i <= nite_; ++i)
+	// for (int i = 0; i < 10; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0., Nvar_);
 		
 		// Calculate MK_o*U{n}
-		assignArr(U, 1., Nvar_);
 		F77NAME(dgbmv)('n', Nvar_, Nvar_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
+
 		// Update Variables
-		// showMat(MK_o, 9, Nvar_);
-		showVec(MKU_o, Nvar_);
 		assignArr(F, 0., Nvar_);
 		updateVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
@@ -135,14 +138,12 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 		// Calculate updated M*U{n+1} = S
 	    F77NAME(dgbsv)(Nvar_, 0, 0, 1, Mt_, 1, ipiv, S, Nvar_, info);
-		// showVec(Un_g, Nvar_);
-		// showVec(F, Nvar_);
-		// showVec(Un_g, Nvar_);
-		// showMat(MK_o,9, Nvar_);
+
 		// Now update vars for repeat
 		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
 		F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
 	}
+	// showVec(U, Nvar_);
 	writeVec(U, Nx_g, 1, test);
 }
 
@@ -177,72 +178,44 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
     {	Minv_[i] = 1/M[i];
     }    	
 
-
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	// for (int i = 0; i <= nite_; ++i)
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i <= nite_; ++i)
+	// for (int i = 0; i < 10; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0., Nghost_);
-		assignArr(U, 1., Nghost_);
 
 		// Calculate MK_o*U{n}
-		// MPI::exchangeVecConts(U, Nghost_);
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
-		for (int i = 0; i < MPI::mpi_size; ++i)
-		{	if (MPI::mpi_rank==i)
-			{	
-				// showMat(MK_o, 9, Nghost_);
-				cout << MPI::mpi_rank << "  " << Nghost_ << "  " << Nvar_ << endl;
-				showVec(MKU_o, Nghost_);
-				MPI_Barrier(MPI_COMM_WORLD);
-				// showMat(MK_o, 9, Nghost_);
-				// showVec(F, Nvar_);
-				// showVec(Un_g, Nvar_);
-			}
-			MPI_Barrier(MPI_COMM_WORLD);
-		}
 		MPI::exchangeVecConts(MKU_o, Nghost_);
-		for (int i = 0; i < MPI::mpi_size; ++i)
-		{	if (MPI::mpi_rank==i)
-			{	
-				// showMat(MK_o, 9, Nghost_);
-				cout << MPI::mpi_rank << endl;
-				showVec(MKU_o, Nghost_);
-				MPI_Barrier(MPI_COMM_WORLD);
-				// showMat(MK_o, 9, Nghost_);
-				// showVec(F, Nvar_);
-				// showVec(Un_g, Nvar_);
-			}
-			MPI_Barrier(MPI_COMM_WORLD);
-		}
 
 		// Update Variables
 		assignArr(F, 0., Nvar_);
 		updateParVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
 		// Calculate M*U{n-1}
-
+		for (int i = 0; i < Nvar_; ++i)
+		{	MU_o[i] = Mt_[i]*Un_g[i];
+		}
+		
 		for (int i = 0; i < Nvar_; ++i)
 		{	double sum = F[i] - MU_o[i];
 			S[i] = sum;
 		}
 		parVecSum(S, MKU_o, -1., Nvar_);
-		for (int i = 0; i < Nvar_; ++i)
-		{	MU_o[i] = Mt_[i]*Un_g[i];
-		}
+
+		// Update old U into Un_g
+		parVecCopy(Un_g, U, Nvar_);
 
 		// Calculate updated M*U{n+1} = S
 		parMatSolve(Minv_, S, U, Nvar_);
 
 		// Now update vars for repeat
-		// F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
-		parVecCopy(Un_g, U, Nvar_);
-		parVecCopy(U, S, Nvar_);
+		MPI::copyVecConts(U, Nghost_);
 
-		// F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
 	}
-	// writeVec(U, Nx_g, 1, test);
+	parVecCopy(Un_g, U, Nvar_);
+	writeParVec(Un_g, Nx_g, Nvar_g, Nvar_, 1, test);
 }
 
 void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx_,

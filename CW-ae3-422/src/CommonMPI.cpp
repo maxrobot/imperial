@@ -97,6 +97,33 @@ MPI_Status status;
 		}
 	}
 
+	void copyVecConts(double *U, int Nghost_)
+	{	// Set exchange length
+		int bnd = 3;
+
+		// Temp array for old input
+		double *temp =  new double[Nghost_]();
+		for (int i = 0; i < Nghost_; ++i)
+		{	temp[i] = U[i];
+		}
+		for (int i = 0; i < bnd; ++i)
+		{	int pnt = 3 + i;
+			int pnt2 = Nghost_ - bnd  + i;
+			double d1 = U[pnt], d2;
+			getLeftData(&d1, &d2);
+			if (mpi_rank<(MPI::mpi_size-1))
+			{	U[pnt2] = d2;
+			}
+			pnt = Nghost_ - bnd - 3 + i;
+			pnt2 = i;
+			d1 = temp[pnt];
+			getRightData(&d1, &d2);
+			if (mpi_rank>0)
+			{	U[pnt2] = d2;
+			}
+		}
+	}
+
 	void exchangeVecConts(double *U, int Nghost_)
 	{	// Set exchange length
 		int bnd = 6;
@@ -120,16 +147,6 @@ MPI_Status status;
 			{	U[pnt]+= d2;
 			}
 		}
-		// double d1 = U[0], d2;
-		// getLeftData(&d1, &d2);
-		// if (mpi_rank<(MPI::mpi_size-1))
-		// {	U[Nghost_-1] += d2;
-		// }
-		// d1 = U[Nghost_-1];
-		// getRightData(&d1, &d2);
-		// if (mpi_rank>0)
-		// {	U[0]+= d2;
-		// }
 	}
 
 	void getLeftData(double *d1, double *d2)
@@ -163,5 +180,49 @@ MPI_Status status;
 	    }
 	    // MPI_Sendrecv 
 		MPI_Sendrecv(d1, 1, MPI_DOUBLE, right, 123, d2, 1, MPI_DOUBLE, left, 123, MPI_COMM_WORLD, &status);
+	}
+
+	void gatherData(double *output, double *U, int Nvar_g, int Nvar_)
+	{	
+		MPI::getNeighbours();
+		MPI_Request request;
+		MPI_Status status;
+		int right = n_rhs, left  = MPI::mpi_rank-1;
+		int pnt = 0;
+		double sendArray[Nvar_];
+		double d1, d2;
+
+		if (MPI::mpi_rank==0)
+		{	for (int i = 0; i < Nvar_; ++i)
+			{	output[i] = U[i];
+				pnt += 1;
+			}
+		}
+
+		for (int i = 1; i < MPI::mpi_size; ++i)
+		{	int bnd;
+			if (MPI::mpi_rank==i)
+			{	d1 = Nvar_;
+				bnd = Nvar_;
+				MPI_Send(&d1, 1, MPI_DOUBLE, 0, 123, MPI_COMM_WORLD);
+			}
+			else if (MPI::mpi_rank==0)
+			{	MPI_Recv(&d2, 1, MPI_DOUBLE, i, 123, MPI_COMM_WORLD, &status);
+				bnd = d2;
+			}
+			for (int j = 0; j < bnd; ++j)
+			{	if (MPI::mpi_rank==i)
+				{	d1 = U[j];
+					// cout << U[j] << endl;
+					MPI_Send(&d1, 1, MPI_DOUBLE, 0, 123, MPI_COMM_WORLD);
+				}
+				else if (MPI::mpi_rank==0)
+				{	MPI_Recv(&d2, 1, MPI_DOUBLE, i, 123, MPI_COMM_WORLD, &status);
+					output[pnt] = d2;
+					pnt += 1;
+				}
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
+		}
 	}
 }

@@ -58,6 +58,35 @@ void writeVec(double *M, int N, int step, std::string test)
 	myfile.close();
 }
 
+void writeParVec(double *M, int N, int Nvar_g, int Nvar_, int step, std::string test)
+{	ofstream myfile;
+	char numstr[21]; 
+	sprintf(numstr, "%d", step);
+	double *output = new double[Nvar_g]();
+	MPI::gatherData(output, M, Nvar_g, Nvar_);
+
+	for (int rnk = 0; rnk < MPI::mpi_size; ++rnk)
+	{	if (MPI::mpi_rank==rnk)
+		{	cout << MPI::mpi_rank << "  " << N << endl;
+			showVec(output, Nvar_g);
+			MPI_Barrier(MPI_COMM_WORLD);
+		}
+		MPI_Barrier(MPI_COMM_WORLD);
+	}
+
+	if (MPI::mpi_rank==0)
+	{	//showVec(output, Nvar_g);
+		myfile.open ("./output/data/" + test + numstr + ".txt");
+		myfile << setprecision(10) << 0. << setw(20) << 0.  <<  setw(20) << 0.  << endl;
+		for (int i = 0; i < N-1; ++i)
+		{	int pnt = i*3;
+			myfile << setprecision(10) << output[pnt] << setw(20) << output[pnt+1] <<  setw(20) << output[pnt+2] << endl;
+		}
+		myfile << setprecision(10) << 0. << setw(20) << 0.  <<  setw(20) << 0.  << endl;
+		myfile.close();
+	}
+}
+
 void printMessage(std::string message)
 {	if (MPI::mpi_rank==0)
 	{	std::cout << message << std::endl;
