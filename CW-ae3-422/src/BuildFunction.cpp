@@ -354,7 +354,7 @@ void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
 			}
 		}
 	}
-	Kg[(Nvar_-1)/2] +=1000;
+	// Kg[(Nvar_-1)/2] +=1000;
 }
 
 void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, double dt_)

@@ -164,10 +164,10 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
   }
   if (MPI::mpi_size>1)
   { if (MPI::mpi_rank==0 || MPI::mpi_rank==(MPI::mpi_size-1))
-    { *Nghost_ = *Nvar_e+1;
+    { *Nghost_ = *Nvar_e+3;
     }
     if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
-    { *Nghost_ = *Nvar_e+2;
+    { *Nghost_ = *Nvar_e+(2*3);
     }
   }
 }

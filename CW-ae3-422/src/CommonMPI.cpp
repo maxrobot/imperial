@@ -98,19 +98,41 @@ MPI_Status status;
 	}
 
 	void exchangeVecConts(double *U, int Nghost_)
-	{	double d1 = U[0], d2;
-		exchangeLeftData(&d1, &d2);
-		if (mpi_rank<(MPI::mpi_size-1))
-		{	U[Nghost_-1] += d2;
+	{	// Set exchange length
+		int bnd = 6;
+
+		// Temp array for old input
+		double *temp =  new double[Nghost_]();
+		for (int i = 0; i < Nghost_; ++i)
+		{	temp[i] = U[i];
 		}
-		d1 = U[Nghost_-1];
-		exchangeRightData(&d1, &d2);
-		if (mpi_rank>0)
-		{	U[0]+= d2;
+		for (int i = 0; i < bnd; ++i)
+		{	int pnt = 0 + i;
+			int pnt2 = Nghost_-bnd + i;
+			double d1 = U[pnt], d2;
+			getLeftData(&d1, &d2);
+			if (mpi_rank<(MPI::mpi_size-1))
+			{	U[pnt2] += d2;
+			}
+			d1 = temp[pnt2];
+			getRightData(&d1, &d2);
+			if (mpi_rank>0)
+			{	U[pnt]+= d2;
+			}
 		}
+		// double d1 = U[0], d2;
+		// getLeftData(&d1, &d2);
+		// if (mpi_rank<(MPI::mpi_size-1))
+		// {	U[Nghost_-1] += d2;
+		// }
+		// d1 = U[Nghost_-1];
+		// getRightData(&d1, &d2);
+		// if (mpi_rank>0)
+		// {	U[0]+= d2;
+		// }
 	}
 
-	void exchangeLeftData(double *d1, double *d2)
+	void getLeftData(double *d1, double *d2)
 	{	MPI::getNeighbours();
 		// MPI_Comm_rank(row_comm, &row_rank);
 		MPI_Request request;
@@ -127,7 +149,7 @@ MPI_Status status;
 		MPI_Sendrecv(d1, 1, MPI_DOUBLE, left, 123, d2, 1, MPI_DOUBLE, right, 123, MPI_COMM_WORLD, &status);
 	}
 	
-	void exchangeRightData(double *d1, double *d2)
+	void getRightData(double *d1, double *d2)
 	{	MPI::getNeighbours();
 		// MPI_Comm_rank(row_comm, &row_rank);
 		MPI_Request request;

@@ -19,10 +19,10 @@ void parMatSum(double *K, double *M, double *MK, int Nvar_, int Nghost_)
 	else if (MPI::mpi_rank!=0)
 	{	// Copy K into MK
 		for (int i = 0; i < Nvar_*9; ++i)
-		{	MK[i+9] = K[i];
+		{	MK[i+(3*9)] = K[i];
 		}
 		for (int i = 0; i < Nvar_; ++i)
-	    {	int pnt = 4 + (i+1)*9 ;
+	    {	int pnt = 4 + (i+3)*9 ;
 	    	MK[pnt] -= 2*M[i];
 	    }    	
 	}
@@ -85,7 +85,7 @@ void parMatSolve(double *M, double *N, double *S, int Nvar_)
 void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 	double qx_, double qy_, int Nvar_, int Nx_g, int nite_, int nout_,
 	int buf_, std::string test)
-{	
+{	cout << "Running Explicit Banded, nprocs:  " << MPI::mpi_size << endl;
 	double *MK_o	= new double[Nvar_ * 9]();
 	double *U 		= new double[Nvar_]();
 	double *Un_g	= new double[Nvar_]();
@@ -110,13 +110,16 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	// for (int i = 0; i <= nite_; ++i)
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 1; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0., Nvar_);
 		
 		// Calculate MK_o*U{n}
+		assignArr(U, 1., Nvar_);
 		F77NAME(dgbmv)('n', Nvar_, Nvar_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
 		// Update Variables
+		// showMat(MK_o, 9, Nvar_);
+		showVec(MKU_o, Nvar_);
 		assignArr(F, 0., Nvar_);
 		updateVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
@@ -132,7 +135,7 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 		// Calculate updated M*U{n+1} = S
 	    F77NAME(dgbsv)(Nvar_, 0, 0, 1, Mt_, 1, ipiv, S, Nvar_, info);
-		showVec(S, Nvar_);
+		// showVec(Un_g, Nvar_);
 		// showVec(F, Nvar_);
 		// showVec(Un_g, Nvar_);
 		// showMat(MK_o,9, Nvar_);
@@ -146,7 +149,7 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 	double qx_, double qy_, int Nvar_g, int Nvar_, int Nghost_, int Nx_g,
 	int Nx_, int nite_, int nout_, int buf_, std::string test)
-{	
+{	cout << "Running Explicit Banded, nprocs:  " << MPI::mpi_size << endl;
 	double *MK_o	= new double[Nghost_ * 9]();
 	double *U 		= new double[Nghost_]();
 	double *MKU_o	= new double[Nghost_]();
@@ -177,17 +180,42 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	for (int i = 0; i <= nite_; ++i)
-	// for (int i = 0; i < 3; ++i)
+	// for (int i = 0; i <= nite_; ++i)
+	for (int i = 0; i < 1; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0., Nghost_);
+		assignArr(U, 1., Nghost_);
 
-		
 		// Calculate MK_o*U{n}
+		// MPI::exchangeVecConts(U, Nghost_);
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
+		for (int i = 0; i < MPI::mpi_size; ++i)
+		{	if (MPI::mpi_rank==i)
+			{	
+				// showMat(MK_o, 9, Nghost_);
+				cout << MPI::mpi_rank << "  " << Nghost_ << "  " << Nvar_ << endl;
+				showVec(MKU_o, Nghost_);
+				MPI_Barrier(MPI_COMM_WORLD);
+				// showMat(MK_o, 9, Nghost_);
+				// showVec(F, Nvar_);
+				// showVec(Un_g, Nvar_);
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
+		}
 		MPI::exchangeVecConts(MKU_o, Nghost_);
-		MPI::exchangeVecConts(U, Nghost_);
-		// for (int i = 0; i < MPI::mpi_size; ++i)
+		for (int i = 0; i < MPI::mpi_size; ++i)
+		{	if (MPI::mpi_rank==i)
+			{	
+				// showMat(MK_o, 9, Nghost_);
+				cout << MPI::mpi_rank << endl;
+				showVec(MKU_o, Nghost_);
+				MPI_Barrier(MPI_COMM_WORLD);
+				// showMat(MK_o, 9, Nghost_);
+				// showVec(F, Nvar_);
+				// showVec(Un_g, Nvar_);
+			}
+			MPI_Barrier(MPI_COMM_WORLD);
+		}
 
 		// Update Variables
 		assignArr(F, 0., Nvar_);
@@ -207,28 +235,21 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 		// Calculate updated M*U{n+1} = S
 		parMatSolve(Minv_, S, U, Nvar_);
 
-		// for (int i = 0; i < MPI::mpi_size; ++i)
-		// {	if (MPI::mpi_rank==0)
-		// 	{	
-		// 		// showMat(MK_o, 9, Nghost_);
-		// 		// showVec(MKU_o, Nvar_);
-		// 		// showVec(F, Nvar_);
-		// 		// showVec(Un_g, Nvar_);
-		// 	}
-		// }
 		// Now update vars for repeat
 		// F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
 		parVecCopy(Un_g, U, Nvar_);
+		parVecCopy(U, S, Nvar_);
 
-		F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
+		// F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
 	}
-	writeVec(U, Nx_g, 1, test);
+	// writeVec(U, Nx_g, 1, test);
 }
 
 void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx_,
 	double qy_, double dt_, int Nvar_, int Nx_g, int nite_, int nout_, int buf_,
 	std::string test)
-{	// ===================== Build Tables =====================//
+{	cout << "Running Implicit Banded, nprocs:  " << MPI::mpi_size << endl;
+	// ===================== Build Tables =====================//
 	double *K_eff 		= new double[Nvar_ * (9+buf_)]();
 	double *U			= new double[Nvar_]();
 	double *Ud			= new double[Nvar_]();
@@ -258,7 +279,6 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
     int info = 0;
     int *ipiv = new int[Nvar_];
 
-	// for (int i = 0; i < 2; ++i)
 	for (int i = 0; i < nite_; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
@@ -301,7 +321,7 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 
 		// Now update Ud
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = U[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
+		{	double sum = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
 			Ud[i] = sum;
 		}
 
