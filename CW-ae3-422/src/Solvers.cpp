@@ -245,3 +245,85 @@ void solveImplicit(double *K, double *M, double *F, double lx_e, double qx_,
 	}
 	writeVec(U, Nx_g, 1, test);
 }
+
+void parMatSum(double *K, double *M, double *MK, int Nvar_, int Nghost_)
+{	int Sghost_ = 3;
+	int cnt = 4;
+	if (MPI::mpi_rank==0)
+	{	// Copy K into MK
+		for (int i = 0; i < Nvar_*9; ++i)
+		{	MK[i] = K[i];
+		}
+		for (int i = 0; i < Nvar_; ++i)
+	    {	int pnt = cnt + (i*9);
+	    	MK[pnt] -= 2*M[i];
+	    }    	
+	}
+	else if (MPI::mpi_rank!=0)
+	{	// Copy K into MK
+		for (int i = 0; i < Nvar_*9; ++i)
+		{	MK[i+(Sghost_*9)] = K[i];
+		}
+		for (int i = 0; i < Nvar_; ++i)
+	    {	int pnt = cnt + (i+Sghost_)*9 ;
+	    	MK[pnt] -= 2*M[i];
+	    }    	
+	}
+}
+
+void parVecCopy(double *M, double *N, int Nvar_)
+{	int Sghost_ =  3;
+	if (MPI::mpi_rank==0)
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] = N[i];
+		}
+	}
+	if (MPI::mpi_rank==(MPI::mpi_size-1))
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] = N[i+Sghost_];
+		}
+	}
+	if (MPI::mpi_rank>0 && MPI::mpi_rank>(MPI::mpi_size-1))
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] = N[i+Sghost_];
+		}
+	}
+}
+
+void parVecSum(double *M, double *N, double al, int Nvar_)
+{	int Sghost_ = 3;
+	if (MPI::mpi_rank==0)
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] += al*N[i];
+		}
+	}
+	if (MPI::mpi_rank==(MPI::mpi_size-1))
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] += al*N[i+Sghost_];
+		}
+	}
+	if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] += al*N[i+Sghost_];
+		}
+	}
+}
+
+void parMatSolve(double *M, double *S, double *U, int Nvar_)
+{	int Sghost_ = 3;
+	if (MPI::mpi_rank==0)
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	U[i] = M[i]*S[i];
+		}
+	}
+	if (MPI::mpi_rank==(MPI::mpi_size-1))
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	U[i+Sghost_] = M[i]*S[i];
+		}
+	}
+	if (MPI::mpi_rank>0 && MPI::mpi_rank>(MPI::mpi_size-1))
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	U[i+Sghost_] = M[i]*S[i];
+		}
+	}
+}

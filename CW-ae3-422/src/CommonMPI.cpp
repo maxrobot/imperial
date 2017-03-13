@@ -192,6 +192,7 @@ MPI_Status status;
 		double sendArray[Nvar_];
 		double d1, d2;
 
+		// Fill in root proc
 		if (MPI::mpi_rank==0)
 		{	for (int i = 0; i < Nvar_; ++i)
 			{	output[i] = U[i];
@@ -199,6 +200,7 @@ MPI_Status status;
 			}
 		}
 
+		// Fill in following procs
 		for (int i = 1; i < MPI::mpi_size; ++i)
 		{	int bnd;
 			if (MPI::mpi_rank==i)

@@ -68,7 +68,6 @@ void writeParVec(double *M, int N, int Nvar_g, int Nvar_, int step, std::string 
 	for (int rnk = 0; rnk < MPI::mpi_size; ++rnk)
 	{	if (MPI::mpi_rank==rnk)
 		{	cout << MPI::mpi_rank << "  " << N << endl;
-			showVec(output, Nvar_g);
 			MPI_Barrier(MPI_COMM_WORLD);
 		}
 		MPI_Barrier(MPI_COMM_WORLD);
