@@ -36,7 +36,8 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 
 void parMatSum(double *K, double *M, double *MK, int Nvar_, int Nghost_);
 void parVecCopy(double *M, double *N, int Nvar_);
-void parVecSum(double *M, double *N, double al, int Nvar_);
+void parVecAdd(double *M, double *N, int Nvar_);
+void parVecSub(double *M, double *N, int Nvar_);
 void parMatSolve(double *M, double *S, double *U, int Nvar_);
 
 #endif // SOLVERS_HPP_INCLUDED

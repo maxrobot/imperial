@@ -283,28 +283,47 @@ void parVecCopy(double *M, double *N, int Nvar_)
 		{	M[i] = N[i+Sghost_];
 		}
 	}
-	if (MPI::mpi_rank>0 && MPI::mpi_rank>(MPI::mpi_size-1))
+	if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
 		{	M[i] = N[i+Sghost_];
 		}
 	}
 }
 
-void parVecSum(double *M, double *N, double al, int Nvar_)
+void parVecAdd(double *M, double *N, int Nvar_)
 {	int Sghost_ = 3;
 	if (MPI::mpi_rank==0)
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	M[i] += al*N[i];
+		{	M[i] += N[i];
 		}
 	}
 	if (MPI::mpi_rank==(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	M[i] += al*N[i+Sghost_];
+		{	M[i] += N[i+Sghost_];
 		}
 	}
 	if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
-		{	M[i] += al*N[i+Sghost_];
+		{	M[i] += N[i+Sghost_];
+		}
+	}
+}
+
+void parVecSub(double *M, double *N, int Nvar_)
+{	int Sghost_ = 3;
+	if (MPI::mpi_rank==0)
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] -= N[i];
+		}
+	}
+	if (MPI::mpi_rank==(MPI::mpi_size-1))
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] -= N[i+Sghost_];
+		}
+	}
+	if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
+	{	for (int i = 0; i < Nvar_; ++i)
+		{	M[i] -= N[i+Sghost_];
 		}
 	}
 }
@@ -321,7 +340,7 @@ void parMatSolve(double *M, double *S, double *U, int Nvar_)
 		{	U[i+Sghost_] = M[i]*S[i];
 		}
 	}
-	if (MPI::mpi_rank>0 && MPI::mpi_rank>(MPI::mpi_size-1))
+	if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
 	{	for (int i = 0; i < Nvar_; ++i)
 		{	U[i+Sghost_] = M[i]*S[i];
 		}

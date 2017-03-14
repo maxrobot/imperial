@@ -60,10 +60,12 @@ extern "C" {
     void Cblacs_gridexit(int);
 }
 
+void showParVec(double *M, int N);
 void showVec(double *M, int N);
 
 void showMat(double *M, int N);
 void showMat(double *M, int N, int O);
+void showParMat(double *M, int N, int O);
 
 void writeVec(double *M, int N, std::string test);
 void writeVec(double *M, int N, int step, std::string test);

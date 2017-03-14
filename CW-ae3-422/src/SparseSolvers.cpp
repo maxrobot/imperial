@@ -30,14 +30,16 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
     	MK_o[pnt] -= 2*M[i];
     }    	
 
+	// assignArr(U, 1.2, Nvar_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i <= nite_; ++i)
-	// for (int i = 0; i < 1; ++i)
+	// for (int i = 0; i < 10; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
-		assignArr(MKU_o, 0., Nvar_);
+		assignArr(MKU_o, 0, Nvar_);
 		
 		// Calculate MK_o*U{n}
+		// showVec(U, Nvar_);
 		F77NAME(dgbmv)('n', Nvar_, Nvar_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
 		// showVec(MKU_o, Nvar_);
 
@@ -57,6 +59,8 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 		// Calculate updated M*U{n+1} = S
 	    F77NAME(dgbsv)(Nvar_, 0, 0, 1, Mt_, 1, ipiv, S, Nvar_, info);
+		// showVec(S, Nvar_);
+		// showMat(MK_o, 9, Nvar_);
 
 		// Now update vars for repeat
 		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
@@ -98,26 +102,26 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
     {	Minv_[i] = 1/M[i];
     }    	
 
-    // for (int i = 0; i < MPI::mpi_size; ++i)
-    // {	if (MPI::mpi_rank==i)
-	   //  {	showMat(MK_o, 9, Nghost_);
-	   //  	MPI_Barrier(MPI_COMM_WORLD);
-	   //  }
-    // 	MPI_Barrier(MPI_COMM_WORLD);
-    // }
-
+	// assignArr(U, 1.2, Nghost_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
+	// for (int i = 0; i < 10; ++i)
 	for (int i = 0; i <= nite_; ++i)
-	// for (int i = 0; i < 1; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
-		assignArr(MKU_o, 0., Nghost_);
+		assignArr(MKU_o, 0, Nghost_);
 
 		// Calculate MK_o*U{n}
+		// MPI_Barrier(MPI_COMM_WORLD);
+		// showParVec(U, Nghost_);
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
 		MPI::exchangeVecConts(MKU_o, Nghost_);
+		// MPI_Barrier(MPI_COMM_WORLD);
+		// showParVec(MKU_o, Nghost_);
 
-		// Update Variables
+		// MPI_Barrier(MPI_COMM_WORLD);
+		// showParVec(MKU_o, Nghost_);
+
+		// // Update Variables
 		assignArr(F, 0., Nvar_);
 		updateParVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
@@ -130,19 +134,15 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 		{	double sum = F[i] - MU_o[i];
 			S[i] = sum;
 		}
-
-		parVecSum(S, MKU_o, -1., Nvar_);
+		parVecSub(S, MKU_o, Nvar_);
 
 		// Update old U into Un_g
 		parVecCopy(Un_g, U, Nvar_);
 
 		// Calculate updated M*U{n+1} = S
 		parMatSolve(Minv_, S, U, Nvar_);
-
-		// Now update vars for repeat
 		MPI::copyVecConts(U, Nghost_);
 	}
-
 	parVecCopy(Un_g, U, Nvar_);
 	writeParVec(Un_g, Nx_g, Nvar_g, Nvar_, 1, test);
 }

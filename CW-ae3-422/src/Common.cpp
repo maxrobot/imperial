@@ -3,6 +3,19 @@
 
 using namespace std;
 
+void showParVec(double *M, int N)
+{	MPI_Barrier(MPI_COMM_WORLD);
+    for (int i = 0; i < MPI::mpi_size; ++i)
+    {	if (MPI::mpi_rank==i)
+	    {	MPI_Barrier(MPI_COMM_WORLD);
+	    	showVec(M, N);
+	    	MPI_Barrier(MPI_COMM_WORLD);
+	    }
+    	MPI_Barrier(MPI_COMM_WORLD);
+    }
+	MPI_Barrier(MPI_COMM_WORLD);
+}
+
 void showVec(double *M, int N)
 {	for (int i = 0; i < N; ++i)
 	    cout << setprecision(5) << setw(12) << M[i] << endl;
@@ -29,6 +42,19 @@ void showMat(double *M, int N, int O)
 	    cout << endl;
 	}
 	cout << endl;
+}
+
+void showParMat(double *M, int N, int O)
+{	MPI_Barrier(MPI_COMM_WORLD);
+    for (int i = 0; i < MPI::mpi_size; ++i)
+    {	if (MPI::mpi_rank==i)
+	    {	MPI_Barrier(MPI_COMM_WORLD);
+	    	showMat(M, N, O);
+	    	MPI_Barrier(MPI_COMM_WORLD);
+	    }
+    	MPI_Barrier(MPI_COMM_WORLD);
+    }
+	MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void writeVec(double *M, int N, std::string test)
@@ -64,14 +90,6 @@ void writeParVec(double *M, int N, int Nvar_g, int Nvar_, int step, std::string 
 	sprintf(numstr, "%d", step);
 	double *output = new double[Nvar_g]();
 	MPI::gatherData(output, M, Nvar_g, Nvar_);
-
-	for (int rnk = 0; rnk < MPI::mpi_size; ++rnk)
-	{	if (MPI::mpi_rank==rnk)
-		{	cout << MPI::mpi_rank << "  " << N << endl;
-			MPI_Barrier(MPI_COMM_WORLD);
-		}
-		MPI_Barrier(MPI_COMM_WORLD);
-	}
 
 	if (MPI::mpi_rank==0)
 	{	//showVec(output, Nvar_g);
