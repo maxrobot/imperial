@@ -4,7 +4,7 @@ Input file
 
 Simulation Parameters =========================================================
 equation: dynamic
-integration: explicit
+integration: implicit
 matrix format: sparse
 simulation time (s): 1
 number of iterations: 10000

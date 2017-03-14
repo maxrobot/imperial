@@ -160,8 +160,8 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
     int info = 0;
     int *ipiv = new int[Nvar_];
 
-	// for (int i = 0; i < nite_; ++i)
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < nite_; ++i)
+	// for (int i = 0; i < 1; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
 		assignArr(S, 0., Nvar_);
@@ -175,7 +175,7 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		{	double sum = (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]);
 			tmp2[i] = sum;
 		}
-		showVec(tmp2, Nvar_);
+		// showVec(tmp2, Nvar_);
 
 		// Multiple mass by sum
 		for (int i = 0; i < Nvar_; ++i)
@@ -188,10 +188,10 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 			S[i] = sum;
 		}
 
-		assignArr(S, 0.5, Nvar_);
+		// assignArr(S, 0.5, Nvar_);
 		// Solve Keff*U_{n+1} = S
 	    F77NAME(dgbsv)(Nvar_, 4, 4, 1, K, 9+buf_, ipiv, S, Nvar_, info);
-	    showVec(S, Nvar_);
+	    // showVec(S, Nvar_);
 
 		// Update K to contain only the K_eff as desgv overwrites...
 		F77NAME(dcopy)(Nvar_*(9+buf_), K_eff, 1, K, 1);

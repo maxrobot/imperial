@@ -149,8 +149,11 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
   *dt_ = double(*T_)/ *nite_;
 
   // Initialise domain decomp slightly unequal loading but works noicely...
-  *Nx_ = (*Nx_g-1)/(MPI::mpi_size);
-  int rem = (*Nx_g-1)%(MPI::mpi_size);
+  int rem = (*Nx_g)%(MPI::mpi_size);
+  if (rem!=0)
+  { printMessage("Error: domain decomposed incorrectly, try again! (Hint, even elements per proc)");
+  }
+  *Nx_ = (*Nx_g)/(MPI::mpi_size);
   if (rem!=0)
   { for (int i = 0; i < rem; ++i)
     { if (MPI::mpi_rank==i)
@@ -158,7 +161,12 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
       }
     }
   }
-  *Nvar_e = *Nx_*3;
+  if (MPI::mpi_size==1)
+  { *Nvar_e = (*Nx_g-1)*3;
+  }
+  else
+  { *Nvar_e = (*Nx_g+1)*3;
+  }
   
   // Initialise ghost cells we use 3 ghost cells as 4th makes no contribution 
   int Sghost_ = 3;
