@@ -43,7 +43,7 @@ void runSolver(double *K_e, double dt_, double lx_e, double A_,
 	double *M_e	= new double[6*6]();
 
 	// ============== Create Elemental K Matrix ===============//
-	if (buf_ == 4)
+	if (buf_ == 4 || buf_ == 8)
 	{	buildMele(M_e, A_, rho_, lx_e, Al_);
 	}
 	if (buf_ == 0)	
@@ -88,9 +88,10 @@ void runSolver(double *K_e, double dt_, double lx_e, double A_,
 		{	buildBandSparse(K_g, K_e, Nvar_e, Nx_g, buf_);
 			buildMglbPar(M_g, M_e, Nvar_e, Nx_g, buf_);
 		// ==================== Run Solver ========================//
-			if (buf_==4)
-			{	solveSparseImplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
-					dt_, Nvar_, Nx_g, nite_, nout_, buf_, "task_5");
+			if (buf_==8)
+			{	solveParSparseImplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
+					dt_, Nvar_, Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_,
+					buf_, "task_5");
 			}
 			else
 			{	solveParSparseExplicit(K_g, M_g, F_g, lx_e, qx_,
@@ -272,7 +273,7 @@ void parMatSum(double *K, double *M, double *MK, int Nvar_, int Nghost_)
 }
 
 void parVecCopy(double *M, double *N, int Nvar_)
-{	int Sghost_ =  3;
+{	int Sghost_ = 3;
 	if (MPI::mpi_rank==0)
 	{	for (int i = 0; i < Nvar_; ++i)
 		{	M[i] = N[i];

@@ -30,18 +30,14 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
     	MK_o[pnt] -= 2*M[i];
     }    	
 
-	// assignArr(U, 1.2, Nvar_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i <= nite_; ++i)
-	// for (int i = 0; i < 10; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0, Nvar_);
 		
 		// Calculate MK_o*U{n}
-		// showVec(U, Nvar_);
 		F77NAME(dgbmv)('n', Nvar_, Nvar_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
-		// showVec(MKU_o, Nvar_);
 
 		// Update Variables
 		assignArr(F, 0., Nvar_);
@@ -66,6 +62,7 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
 		F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
 	}
+	// showVec(U, Nvar_);
 	writeVec(U, Nx_g, 1, test);
 }
 
@@ -85,43 +82,24 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 	double *MU_o	= new double[Nvar_]();
 	double d1, d2;
 
-	int kl = 0;
-	int ku = 0;
-    int info = 0;
-    const int lda = 1 + 2*kl + 2*ku;
-    const int ldb  = Nvar_;
-    int nrhs = 1;
-    const int lwork= (Nvar_+ku)*(kl+ku)+6*(kl+ku)*(kl+2*ku)
-                    + max(nrhs*(Nvar_+2*kl+4*ku), 1);
-    double* wk   = new double[lwork]();   // Local workspace
-    int *ipiv = new int[Nvar_];
-
     // Make the initial matrix...
 	parMatSum(K, M, MK_o, Nvar_, Nghost_);
     for (int i = 0; i < Nvar_; ++i)
     {	Minv_[i] = 1/M[i];
     }    	
-
-	// assignArr(U, 1.2, Nghost_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	// for (int i = 0; i < 10; ++i)
 	for (int i = 0; i <= nite_; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0, Nghost_);
 
 		// Calculate MK_o*U{n}
-		// MPI_Barrier(MPI_COMM_WORLD);
-		// showParVec(U, Nghost_);
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
+	    // showParVec(MKU_o, Nghost_);
 		MPI::exchangeVecConts(MKU_o, Nghost_);
-		// MPI_Barrier(MPI_COMM_WORLD);
-		// showParVec(MKU_o, Nghost_);
+	    // showParVec(MKU_o, Nghost_);
 
-		// MPI_Barrier(MPI_COMM_WORLD);
-		// showParVec(MKU_o, Nghost_);
-
-		// // Update Variables
+		// Update Variables
 		assignArr(F, 0., Nvar_);
 		updateParVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
@@ -143,6 +121,7 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 		parMatSolve(Minv_, S, U, Nvar_);
 		MPI::copyVecConts(U, Nghost_);
 	}
+    // showParMat(MK_o, 9, Nghost_);
 	parVecCopy(Un_g, U, Nvar_);
 	writeParVec(Un_g, Nx_g, Nvar_g, Nvar_, 1, test);
 }
@@ -181,7 +160,8 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
     int info = 0;
     int *ipiv = new int[Nvar_];
 
-	for (int i = 0; i < nite_; ++i)
+	// for (int i = 0; i < nite_; ++i)
+	for (int i = 0; i < 1; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
 		assignArr(S, 0., Nvar_);
@@ -195,6 +175,7 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		{	double sum = (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]);
 			tmp2[i] = sum;
 		}
+		showVec(tmp2, Nvar_);
 
 		// Multiple mass by sum
 		for (int i = 0; i < Nvar_; ++i)
@@ -207,8 +188,10 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 			S[i] = sum;
 		}
 
+		assignArr(S, 0.5, Nvar_);
 		// Solve Keff*U_{n+1} = S
 	    F77NAME(dgbsv)(Nvar_, 4, 4, 1, K, 9+buf_, ipiv, S, Nvar_, info);
+	    showVec(S, Nvar_);
 
 		// Update K to contain only the K_eff as desgv overwrites...
 		F77NAME(dcopy)(Nvar_*(9+buf_), K_eff, 1, K, 1);
@@ -231,4 +214,12 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		F77NAME(dcopy)(Nvar_, S, 1, U, 1);
 	}
 	writeVec(U, Nx_g, 1, test);
+}
+
+void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double qx_,
+	double qy_, double dt_, int Nvar_g, int Nvar_, int Nghost_, int Nx_g, int Nx_,
+	int nite_, int nout_, int buf_, std::string test)
+{	if (MPI::mpi_rank==0)
+	{	cout << "Running Parallel Implicit Banded, nprocs:  " << MPI::mpi_size << endl;
+	}
 }

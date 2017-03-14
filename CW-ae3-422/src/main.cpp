@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
 	MPI::initMpiStuff();
 	MPI::initMpiDomain();
-	MPI::initCblacsStuff();
+	// MPI::initCblacsStuff();
 	// ================ Reading of Inputs =====================//
 
 	ifstream param_file;
@@ -73,9 +73,16 @@ int main(int argc, char *argv[])
 				Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
 		}
 		if (scheme_=="implicit")
-		{	const int buf_(4);
-			runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-				Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
+		{	if (MPI::mpi_size==1)
+			{	const int buf_(4);
+				runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+					Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
+			}
+			if (MPI::mpi_size>1)
+			{	const int buf_(8);
+				runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+					Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
+			}
 		}
 		if (scheme_=="none")
 		{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");

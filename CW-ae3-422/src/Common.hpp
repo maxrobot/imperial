@@ -52,6 +52,7 @@ extern "C" {
               const int* descb, double* AF, const int& LAF, double* work,
               const int& LWORK, int& info);
     
+    void Cblacs_barrier(int, char*);
     void Cblacs_get(int, int, int*);
     void Cblacs_pinfo(int*, int*);
     void Cblacs_gridinit(int*, char*, int, int);

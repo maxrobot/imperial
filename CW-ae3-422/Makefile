@@ -1,6 +1,6 @@
 # Declaration of variables
 CC = mpicxx
-CC_FLAGS = -O3 -std=c++11
+CC_FLAGS = -g -std=c++11
 LD_FLAGS = -lscalapack-openmpi -lblacs-openmpi -lblacsCinit-openmpi -llapack -lblas
 DEBUG_FLAGS = -g
 

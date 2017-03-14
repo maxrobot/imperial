@@ -12,7 +12,7 @@ namespace MPI
 // in practice, the user should call initMpiStuff
 // near the start of there code, after MPI_Init(*,*)...
 int mpi_rank;
-int mpi_size = 1;
+int mpi_size;
 int row_rank;
 int row_size;
 int ndims = 1; // Number of dimensions in domain decomposition
@@ -26,15 +26,17 @@ int *n_coords;
 int *n_rank;
 int *mpi_dims;
 
-// CLbacs things
-int nrow = 1;
-int ncol = 2;
-char order = 'R';
-int ctx;
-int mype;
-int npe;
-int myrow;
-int mycol;
+// Cblacs things
+// int nrow = 1;
+// int ncol;
+// char order = 'R';
+// int ctx;
+// int mype;
+// int npe;
+// int myrow;
+// int mycol;
+
+
 
 
 MPI_Comm mpi_comm = MPI_COMM_WORLD;
@@ -52,12 +54,13 @@ MPI_Status status;
 	  	MPI_Comm_dup(MPI_COMM_WORLD, &mpi_comm);
 	}
 
-	void initCblacsStuff()
-	{   Cblacs_pinfo(&mype, &npe);
-	    Cblacs_get(0, 0, &ctx);
-	    Cblacs_gridinit(&ctx, &order, 1, npe);
-	    Cblacs_gridinfo(ctx, &nrow, &ncol, &myrow, &mycol);
-	}
+	// void initCblacsStuff()
+	// {   ncol = mpi_size;
+	// 	Cblacs_pinfo(&mype, &npe);
+	//     Cblacs_get(0, 0, &ctx);
+	//     Cblacs_gridinit(&ctx, &order, nrow, ncol);
+	//     Cblacs_gridinfo(ctx, &nrow, &ncol, &myrow, &mycol);
+	// }
 	
 	void checkMPI(int retval)
 	{	if(retval!=MPI_SUCCESS) 
@@ -100,6 +103,7 @@ MPI_Status status;
 	void copyVecConts(double *U, int Nghost_)
 	{	// Set exchange length
 		int bnd = 3;
+		int Sghost_ = 3;
 
 		// Temp array for old input
 		double *temp =  new double[Nghost_]();
@@ -107,14 +111,14 @@ MPI_Status status;
 		{	temp[i] = U[i];
 		}
 		for (int i = 0; i < bnd; ++i)
-		{	int pnt = 3 + i;
+		{	int pnt = Sghost_ + i;
 			int pnt2 = Nghost_ - bnd  + i;
 			double d1 = U[pnt], d2;
 			getLeftData(&d1, &d2);
 			if (mpi_rank<(MPI::mpi_size-1))
 			{	U[pnt2] = d2;
 			}
-			pnt = Nghost_ - bnd - 3 + i;
+			pnt = Nghost_ - bnd - Sghost_ + i;
 			pnt2 = i;
 			d1 = temp[pnt];
 			getRightData(&d1, &d2);

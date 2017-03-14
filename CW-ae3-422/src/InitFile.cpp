@@ -4,6 +4,7 @@
 
 using namespace std;
 
+// Moves through param file and reads each line
 void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
     int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
     double *qx_, double *qy_, string *eq_, string *scheme_, string *sparse_)
@@ -19,6 +20,7 @@ void readParamFile(ifstream &in_run_input_file, int *T_, int *nite_, int *Nx_g,
   }
 }
 
+// Look at each line and see if the is something we need
 void analyzeLine(string &keyword, const char *value, int *T_, int *nite_, int *Nx_g,
     int *nout_, double *lx_g, double *E_, double *rho_, double *b_, double *h_,
     double *qx_, double *qy_, string *eq_, string *scheme_, string *sparse_)
@@ -146,7 +148,7 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
   *E_ = *E_;
   *dt_ = double(*T_)/ *nite_;
 
-  // Initialise domain decomp
+  // Initialise domain decomp slightly unequal loading but works noicely...
   *Nx_ = (*Nx_g-1)/(MPI::mpi_size);
   int rem = (*Nx_g-1)%(MPI::mpi_size);
   if (rem!=0)
@@ -158,16 +160,17 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
   }
   *Nvar_e = *Nx_*3;
   
-  // Initialise ghost cells
+  // Initialise ghost cells we use 3 ghost cells as 4th makes no contribution 
+  int Sghost_ = 3;
   if (MPI::mpi_size==1)
   { *Nghost_ = *Nvar_e;
   }
   if (MPI::mpi_size>1)
   { if (MPI::mpi_rank==0 || MPI::mpi_rank==(MPI::mpi_size-1))
-    { *Nghost_ = *Nvar_e+3;
+    { *Nghost_ = *Nvar_e+Sghost_;
     }
     if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
-    { *Nghost_ = *Nvar_e+(2*3);
+    { *Nghost_ = *Nvar_e+(2*Sghost_);
     }
   }
 }

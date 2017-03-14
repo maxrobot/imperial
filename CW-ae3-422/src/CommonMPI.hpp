@@ -38,14 +38,14 @@ extern int *periods;
 extern int *mpi_dims;
 
 // Clbas Variables
-extern int nrow;
-extern int ncol;
-extern char order;
-extern int ctx;
-extern int mype;
-extern int npe;
-extern int myrow;
-extern int mycol;
+// extern int nrow;
+// extern int ncol;
+// extern char order;
+// extern int ctx;
+// extern int mype;
+// extern int npe;
+// extern int myrow;
+// extern int mycol;
 
 
 extern MPI_Comm mpi_comm;
