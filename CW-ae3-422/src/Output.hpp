@@ -9,6 +9,6 @@
 
 void printHeader();
 
-void printInfo();
+void printInfo(int Nx_g, int Nx_, int Nvar_, int Nvar_e);
 
 #endif // OUTPUT_HPP_INCLUDED

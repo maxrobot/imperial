@@ -2,10 +2,11 @@
 #include <mpi.h>
 #include <time.h>
 
+#include "BuildFunction.hpp"
 #include "Common.hpp"
 #include "CommonMPI.hpp"
 #include "InitFile.hpp"
-#include "BuildFunction.hpp"
+#include "Output.hpp"
 #include "Solvers.hpp"
 
 using namespace std;
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
 	int Nvar_(0);				// Number of variables global in domain
 	int Nvar_e(0);				// Number of variables local in domain
 	int Nghost_(0);				// Number of ghost variables local in domain
+	int Sghost_(0);				// Number of ghost variables overlap
 	double lx_g(0);       		// Length of global domain
 	double lx_e(0);       		// Length of global domain
 	double dt_(0);        		// Time step
@@ -57,8 +59,9 @@ int main(int argc, char *argv[])
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &nout_, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_, &scheme_, &sparse_);
 	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nvar_e, &Nghost_,
-		&Nx_g, &Nx_, &T_, &nite_);
+		&Sghost_, &Nx_g, &Nx_, &T_, &nite_);
 	lx_e = lx_g/Nx_g;		// Local element length
+	printInfo(Nx_g, Nx_, Nvar_, Nvar_e);
 
 	// ===================== Build Tables =====================//
 	double *K_e	= new double[6*6]();
@@ -70,18 +73,21 @@ int main(int argc, char *argv[])
 	{	if (scheme_=="explicit")
 		{	const int buf_(0);
 			runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-				Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
+				Nvar_e, Nghost_, Sghost_, Nx_g, Nx_, nite_, nout_, buf_,
+				sparse_);
 		}
 		if (scheme_=="implicit")
 		{	if (MPI::mpi_size==1)
 			{	const int buf_(4);
 				runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-					Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
+					Nvar_e, Nghost_, Sghost_, Nx_g, Nx_, nite_, nout_, buf_,
+					sparse_);
 			}
 			if (MPI::mpi_size>1)
 			{	const int buf_(8);
 				runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
-					Nvar_e, Nghost_, Nx_g, Nx_, nite_, nout_, buf_, sparse_);
+					Nvar_e, Nghost_, Sghost_, Nx_g, Nx_, nite_, nout_, buf_,
+					sparse_);
 			}
 		}
 		if (scheme_=="none")

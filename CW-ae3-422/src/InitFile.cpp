@@ -139,46 +139,66 @@ string replaceTabsAndReturns(string & str)
 }
 
 void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
-  double *dt_, int *Nvar_, int *Nvar_e, int *Nghost_, int *Nx_g, int *Nx_,
-  int *T_, int *nite_)
+  double *dt_, int *Nvar_, int *Nvar_e, int *Nghost_, int *Sghost_, int *Nx_g,
+  int *Nx_, int *T_, int *nite_)
 { // Initialise most value stuffs
   *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
   *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
-  *Nvar_ = (*Nx_g-1)*3;          // Number of variables in global matrices excluding boundaries
   *E_ = *E_;
   *dt_ = double(*T_)/ *nite_;
+  *Nvar_ = (*Nx_g-1)*3;          // Number of variables in global matrices excluding boundaries
 
-  // Initialise domain decomp slightly unequal loading but works noicely...
-  int rem = (*Nx_g)%(MPI::mpi_size);
-  if (rem!=0)
-  { printMessage("Error: domain decomposed incorrectly, try again! (Hint, even elements per proc)");
-  }
-  *Nx_ = (*Nx_g)/(MPI::mpi_size);
-  if (rem!=0)
-  { for (int i = 0; i < rem; ++i)
-    { if (MPI::mpi_rank==i)
-      { *Nx_+=1;
-      }
-    }
-  }
-  if (MPI::mpi_size==1)
-  { *Nvar_e = (*Nx_g-1)*3;
-  }
-  else
-  { *Nvar_e = (*Nx_g+1)*3;
-  }
+  // Initialise domain decomposition using bool to ensure it does so correclty...
   
+  int pnt = 0;
+
+  // First check number of mpi processes
+  if (MPI::mpi_size%2 && MPI::mpi_size>1)
+  { printMessage("Error: odd  number of proc, choose even amount!");
+    exit(EXIT_FAILURE);
+  }
+  bool safe_decomp = false;
+
+  if (MPI::mpi_size>1)
+  { while(safe_decomp!=true)
+    { 
+      *Nvar_ = (*Nx_g-1)*3;          // Number of variables in global matrices excluding boundaries
+      *Nvar_e = (*Nvar_ + (MPI::mpi_size-1)*3)/MPI::mpi_size;
+      if (*Nvar_e%2)
+      { printMessage("Error: Domain decomposed irregularly!");
+        printMessage("Trying to fix!");
+        safe_decomp = false; // Flick switch to say domain not happy
+        Nx_g += 2;
+        pnt +=1;
+      }
+      else
+      {
+        safe_decomp = true;
+      }
+      if (pnt==3)
+      { printMessage("Fix didn't work, exiting!");
+        exit(EXIT_FAILURE);
+      }
+      *Nvar_ = (*Nx_g-1)*3;          // Number of variables in global matrices excluding boundaries
+      *Nvar_e = (*Nvar_ + (MPI::mpi_size-1)*3)/MPI::mpi_size;
+      *Nx_ = *Nvar_e/3;
+    }
+  } 
+  else if (MPI::mpi_size==1)
+  { *Nvar_e = *Nvar_;
+    *Nx_ = *Nx_g;
+  }  
   // Initialise ghost cells we use 3 ghost cells as 4th makes no contribution 
-  int Sghost_ = 3;
+  *Sghost_ = 3;
   if (MPI::mpi_size==1)
   { *Nghost_ = *Nvar_e;
   }
   if (MPI::mpi_size>1)
   { if (MPI::mpi_rank==0 || MPI::mpi_rank==(MPI::mpi_size-1))
-    { *Nghost_ = *Nvar_e+Sghost_;
+    { *Nghost_ = *Nvar_e+ *Sghost_;
     }
     if (MPI::mpi_rank>0 && MPI::mpi_rank<(MPI::mpi_size-1))
-    { *Nghost_ = *Nvar_e+(2*Sghost_);
+    { *Nghost_ = *Nvar_e+(2* *Sghost_);
     }
-  }
+  }  
 }

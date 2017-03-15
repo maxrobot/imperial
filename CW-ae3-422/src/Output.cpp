@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Output.hpp"
+#include "CommonMPI.hpp"
 
 using namespace std;
 
@@ -18,26 +19,17 @@ void printHeader(){
   cout << "       *************************************************************\033[0m" << endl;
 }
 
-void printInfo(){
-  cout << "\n";
-  cout << "       ============================================================="<< endl;
-  cout << "       =                     Simulation parameters                 ="<< endl;
-  cout << "       ============================================================="<< endl;
-  // cout << "           " << std::left << std::setw(32) << "LBM modelisation: "         << std::setw(7) << LBMmodel_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Regularisation: "         << std::setw(7) << BoolToString(reg_) << endl;
-  // cout << "           " << std::left << std::setw(32) << "Reference Temperature: "    << std::setw(7) << Tref_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Kinematic Viscosity: "      << std::setw(7) << Nu_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Thermal Diffusivity: "      << std::setw(7) << kappa_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Volumic force (S.I. units)" << std::setw(7) << gx_ << " " << gy_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Number of iteration: "      << std::setw(7) << nite_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Result output frequency: "  << std::setw(7) << tResults_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Configuration file: "       << std::setw(7) << config_file << endl;
-  // cout << "           " << std::left << std::setw(32) << "R gas constant: "           << std::setw(7) << Rgas_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Gamma: "                    << std::setw(7) << Gamma_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Aero distribution dev. order: " << std::setw(7) << aeroOrder_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Convergence criterion: "    << std::setw(7) << convCriterion_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Residuals comp. frequency: "  << std::setw(7) << tResiduals_ << endl;
-  // cout << "           " << std::left << std::setw(32) << "Number of MPI Procs: "  << std::setw(7) << mpi_size << endl;
-  // cout << "           " << std::left << std::setw(32) << "MPI Decomposition (x, y): "  << std::setw(0) << mpi_dims[0] << "," << mpi_dims[1] << endl;
-  cout << "       ============================================================="<< endl;
+void printInfo(int Nx_g, int Nx_, int Nvar_, int Nvar_e)
+{ if (MPI::mpi_rank==0)
+  { cout << "\n";
+    cout << "       ============================================================="<< endl;
+    cout << "       =                     Simulation parameters                 ="<< endl;
+    cout << "       ============================================================="<< endl;
+    cout << "           " << std::left << std::setw(32) << "Global element numbers: "         << std::setw(7) << Nx_g << endl;
+    cout << "           " << std::left << std::setw(32) << "Local element numbers: "         << std::setw(7) << Nx_ << endl;
+    cout << "           " << std::left << std::setw(32) << "Global nodes numbers: "         << std::setw(7) << Nvar_ << endl;
+    cout << "           " << std::left << std::setw(32) << "Local nodes numbers: "         << std::setw(7) << Nvar_e << endl;
+    cout << "           " << std::left << std::setw(32) << "Number of processes: "         << std::setw(7) << MPI::mpi_size << endl;
+    cout << "       ============================================================="<< endl;
+  }
 }
