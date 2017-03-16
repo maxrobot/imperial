@@ -63,7 +63,7 @@ extern void initCblacsStuff();
 extern void initMpiDomain();
 extern void getNeighbours();
 extern void copyVecConts(double *U, int Nghost_);
-extern void exchangeVecConts(double *U, int Nghost_);
+extern void exchangeVecConts(double *U, int Nghost_, int Sghost_);
 extern void getLeftData(double *d1, double *d2);
 extern void getRightData(double *d1, double *d2);
 extern void gatherData(double *output, double *U, int Nvar_g, int Nvar_);

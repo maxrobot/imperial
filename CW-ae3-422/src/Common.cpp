@@ -3,6 +3,32 @@
 
 using namespace std;
 
+void showVec(double *M, int N)
+{	for (int i = 0; i < N; ++i)
+	    cout << setprecision(5) << setw(12) << M[i] << endl;
+	cout << endl;
+}
+
+void showDenVec(double *M, int N, int Sghost_)
+{	if (MPI::mpi_rank==0)
+	{   for (int i = 0; i < N-(Sghost_+3); ++i)
+		    cout << setprecision(5) << setw(12) << M[i] << endl;
+		cout << endl;
+    }
+    for (int i = 1; i < MPI::mpi_size-1; ++i)
+    {	if (MPI::mpi_rank==i)
+	    {	for (int i = 0; i < N-(Sghost_+3); ++i)
+			    cout << setprecision(5) << setw(12) << M[i] << endl;
+			cout << endl;
+	    }
+    }
+	if (MPI::mpi_rank==MPI::mpi_size-1)
+	{   for (int i = 0; i < N-(Sghost_+3); ++i)
+		    cout << setprecision(5) << setw(12) << M[i] << endl;
+		cout << endl;
+    }
+}
+
 void showParVec(double *M, int N)
 {	MPI_Barrier(MPI_COMM_WORLD);
     for (int i = 0; i < MPI::mpi_size; ++i)
@@ -16,10 +42,30 @@ void showParVec(double *M, int N)
 	MPI_Barrier(MPI_COMM_WORLD);
 }
 
-void showVec(double *M, int N)
-{	for (int i = 0; i < N; ++i)
-	    cout << setprecision(5) << setw(12) << M[i] << endl;
-	cout << endl;
+void showParVec(double *M, int N, int Sghost_)
+{	MPI_Barrier(MPI_COMM_WORLD);
+	if (MPI::mpi_rank==0)
+	{   MPI_Barrier(MPI_COMM_WORLD);
+		showDenVec(M, N, Sghost_);
+	   	MPI_Barrier(MPI_COMM_WORLD);
+    }
+	MPI_Barrier(MPI_COMM_WORLD);
+    for (int i = 1; i < MPI::mpi_size-1; ++i)
+    {	if (MPI::mpi_rank==i)
+	    {	MPI_Barrier(MPI_COMM_WORLD);
+			showDenVec(M, N, Sghost_);
+	    	showVec(M, N);
+	    	MPI_Barrier(MPI_COMM_WORLD);
+	    }
+    	MPI_Barrier(MPI_COMM_WORLD);
+    }
+	MPI_Barrier(MPI_COMM_WORLD);
+	if (MPI::mpi_rank==MPI::mpi_size-1)
+	{   MPI_Barrier(MPI_COMM_WORLD);
+		showDenVec(M, N, Sghost_);
+	   	MPI_Barrier(MPI_COMM_WORLD);
+    }
+	MPI_Barrier(MPI_COMM_WORLD);
 }
 
 void showMat(double *M, int N)

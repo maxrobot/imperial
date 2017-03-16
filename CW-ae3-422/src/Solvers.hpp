@@ -23,8 +23,8 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
     int buf_, std::string test);
 
 void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
-    double qx_, double qy_, int Nvar_g, int Nvar_, int Nghost_, int Nx_g,
-   int Nx_, int nite_, int nout_, int buf_, std::string test);
+    double qx_, double qy_, int Nvar_g, int Nvar_, int Nghost_, int Sghost_,
+    int Nx_g, int Nx_, int nite_, int nout_, int buf_, std::string test);
 
 void solveImplicit(double *K, double *M, double *F, double lx_e, double qx_,
     double qy_, double dt_, int Nvar_, int Nx_g, int nite_, int nout_,
@@ -35,8 +35,8 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
     int buf_, std::string test);
 
 void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double qx_,
-    double qy_, double dt_, int Nvar_g, int Nvar_, int Nghost_, int Nx_, int Nx_g,
-    int nite_, int nout_, int buf_, std::string test);
+    double qy_, double dt_, int Nvar_g, int Nvar_, int Nghost_, int Sghost_, int Nx_,
+    int Nx_g, int nite_, int nout_, int buf_, std::string test);
 
 void parMatSum(double *K, double *M, double *MK, int Nvar_, int Nghost_);
 void parVecCopy(double *M, double *N, int Nvar_);

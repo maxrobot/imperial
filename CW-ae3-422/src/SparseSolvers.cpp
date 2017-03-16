@@ -38,6 +38,7 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 		
 		// Calculate MK_o*U{n}
 		F77NAME(dgbmv)('n', Nvar_, Nvar_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
+		showVec(MKU_o, Nvar_);
 
 		// Update Variables
 		assignArr(F, 0., Nvar_);
@@ -55,8 +56,6 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 		// Calculate updated M*U{n+1} = S
 	    F77NAME(dgbsv)(Nvar_, 0, 0, 1, Mt_, 1, ipiv, S, Nvar_, info);
-		// showVec(S, Nvar_);
-		// showMat(MK_o, 9, Nvar_);
 
 		// Now update vars for repeat
 		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
@@ -67,8 +66,8 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 }
 
 void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
-	double qx_, double qy_, int Nvar_g, int Nvar_, int Nghost_, int Nx_g,
-	int Nx_, int nite_, int nout_, int buf_, std::string test)
+	double qx_, double qy_, int Nvar_g, int Nvar_, int Nghost_, int Sghost_,
+	int Nx_g, int Nx_, int nite_, int nout_, int buf_, std::string test)
 {	if (MPI::mpi_rank==0)
 	{	cout << "Running Parallel Explicit Banded, nprocs:  " << MPI::mpi_size <<  endl;
 	}
@@ -86,7 +85,8 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 	parMatSum(K, M, MK_o, Nvar_, Nghost_);
     for (int i = 0; i < Nvar_; ++i)
     {	Minv_[i] = 1/M[i];
-    }    	
+    }
+
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i <= nite_; ++i)
@@ -96,8 +96,10 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 		// Calculate MK_o*U{n}
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
 	    // showParVec(MKU_o, Nghost_);
-		MPI::exchangeVecConts(MKU_o, Nghost_);
-	    // showParVec(MKU_o, Nghost_);
+		MPI::exchangeVecConts(MKU_o, Nghost_, Sghost_);
+		MPI_Barrier(MPI_COMM_WORLD);
+	    // showParVec(MKU_o, Nghost_, Sghost_);
+	    // showParVec(U, Nghost_);
 
 		// Update Variables
 		assignArr(F, 0., Nvar_);
@@ -121,7 +123,6 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 		parMatSolve(Minv_, S, U, Nvar_);
 		MPI::copyVecConts(U, Nghost_);
 	}
-    // showParMat(MK_o, 9, Nghost_);
 	parVecCopy(Un_g, U, Nvar_);
 	writeParVec(Un_g, Nx_g, Nvar_g, Nvar_, 1, test);
 }
@@ -217,8 +218,8 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 }
 
 void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double qx_,
-	double qy_, double dt_, int Nvar_g, int Nvar_, int Nghost_, int Nx_g, int Nx_,
-	int nite_, int nout_, int buf_, std::string test)
+	double qy_, double dt_, int Nvar_g, int Nvar_, int Nghost_, int Sghost_, int Nx_g,
+	int Nx_, int nite_, int nout_, int buf_, std::string test)
 {	if (MPI::mpi_rank==0)
 	{	cout << "Running Parallel Implicit Banded, nprocs:  " << MPI::mpi_size << endl;
 	}

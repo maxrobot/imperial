@@ -128,7 +128,7 @@ MPI_Status status;
 		}
 	}
 
-	void exchangeVecConts(double *U, int Nghost_)
+	void exchangeVecConts(double *U, int Nghost_, int Sghost_)
 	{	// Set exchange length
 		int bnd = 6;
 

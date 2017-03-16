@@ -62,6 +62,8 @@ extern "C" {
 }
 
 void showParVec(double *M, int N);
+void showDenVec(double *M, int N, int Sghost_);
+void showParVec(double *M, int N, int Sghost_);
 void showVec(double *M, int N);
 
 void showMat(double *M, int N);
