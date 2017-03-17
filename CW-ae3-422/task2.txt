@@ -7,7 +7,7 @@ equation: dynamic
 integration: explicit
 matrix format: sparse
 simulation time (s): 1
-number of iterations: 100000
+number of iterations: 10000
 output spacing: 1000
 number of elements: 24
 

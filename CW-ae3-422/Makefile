@@ -33,6 +33,7 @@ all: task1 task2 task3 task4 task5
 clean: 
 	@printf "\033[1;31m Cleaning object, executable and archive files\033[0m\n"
 	@rm -f $(EXEC) $(OBJ_FILES) solver.tgz
+	@./clear
 
 # To create a tar archive of the project
 tar: clean

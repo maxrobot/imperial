@@ -288,6 +288,7 @@ void buildKgBand(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
+// Build global mass in banded format
 void buildMgBand(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 {	const int jmp =  9 + buf;
 	// LHS Boundary
@@ -316,6 +317,7 @@ void buildMgBand(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
+// Build global mass in banded format across all formats
 void buildMgBandPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 {	const int jmp =  9 + buf;
 	int iter = Nvar_/3;
@@ -328,6 +330,7 @@ void buildMgBandPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
+// Build global force
 void buildFgBand(double *Kg, double *ke, int Nx_g, int Nvar_)
 {	// Build Center	
 	if (MPI::mpi_rank==0)
@@ -344,7 +347,13 @@ void buildFgBand(double *Kg, double *ke, int Nx_g, int Nvar_)
 			Kg[pnt] =  2*ke[1];
 		}
 	}
-	// Kg[(Nvar_-1)/2] +=1000;
+	// Add the concentrated force to the middle node
+	if (MPI::mpi_rank==((MPI::mpi_size)/2 -1) && MPI::mpi_size>1)
+	{	Kg[(Nvar_-2)] +=1000;
+	}
+	else if (MPI::mpi_size==1)
+	{	Kg[(Nvar_-1)/2] +=1000;
+	}
 }
 
 void buildFg(double *Kg, double *ke, int Nx_g, int Nvar_)
@@ -360,7 +369,7 @@ void buildFg(double *Kg, double *ke, int Nx_g, int Nvar_)
 			}
 		}
 	}
-	// Kg[(Nvar_-1)/2] +=1000;
+	Kg[(Nvar_-1)/2] +=1000;
 }
 
 void buildMe(double *K, double A_, double rho_, double lx_e, double Al_, double dt_)
@@ -455,6 +464,7 @@ void buildKe(double *K, double lx_e, double A_, double E_, double I_)
 	}
 }
 
+// Build elemental force vector
 void buildFe(double *K, double lx_e, double qx_, double qy_)
 {	K[0] = K[3] = lx_e*qx_/2;
 	K[1] = K[4] = lx_e*qy_/2;
@@ -462,6 +472,7 @@ void buildFe(double *K, double lx_e, double qx_, double qy_)
 	K[5] = -(qy_*lx_e*lx_e)/12;
 }
 
+// Build Kg - al*M
 void buildKeff(double *K, double *K_eff, double *M, double co1_, int Nvar_, int buf_)
 {	for (int i = 0; i < Nvar_; ++i)
 	{	int pnt = (4+buf_) + i*(9+buf_);
@@ -470,6 +481,7 @@ void buildKeff(double *K, double *K_eff, double *M, double co1_, int Nvar_, int 
 	}
 }
 
+// Assigns an array to a value
 void assignArr(double *K, double V, int N)
 {	fill(K, K+N, V);
 }
@@ -490,6 +502,7 @@ void updateKglb(double *K, int Nvar_, int buf_)
 	}
 }
 
+// Updates Force vector for each timestep
 void updateVars(double *F, double lx_e, double qx_, double qy_,
 	int Nx_g, int Nvar_, int step, int nite_)
 {	double coef = double(step)/nite_;
@@ -499,6 +512,7 @@ void updateVars(double *F, double lx_e, double qx_, double qy_,
 	delete [] fe;
 }
 
+// Updates Force vector for each timestep in parallel
 void updateParVars(double *F, double lx_e, double qx_, double qy_,
 	int Nx_g, int Nvar_, int step, int nite_)
 {	double coef = double(step)/nite_;

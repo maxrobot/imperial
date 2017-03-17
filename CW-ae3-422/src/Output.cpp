@@ -7,18 +7,17 @@ using namespace std;
 void printHeader()
 { MPI_Barrier(MPI_COMM_WORLD);
   if (MPI::mpi_rank==0)
-  { cout << "       *************************************************************" << endl;
-    cout << "       *                                                           *" << endl;
-    cout << "       *     __      ______  ____    ____    ___     ____    ____  *" << endl;
-    cout << "       *    / /     / ____/ / __ \\  / __ \\  /   |   / __ \\  / __ \\ *" << endl;
-    cout << "       *   / /     / __/   / / / / / /_/ / / /| |  / /_/ / / / / / *" << endl;
-    cout << "       *  / /___  / /___  / /_/ / / ____/ / ___ | / _, _/ / /_/ /  *" << endl;
-    cout << "       * /_____/ /_____/  \\____/ /_/     /_/  |_|/_/ |_| /_____/   *" << endl;
-    cout << "       *                                                           *" << endl;
-    cout << "       *         \033[0m \033[1mL\033[0mattic\033[0m\033[1mE\033[0m b\033[0m\033[1mO\033[0mltzmann \033[0m \033[1mP\033[0ml\033[0m\033[1mA\033[0mtefo\033[0m\033[1mR\033[0mm \033[0m\033[1mD\033[0mevelopment         *" << endl;
-    cout << "       *************************************************************" << endl;
-    cout << "       *                   Copyright 2015, CERFACS                 *" << endl;
-    cout << "       *************************************************************\033[0m" << endl;
+  { cout <<    "       =============================================================" << endl;
+    cout <<    "       =                                                           =" << endl;
+    cout <<    "       =  \033[0m \033[1mAE3-422\033[0m High-Performance Computing                      =" << endl;
+    cout <<    "       =  \033[0m \033[1mCoursework Assignment\033[0m                                   =" << endl;
+    cout <<    "       =                                                           =" << endl;
+    cout <<    "       =  \033[0m \033[1mAuthor\033[0m: FM Grabner                                      =" << endl;
+    cout <<    "       =  \033[0m \033[1mCID\033[0m:    01220997                                        =" << endl;
+    cout <<    "       =                                                           =" << endl;
+    cout <<    "       =============================================================" << endl;
+    cout <<    "       =                  \033[0m \033[1mImperial College London\033[0m                 =" << endl;
+    cout << "       =============================================================\033[0m" << endl;
   }
   MPI_Barrier(MPI_COMM_WORLD);
 }
@@ -36,6 +35,21 @@ void printInfo(int Nx_g, int Nx_, int Nvar_, int Nvar_e, std::string sparse_)
     cout << "           " << std::left << std::setw(32) << "Local elements: "         << std::setw(7) << Nx_ << endl;
     cout << "           " << std::left << std::setw(32) << "Global nodes: "         << std::setw(7) << Nvar_ << endl;
     cout << "           " << std::left << std::setw(32) << "Local nodes: "         << std::setw(7) << Nvar_e << endl;
+    cout << "       ============================================================="<< endl;
+  }
+ MPI_Barrier(MPI_COMM_WORLD);
+}
+
+void printTime(clock_t tCPU_)
+{ MPI_Barrier(MPI_COMM_WORLD);
+  if (MPI::mpi_rank==0)
+  { double duration = ( clock() - tCPU_ );
+    cout << "\n";
+    cout << "       ============================================================="<< endl;
+    cout << "       =                      Simulation Time                      ="<< endl;
+    cout << "       ============================================================="<< endl;
+    cout << "           " << std::left << std::setw(32) << "Simulation length (s): "         << std::setw(7) << duration/(double) CLOCKS_PER_SEC << endl;
+    cout << "           " << std::left << std::setw(32) << "Simulation finished you can go home now!"         << std::setw(7) << endl;
     cout << "       ============================================================="<< endl;
   }
  MPI_Barrier(MPI_COMM_WORLD);

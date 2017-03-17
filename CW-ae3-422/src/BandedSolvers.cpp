@@ -82,15 +82,16 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
     {	Minv_[i] = 1/M[i];
     }
 
+	// updateParVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, 1, nite_);
+	// showParVec(F, Nvar_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	for (int i = 0; i <= nite_; ++i)
+	for (int i = 0; i < nite_; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0, Nghost_);
 
 		// Calculate MK_o*U{n}
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
-	    // showParVec(MKU_o, Nghost_);
 		MPI::exchangeVecConts(MKU_o, Nghost_, Sghost_);
 		MPI_Barrier(MPI_COMM_WORLD);
 
@@ -176,7 +177,6 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		{	double sum = S[i] + F[i];
 			S[i] = sum;
 		}
-		// showVec(S, Nvar_);
 
 		// Solve Keff*U_{n+1} = S
 	    F77NAME(dgbsv)(Nvar_, 4, 4, 1, K, 9+buf_, ipiv, S, Nvar_, info);

@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	MPI::initMpiDomain();
 	MPI::initCblacsStuff();
 	// ================ Reading of Inputs =====================//
-
+	printHeader();
 	ifstream param_file;
 	param_file.open(argv[1], ifstream::in);
 	if (!param_file)
@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
 	string scheme_("none");		// Type of integration, explicit or 
 	string sparse_("none");		// Type of matrices, sparse or 
 
+	clock_t tCPU_(0.);	        // CPU (s)
 	int T_(0);	         		// Simulation length (s)
 	int nite_(0);         		// Number of time steps
 	int nout_(0);         		// Number of output interval
@@ -97,6 +98,7 @@ int main(int argc, char *argv[])
 		{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");
 		}
 	}
+	printTime(tCPU_);
 	MPI_Finalize();
 	return 0;
 }

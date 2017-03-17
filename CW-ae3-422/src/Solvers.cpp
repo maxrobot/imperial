@@ -159,7 +159,7 @@ void solveExplicit(double *K, double *M, double *F, double lx_e,
 
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	for (int i = 0; i <= nite_; ++i)
+	for (int i = 0; i < nite_; ++i)
 	{	// Calculate MK_o*U{n}
 		F77NAME(dgemv)('n', Nvar_, Nvar_, 1, MK_o, Nvar_, U, 1, 0, MKU_o, 1);
 		
@@ -217,8 +217,7 @@ void solveImplicit(double *K, double *M, double *F, double lx_e, double qx_,
     int info = 0;
     int *ipiv = new int[Nvar_];
 
-	for (int i = 0; i < 2; ++i)
-	// for (int i = 0; i < nite_; ++i)
+	for (int i = 0; i < nite_; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
 		assignArr(S, 0., Nvar_);
