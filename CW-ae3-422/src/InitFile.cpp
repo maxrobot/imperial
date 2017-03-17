@@ -1,6 +1,7 @@
 #include "InitFile.hpp"
 #include "Common.hpp"
 #include "CommonMPI.hpp"
+#include "Output.hpp"
 
 using namespace std;
 

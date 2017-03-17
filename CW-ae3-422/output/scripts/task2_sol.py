@@ -9,7 +9,7 @@ import numpy as np
 # Concetrated Load
 plt.title('Computed Deflection Task 1')
 plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-plt.ylabel('Deflection (m)')
+plt.ylabel('Deflection (mm)')
 plt.xlabel('Axial Position (m)')
 plt.grid(b=True, which='major', color='k', linestyle='--')
 crs = open('./output/data/task_21.txt','r')

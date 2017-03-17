@@ -59,6 +59,8 @@ extern "C" {
     void Cblacs_gridinfo(int, int*, int*, int*, int*);
     void Cblacs_exit(int);
     void Cblacs_gridexit(int);
+
+    int descinit_(int*, int*, int*, int*, int*,int*, int*);
 }
 
 void showParVec(double *M, int N);

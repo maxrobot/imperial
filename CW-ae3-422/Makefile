@@ -1,6 +1,6 @@
 # Declaration of variables
 CC = mpicxx
-CC_FLAGS = -g -std=c++11
+CC_FLAGS = -O3 -std=c++11
 LD_FLAGS = -lscalapack-openmpi -lblacs-openmpi -lblacsCinit-openmpi -llapack -lblas
 DEBUG_FLAGS = -g
 
@@ -27,6 +27,8 @@ $(OBJDIR)%.o: $(SRCDIR)%.cpp
 	@printf $(COTEXT) 
 	@$(CC) -c $(CC_FLAGS) $< -o  $@
 
+all: task1 task2 task3 task4 task5
+
 # To remove generated files
 clean: 
 	@printf "\033[1;31m Cleaning object, executable and archive files\033[0m\n"
@@ -35,10 +37,10 @@ clean:
 # To create a tar archive of the project
 tar: clean
 	@printf "\033[1;31m Creating tar archive of the code \033[0m\n"
-	@mkdir -p solver_v0.1
-	@cp -r Makefile doc src testcases solver_v0.1
-	@tar czf solver_v0.1.tgz --exclude .git --exclude .Obj --exclude output solver_v0.1
-	@rm -rf solver_v0.1
+	@mkdir -p solver_01220997
+	@cp -r Makefile src solver_01220997
+	@tar czf solver_01220997.tgz --exclude .git --exclude .Obj --exclude output solver_01220997
+	@rm -rf solver_01220997
 
 $(MKDIRS): 
 	@mkdir -p $@
@@ -77,4 +79,20 @@ help: author
 	@printf "\033[1;31m  help         =>\033[0m\033[1m printing this help message\033[0m\n"
 	@printf "\033[1;31m  clean        =>\033[0m\033[1m cleaning object, executable and archive files\033[0m\n"
 	@printf "\033[1;31m  tar          =>\033[0m\033[1m creating a tar archive of the project\033[0m\n"
+	@printf "\033[1;31m  all          =>\033[0m\033[1m run all tasks for this assignment\033[0m\n"
 	@echo
+
+task1:
+	@mpiexec -np 1 bin/hpc_solver task1.txt && python output/scripts/task1_sol.py
+
+task2:
+	@mpiexec -np 1 bin/hpc_solver task2.txt && python output/scripts/task2_sol.py
+
+task3:
+	@mpiexec -np 1 bin/hpc_solver task3.txt && python output/scripts/task3_sol.py
+
+task4:
+	@mpiexec -np 2 bin/hpc_solver task4.txt && python output/scripts/task4_sol.py
+
+task5:
+	@mpiexec -np 4 bin/hpc_solver task5.txt && python output/scripts/task5_sol.py

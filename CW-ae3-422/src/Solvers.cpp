@@ -23,13 +23,17 @@ void runSolver(double lx_e, double A_,
 	double *F_e	= new double[6]();
 
 	// ============== Create Elemental K Matrix ===============//
-	buildKele(K_e, lx_e, A_, E_, I_);
-	buildFele(F_e, lx_e, qx_, qy_);
+	buildKe(K_e, lx_e, A_, E_, I_);
+	buildFe(F_e, lx_e, qx_, qy_);
 	
-	buildKglbSparse(K_g, K_e, Nvar_, Nx_g, buf_);
-	buildFglb(F_g, F_e, Nx_g, Nvar_);
+	buildKgBand(K_g, K_e, Nvar_, Nx_g, buf_);
+	buildFg(F_g, F_e, Nx_g, Nvar_);
 
-	// =================== Solve System =======================//
+	// ==================== Free Memory =======================//
+	delete[] K_e;
+	delete[] F_e;
+
+	// ==================== Run Solver ========================//
 	solveStatic(K_g, F_g, Nvar_, 9+buf_, Nx_g, "task_1");
 }
 
@@ -49,13 +53,13 @@ void runSolver(double dt_, double lx_e, double A_,
 
 	// ============== Create Elemental K Matrix ===============//
 	if (buf_ == 4 || buf_ == 8)
-	{	buildMele(M_e, A_, rho_, lx_e, Al_);
+	{	buildMe(M_e, A_, rho_, lx_e, Al_);
 	}
 	if (buf_ == 0)	
-	{	buildMele(M_e, A_, rho_, lx_e, Al_, dt_);
+	{	buildMe(M_e, A_, rho_, lx_e, Al_, dt_);
 	}
 	
-	buildKele(K_e, lx_e, A_, E_, I_);
+	buildKe(K_e, lx_e, A_, E_, I_);
 
 	if (sparse_=="none")
 	{	// Matrices
@@ -63,8 +67,12 @@ void runSolver(double dt_, double lx_e, double A_,
 		double *M_g	= new double[Nvar_e*Nvar_e]();
 
 	// ===================== Build Tables =====================//
-		buildKglb(K_g, K_e, Nvar_e, Nx_g);
-		buildKglb(M_g, M_e, Nvar_e, Nx_g);
+		buildKg(K_g, K_e, Nvar_e, Nx_g);
+		buildKg(M_g, M_e, Nvar_e, Nx_g);
+
+	// ==================== Free Memory =======================//
+		delete[] K_e;
+		delete[] M_e;
 
 		solveExplicit(K_g, M_g, F_g, lx_e, qx_, qy_, Nvar_e,
 			Nx_g, nite_, nout_, buf_, "task_2");
@@ -73,10 +81,16 @@ void runSolver(double dt_, double lx_e, double A_,
 	{	// Matrices
 		double *K_g = new double[Nvar_e*(9+buf_)]();
 		double *M_g	= new double[Nvar_e]();
-	// ===================== Build Tables =====================//
+
 		if (MPI::mpi_size==1)
-		{	buildSparse(K_g, K_e, Nvar_e, Nx_g, buf_);
-			buildMglbSparse(M_g, M_e, Nvar_e, Nx_g, buf_);
+		{	// ===================== Build Tables =====================//
+			buildKgBand(K_g, K_e, Nvar_e, Nx_g, buf_);
+			buildMgBand(M_g, M_e, Nvar_e, Nx_g, buf_);
+
+			// ==================== Free Memory =======================//
+			delete[] K_e;
+			delete[] M_e;
+
 			// ==================== Run Solver ========================//
 			if (buf_==4)
 			{	solveSparseImplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
@@ -89,9 +103,15 @@ void runSolver(double dt_, double lx_e, double A_,
 		}
 
 		else if (MPI::mpi_size>1)
-		{	buildSparsePar(K_g, K_e, Nvar_e, Nx_g, buf_);
-			buildMglbPar(M_g, M_e, Nvar_e, Nx_g, buf_);
-		// ==================== Run Solver ========================//
+		{	// ===================== Build Tables =====================//
+			buildKgBandPar(K_g, K_e, Nvar_e, Nx_g, buf_);
+			buildMgBandPar(M_g, M_e, Nvar_e, Nx_g, buf_);
+			
+			// ==================== Free Memory =======================//
+			delete[] K_e;
+			delete[] M_e;
+
+			// ==================== Run Solver ========================//
 			if (buf_==8)
 			{	solveParSparseImplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
 					dt_, Nvar_, Nvar_e, Nghost_, Nx_g, Nx_, nite_,

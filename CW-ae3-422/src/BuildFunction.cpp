@@ -4,13 +4,15 @@
 
 using namespace std;
 
+// Builds an identity matrix
 void buildEye(double *K, int Nvar_)
 {	for (int i = 0; i < Nvar_; ++i)
 	{	K[(i*Nvar_)+i] = 1;
 	}
 }
 
-void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
+// Build global stiffness matrix K in dense format
+void buildKg(double *Kg, double *ke, int Nvar_, int Nx_g)
 {	// LHS Boundary
 	for (int j = 3; j < 6; ++j)
 	{	for (int k = 3; k < 6; ++k)
@@ -39,7 +41,8 @@ void buildKglb(double *Kg, double *ke, int Nvar_, int Nx_g)
 	}
 }
 
-void buildSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
+// Builds global stiffness K in banded format
+void buildKgband(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
 {	const int jmp = 9 + buf_;
 	const int cnt = 4 + buf_;
 	
@@ -109,7 +112,8 @@ void buildSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
 	}
 }
 
-void buildSparsePar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
+// Builds global stiffness K in banded format across processes
+void buildKgBandPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
 {	const int jmp = 9 + buf_;
 	const int cnt = 4 + buf_;
 	
@@ -219,117 +223,8 @@ void buildSparsePar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
 	}
 }
 
-// void buildSparsePar2(double *Kg, double *ke, int Nvar_, int Nx_g, int buf_)
-// {	const int jmp = 9 + buf_;
-// 	const int cnt = 4 + buf_;
-	
-// 	if (MPI::mpi_rank==0)
-// 	{
-// 		int ind = 0;
-// 		for (int i = 0; i < Nvar_; ++i)
-// 		{	// Build Diagonal
-// 			int pnt = ind*6 + ind;
-// 			int pnt2 = i*jmp + cnt;
-// 			Kg[pnt2] += ke[pnt];
-// 		 	int max = 6-ind;
-// 		 	int bnd = 5;
-// 		 	if (max < bnd)
-// 		 	{	bnd = max;
-// 		 	}
-// 		 	// Build Lower
-// 			for (int k = 1; k < bnd; ++k)
-// 			{	int pos = pnt2+k;
-// 			 	Kg[pos] += ke[pnt+k];	
-// 			}
-// 		 	// Build Upper
-// 			for (int k = 1; k <= ind; ++k)
-// 			{	int pos = pnt2-k;
-// 				Kg[pos] += ke[pnt-k];
-// 			}
-// 			ind += 1;
-// 			if (ind==6)
-// 			{	ind = 0;
-// 				i-=3;
-// 			}
-// 		}
-// 		// Build first boundary
-// 		for (int i = 3; i < 6; ++i)
-// 		{	int pnt = i*6 + i;
-// 			int pnt2 = (i-3)*jmp + cnt;
-// 			Kg[pnt2] += ke[pnt];
-// 			if (i==4)
-// 			{	Kg[pnt2+1] += ke[pnt+1];
-// 			}
-// 			if (i==5)
-// 			{	Kg[pnt2-1] += ke[pnt-1];
-// 			}
-// 		}
-// 	}
-// 	else if (MPI::mpi_rank==(MPI::mpi_size-1))
-// 	{
-// 		int ind = 3;
-// 		for (int i = 0; i < Nvar_; ++i)
-// 		{	// Build Diagonal
-// 			int pnt = ind*6 + ind;
-// 			int pnt2 = i*jmp + cnt;
-// 			Kg[pnt2] += ke[pnt];
-// 		 	int max = 6-ind;
-// 		 	int bnd = 5;
-// 		 	if (max < bnd)
-// 		 	{	bnd = max;
-// 		 	}
-// 		 	// Build Lower
-// 		 	if (i < Nvar_-3)
-// 		 	{	for (int k = 1; k < bnd; ++k)
-// 				{	int pos = pnt2+k;
-// 				 	Kg[pos] += ke[pnt+k];	
-// 				}
-// 		 	}
-// 		 	// Build Upper
-// 			for (int k = 1; k <= ind; ++k)
-// 			{	int pos = pnt2-k;
-// 				Kg[pos] += ke[pnt-k];
-// 			}
-// 			ind += 1;
-// 			if (ind==6)
-// 			{	ind = 0;
-// 				i-=3;
-// 			}
-// 		}	
-// 	}
-// 	else
-// 	{	// Central Elements
-// 		int ind = 3;
-// 		for (int i = 0; i < Nvar_; ++i)
-// 		{	// Build Diagonal
-// 			int pnt = ind*6 + ind;
-// 			int pnt2 = i*jmp + cnt;
-// 			Kg[pnt2] += ke[pnt];
-// 		 	int max = 6-ind;
-// 		 	int bnd = 5;
-// 		 	if (max < bnd)
-// 		 	{	bnd = max;
-// 		 	}
-// 		 	// Build Lower
-// 			for (int k = 1; k < bnd; ++k)
-// 			{	int pos = pnt2+k;
-// 			 	Kg[pos] += ke[pnt+k];	
-// 			}
-// 		 	// Build Upper
-// 			for (int k = 1; k <= ind; ++k)
-// 			{	int pos = pnt2-k;
-// 				Kg[pos] += ke[pnt-k];
-// 			}
-// 			ind += 1;
-// 			if (ind==6)
-// 			{	ind = 0;
-// 				i-=3;
-// 			}
-// 		}	
-// 	}
-// }
-
-void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
+// Builds global stiffness matrix K in banded
+void buildKgBand(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 {	const int jmp =  9 + buf;
 	// LHS Boundary
 	for (int i = 0; i < 3; ++i)
@@ -393,7 +288,7 @@ void buildKglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
-void buildMglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
+void buildMgBand(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 {	const int jmp =  9 + buf;
 	// LHS Boundary
 	for (int i = 0; i < 3; ++i)
@@ -421,7 +316,7 @@ void buildMglbSparse(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
-void buildMglbPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
+void buildMgBandPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 {	const int jmp =  9 + buf;
 	int iter = Nvar_/3;
 	for (int i = 0; i < iter; ++i)
@@ -433,7 +328,7 @@ void buildMglbPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 	}
 }
 
-void buildBandFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
+void buildFgBand(double *Kg, double *ke, int Nx_g, int Nvar_)
 {	// Build Center	
 	if (MPI::mpi_rank==0)
 	{	Kg[1] = ke[1]; 
@@ -452,7 +347,7 @@ void buildBandFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
 	// Kg[(Nvar_-1)/2] +=1000;
 }
 
-void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
+void buildFg(double *Kg, double *ke, int Nx_g, int Nvar_)
 {	// Build Center	
 	for (int i = 0; i < Nx_g-1; ++i)
 	{	for (int j = 0; j < 6; ++j)
@@ -468,7 +363,7 @@ void buildFglb(double *Kg, double *ke, int Nx_g, int Nvar_)
 	// Kg[(Nvar_-1)/2] +=1000;
 }
 
-void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, double dt_)
+void buildMe(double *K, double A_, double rho_, double lx_e, double Al_, double dt_)
 // Brought the time integration into the mass matrix
 {	const double p =  (rho_*A_*lx_e)/(dt_*dt_);
 	int N = 6;
@@ -494,7 +389,7 @@ void buildMele(double *K, double A_, double rho_, double lx_e, double Al_, doubl
 	}
 }
 
-void buildMele(double *K, double A_, double rho_, double lx_e, double Al_)
+void buildMe(double *K, double A_, double rho_, double lx_e, double Al_)
 // Brought no time in the mass matrix
 {	const double p =  (rho_*A_*lx_e);
 	int N = 6;
@@ -520,7 +415,7 @@ void buildMele(double *K, double A_, double rho_, double lx_e, double Al_)
 	}
 }
 
-void buildKele(double *K, double lx_e, double A_, double E_, double I_)
+void buildKe(double *K, double lx_e, double A_, double E_, double I_)
 {	double EI(E_*I_), a(A_*E_/lx_e), b(12*EI/pow(lx_e, 3)), 
 			c(6*EI/pow(lx_e, 2)), d(4*EI/lx_e), e(2*EI/lx_e);
 	int N = 6;
@@ -560,23 +455,47 @@ void buildKele(double *K, double lx_e, double A_, double E_, double I_)
 	}
 }
 
-void buildFele(double *K, double lx_e, double qx_, double qy_)
+void buildFe(double *K, double lx_e, double qx_, double qy_)
 {	K[0] = K[3] = lx_e*qx_/2;
 	K[1] = K[4] = lx_e*qy_/2;
 	K[2] = (qy_*lx_e*lx_e)/12;
 	K[5] = -(qy_*lx_e*lx_e)/12;
 }
 
+void buildKeff(double *K, double *K_eff, double *M, double co1_, int Nvar_, int buf_)
+{	for (int i = 0; i < Nvar_; ++i)
+	{	int pnt = (4+buf_) + i*(9+buf_);
+		K_eff[pnt] += (co1_*M[i]);
+		K[pnt] += (co1_*M[i]);
+	}
+}
+
 void assignArr(double *K, double V, int N)
 {	fill(K, K+N, V);
+}
+
+void updateKglb(double *K, int Nvar_, int buf_)
+{	if (MPI::mpi_rank==(MPI::mpi_size-1))
+	{	int pnt = (Nvar_ - 3)*(9+buf_);
+		int pnt2 = (Nvar_ - 6)*(9+buf_);
+		for (int i = 0; i < 3*(9+buf_); ++i)
+		{	K[pnt2+i] =  K[pnt+i];
+		}
+		for (int i = 0; i < 3*(9+buf_); ++i)
+		{	K[pnt+i] =  0;
+		}
+		for (int i = Nvar_-3; i < Nvar_; ++i)
+		{	K[i*(9+buf_) + 12] = 1;
+		}
+	}
 }
 
 void updateVars(double *F, double lx_e, double qx_, double qy_,
 	int Nx_g, int Nvar_, int step, int nite_)
 {	double coef = double(step)/nite_;
 	double *fe = new double[6]();
-	buildFele(fe, lx_e, coef*qx_, coef*qy_);
-	buildFglb(F, fe, Nx_g, Nvar_);
+	buildFe(fe, lx_e, coef*qx_, coef*qy_);
+	buildFg(F, fe, Nx_g, Nvar_);
 	delete [] fe;
 }
 
@@ -584,7 +503,7 @@ void updateParVars(double *F, double lx_e, double qx_, double qy_,
 	int Nx_g, int Nvar_, int step, int nite_)
 {	double coef = double(step)/nite_;
 	double *fe = new double[6]();
-	buildFele(fe, lx_e, coef*qx_, coef*qy_);
-	buildBandFglb(F, fe, Nx_g, Nvar_);
+	buildFe(fe, lx_e, coef*qx_, coef*qy_);
+	buildFgBand(F, fe, Nx_g, Nvar_);
 	delete [] fe;
 }

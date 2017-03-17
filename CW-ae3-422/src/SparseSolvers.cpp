@@ -82,11 +82,9 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
     {	Minv_[i] = 1/M[i];
     }
 
-
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i <= nite_; ++i)
-	// for (int i = 0; i < 3; ++i)
 	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0, Nghost_);
 
@@ -154,10 +152,7 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
     int info = 0;
     int *ipiv = new int[Nvar_];
 
-    // assignArr(U, 1.2, Nvar_);
-
 	for (int i = 0; i < nite_; ++i)
-	// for (int i = 0; i < 20; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
 		assignArr(S, 0., Nvar_);
@@ -170,7 +165,6 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		{	double sum = (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]);
 			tmp2[i] = sum;
 		}
-		// showVec(tmp2, Nvar_);
 
 		// Multiple mass by sum
 		for (int i = 0; i < Nvar_; ++i)
@@ -186,7 +180,6 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 
 		// Solve Keff*U_{n+1} = S
 	    F77NAME(dgbsv)(Nvar_, 4, 4, 1, K, 9+buf_, ipiv, S, Nvar_, info);
-	    // showVec(S, Nvar_);
 
 		// Update K to contain only the K_eff as desgv overwrites...
 		F77NAME(dcopy)(Nvar_*(9+buf_), K_eff, 1, K, 1);
@@ -208,18 +201,13 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		// Now update U
 		F77NAME(dcopy)(Nvar_, S, 1, U, 1);
 	}
-    showVec(U, Nvar_);
 	writeVec(U, Nx_g, 1, test);
 }
 
 void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double qx_,
 	double qy_, double dt_, int Nvar_g, int Nvar_, int Nghost_, int Nx_g, int Nx_,
 	int nite_, int nout_, int buf_, std::string test)
-{	if (MPI::mpi_rank==0)
-	{	cout << "Running Parallel Implicit Banded, nprocs:  " << MPI::mpi_size << endl;
-	}
-	MPI_Barrier(MPI_COMM_WORLD);
-	// ===================== Build Tables =====================//
+{	// ===================== Build Tables =====================//
 	double *K_eff 		= new double[Nvar_ * (9+buf_)]();
 	double *U			= new double[Nvar_]();
 	double *Ud			= new double[Nvar_]();
@@ -236,70 +224,46 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 	const double co3_((1/(2*beta_))-1);
 	const double co4_(dt_*(1-gamma_));
 	const double co5_(dt_*gamma_);
-
-
-	// showParMat(K, 9+buf_, Nvar_);
-	if (MPI::mpi_rank==(MPI::mpi_size-1))
-	{	int pnt = (Nvar_ - 3)*(9+buf_);
-		int pnt2 = (Nvar_ - 6)*(9+buf_);
-		for (int i = 0; i < 3*(9+buf_); ++i)
-		{	K[pnt2+i] =  K[pnt+i];
-		}
-		for (int i = 0; i < 3*(9+buf_); ++i)
-		{	K[pnt+i] =  0;
-		}
-		for (int i = Nvar_-3; i < Nvar_; ++i)
-		{	K[i*(9+buf_) + 12] = 1;
-		}
-	}
-
-	// Build Keff
-	F77NAME(dcopy)(Nvar_*(9+buf_), K, 1, K_eff, 1);
-	for (int i = 0; i < Nvar_; ++i)
-	{	int pnt = (4+buf_) + i*(9+buf_);
-		K_eff[pnt] += (co1_*M[i]);
-		K[pnt] += (co1_*M[i]);
-	}
-
-	const int n    = Nghost_;            // Problem size
-    const int nb   = Nvar_;        // Block size
     const int kl   = 4;             // Number of lower diagonals
     const int ku   = 4;             // Number of upper diagonals
-    // const int lda  = n;
     const int lda  = 1 + 2*kl + 2*ku; // Leading dimension (num of rows)
-    const int ldb  = nb;
+    const int ldb  = Nvar_;
     const int nrhs = 1;
     const int ja   = 1;             // Offset index in global array (col)
     const int ib   = 1;             // Offset index in global array (row)
-    const int lwork= (nb+ku)*(kl+ku)+6*(kl+ku)*(kl+2*ku)
-                        + max(nrhs*(nb+2*kl+4*ku), 1);
+    const int lwork= (Nvar_+ku)*(kl+ku)+6*(kl+ku)*(kl+2*ku)
+                        + max(nrhs*(Nvar_+2*kl+4*ku), 1);
     int info = 0;
 
     // Allocate memory
     double* wk   = new double[lwork]();   // Local workspace
-    int*    ipiv = new int[n]();         // Local pivoting array
+    int*    ipiv = new int[Nghost_]();         // Local pivoting array
+
+	// Build Keff
+	updateKglb(K, Nvar_, buf_);
+	F77NAME(dcopy)(Nvar_*(9+buf_), K, 1, K_eff, 1);
+	buildKeff(K, K_eff, M, co1_, Nvar_, buf_);
     
     // Create descriptors for matrix and RHS vector storage
     int desca[7];
     desca[0] = 501;         // Type is a banded matrix 1-by-P
-    desca[1] = MPI::ctx;         // Context
-    desca[2] = n;           // Problem size
-    desca[3] = nb;          // Blocking
+    desca[1] = MPI::ctx;    // Context
+    desca[2] = Nghost_;     // Problem size
+    desca[3] = Nvar_;       // Blocking
     desca[4] = 0;           // Process row/column
     desca[5] = lda;         // Local size
     desca[6] = 0;           // Reserved
 
     int descb[7];
     descb[0] = 502;         // Type is a banded matrix P-by-1 (RHS)
-    descb[1] = MPI::ctx;         // Context
-    descb[2] = n;           // Problem size
-    descb[3] = nb;          // Blocking
+    descb[1] = MPI::ctx;    // Context
+    descb[2] = Nghost_;     // Problem size
+    descb[3] = Nvar_;       // Blocking
     descb[4] = 0;           // Process row/column
-    descb[5] = nb;          // Local size
+    descb[5] = Nvar_;       // Local size
     descb[6] = 0;           // Reserved
     
 	for (int i = 0; i < nite_; ++i)
-	// for (int i = 0; i < 20; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
 		assignArr(S, 0., Nvar_);
@@ -326,7 +290,7 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 		}
 
 	    // Solver for parallel system matrix vector (RHS vector replaced by solution)
-	    F77NAME(pdgbsv)(n, kl, ku, nrhs, K, ja, desca, ipiv, S, ib, descb, wk, lwork, &info);
+	    F77NAME(pdgbsv)(Nghost_, kl, ku, nrhs, K, ja, desca, ipiv, S, ib, descb, wk, lwork, &info);
 
 		// Update K to contain only the K_eff as dgbsv overwrites...
 		F77NAME(dcopy)(Nvar_*(9+buf_), K_eff, 1, K, 1);

@@ -3,12 +3,14 @@
 
 using namespace std;
 
+// Shows vector
 void showVec(double *M, int N)
 {	for (int i = 0; i < N; ++i)
 	    cout << setprecision(5) << setw(12) << M[i] << endl;
 	cout << endl;
 }
 
+// Shows parallel vector without overlap, calls showParVec(M,N,Sghost)
 void showDenVec(double *M, int N, int Sghost_)
 {	if (MPI::mpi_rank==0)
 	{	cout << endl;
@@ -30,6 +32,7 @@ void showDenVec(double *M, int N, int Sghost_)
     }
 }
 
+// Shows parallel vector
 void showParVec(double *M, int N)
 {	MPI_Barrier(MPI_COMM_WORLD);
     for (int i = 0; i < MPI::mpi_size; ++i)
@@ -43,6 +46,7 @@ void showParVec(double *M, int N)
 	MPI_Barrier(MPI_COMM_WORLD);
 }
 
+// Shows parallel vector, but doesn't output overlap
 void showParVec(double *M, int N, int Sghost_)
 {	MPI_Barrier(MPI_COMM_WORLD);
 	if (MPI::mpi_rank==0)
@@ -68,6 +72,7 @@ void showParVec(double *M, int N, int Sghost_)
 	MPI_Barrier(MPI_COMM_WORLD);
 }
 
+// Shows NxN, matrix M = input matrix
 void showMat(double *M, int N)
 {	cout << endl;
 	for (int i = 0; i < N; ++i)
@@ -80,6 +85,7 @@ void showMat(double *M, int N)
 	cout << endl;
 }
 
+// Shows NxO matrix M = input matrix
 void showMat(double *M, int N, int O)
 {	cout << endl;
 	for (int i = 0; i < N; ++i)
@@ -92,6 +98,7 @@ void showMat(double *M, int N, int O)
 	cout << endl;
 }
 
+// Shows parallel NxO matrix M = input matrix
 void showParMat(double *M, int N, int O)
 {	MPI_Barrier(MPI_COMM_WORLD);
     for (int i = 0; i < MPI::mpi_size; ++i)
