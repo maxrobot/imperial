@@ -2,14 +2,16 @@
 #include "Common.hpp"
 #include "CommonMPI.hpp"
 #include "BuildFunction.hpp"
+#include "Output.hpp"
 
 using namespace std;
 
 // Static Solver Launch
-void runSolver(double *K_e, double lx_e, double A_,
+void runSolver(double lx_e, double A_,
 	double E_, double I_, double qx_, double qy_, int Nvar_,
-	int Nx_g)
-{	// ================ Initialise Local Vars. ================//
+	int Nx_g,std::string scheme_)
+{	printInfo(Nx_g, 0, Nvar_, 0, scheme_);
+	// ================ Initialise Local Vars. ================//
 	const int buf_(4);	  	// Buffer
 	if (MPI::mpi_size>1)
 	{	printMessage("ERROR: static is single processor only!");
@@ -17,6 +19,7 @@ void runSolver(double *K_e, double lx_e, double A_,
 	// Matrices
 	double *F_g	= new double[Nvar_]();
 	double *K_g	= new double[Nvar_ * (9+buf_)]();
+	double *K_e	= new double[6*6]();
 	double *F_e	= new double[6]();
 
 	// ============== Create Elemental K Matrix ===============//
@@ -31,14 +34,17 @@ void runSolver(double *K_e, double lx_e, double A_,
 }
 
 // Dynamic Explicit Launch
-void runSolver(double *K_e, double dt_, double lx_e, double A_,
+void runSolver(double dt_, double lx_e, double A_,
 	double E_, double I_, double rho_, double qx_, double qy_,
 	int Nvar_, int Nvar_e, int Nghost_, int Sghost_, int Nx_g,
-	int Nx_, int nite_, int nout_, const int buf_, string sparse_)
-{	// ================ Initialise Local Vars. ================//
+	int Nx_, int nite_, int nout_, const int buf_, string sparse_,
+	string scheme_)
+{	printInfo(Nx_g, Nx_, Nvar_, Nvar_e, scheme_);
+	// ================ Initialise Local Vars. ================//
 	const double Al_(1./24);  	// Constant Alpha
 
 	double *F_g	= new double[Nvar_e]();
+	double *K_e	= new double[6*6]();
 	double *M_e	= new double[6*6]();
 
 	// ============== Create Elemental K Matrix ===============//
@@ -83,18 +89,18 @@ void runSolver(double *K_e, double dt_, double lx_e, double A_,
 		}
 
 		else if (MPI::mpi_size>1)
-		{	buildBandSparse(K_g, K_e, Nvar_e, Nx_g, buf_);
+		{	buildSparsePar(K_g, K_e, Nvar_e, Nx_g, buf_);
 			buildMglbPar(M_g, M_e, Nvar_e, Nx_g, buf_);
 		// ==================== Run Solver ========================//
 			if (buf_==8)
 			{	solveParSparseImplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
-					dt_, Nvar_, Nvar_e, Nghost_, Sghost_, Nx_g, Nx_,
-					nite_, nout_, buf_, "task_5");
+					dt_, Nvar_, Nvar_e, Nghost_, Nx_g, Nx_, nite_,
+					nout_, buf_, "task_5");
 			}
 			else
-			{	solveParSparseExplicit(K_g, M_g, F_g, lx_e, qx_,
-				qy_, Nvar_, Nvar_e, Nghost_, Sghost_, Nx_g, Nx_,
-				nite_, nout_, buf_,"task_4");
+			{	solveParSparseExplicit(K_g, M_g, F_g, lx_e, qx_, qy_,
+					Nvar_, Nvar_e, Nghost_, Sghost_, Nx_g, Nx_, nite_,
+					nout_, buf_,"task_4");
 			}
 		}
 	}
@@ -117,9 +123,7 @@ void solveStatic(double *K, double *F, int Nvar_, int ldab, int Nx_, std::string
 void solveExplicit(double *K, double *M, double *F, double lx_e,
 	double qx_, double qy_, int Nvar_, int Nx_g, int nite_, int nout_,
 	int buf_, std::string test)
-{	
-	
-	double *U 		= new double[Nvar_]();
+{	double *U 		= new double[Nvar_]();
 	double *MK_o	= new double[Nvar_ * Nvar_]();
 	double *Un_g	= new double[Nvar_]();
 	double *S		= new double[Nvar_]();

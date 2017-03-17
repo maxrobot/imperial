@@ -30,8 +30,12 @@ string trim(string & str);
 
 string replaceTabsAndReturns(string & str);
 
-void initVars(double *b_, double *h_, double *A_, double *I_,  double *E_,
-	double *dt_, int *Nvar_, int *Nvar_e, int *Nghost_, int *Sghost_, int *Nx_g,
-	int *Nx_, int *T_, int *nite_);
+void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
+  double *dt_, double *lx_g, double *lx_e, int *Nvar_, int *Nvar_e, int *Nghost_,
+  int *Sghost_, int *Nx_g, int *Nx_, int *T_, int *nite_);
+
+void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
+  double *dt_, double *lx_g, double *lx_e, int *Nvar_, int *Nvar_e, int *Nghost_,
+  int *Nx_g, int *Nx_, int *T_, int *nite_);
 
 #endif // PARAMFILE_HPP_INCLUDED

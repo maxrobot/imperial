@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
 	MPI::initMpiStuff();
 	MPI::initMpiDomain();
-	// MPI::initCblacsStuff();
+	MPI::initCblacsStuff();
 	// ================ Reading of Inputs =====================//
 
 	ifstream param_file;
@@ -58,36 +58,39 @@ int main(int argc, char *argv[])
 	// End of Global Variables ######################################
 	readParamFile(param_file, &T_, &nite_, &Nx_g, &nout_, &lx_g, &E_,
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_, &scheme_, &sparse_);
-	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &Nvar_, &Nvar_e, &Nghost_,
-		&Sghost_, &Nx_g, &Nx_, &T_, &nite_);
-	lx_e = lx_g/Nx_g;		// Local element length
-	printInfo(Nx_g, Nx_, Nvar_, Nvar_e);
+	
 
 	// ===================== Build Tables =====================//
-	double *K_e	= new double[6*6]();
-
 	if (eq_=="static")
-	{	runSolver(K_e, lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g);
+	{	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &lx_g, &lx_e, &Nvar_, &Nvar_e,
+			&Nghost_, &Sghost_, &Nx_g, &Nx_, &T_, &nite_);
+		runSolver(lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g, scheme_);
 	}
 	if (eq_=="dynamic")
 	{	if (scheme_=="explicit")
 		{	const int buf_(0);
-			runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+			initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &lx_g, &lx_e, &Nvar_, &Nvar_e,
+				&Nghost_, &Sghost_, &Nx_g, &Nx_, &T_, &nite_);
+			runSolver(dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
 				Nvar_e, Nghost_, Sghost_, Nx_g, Nx_, nite_, nout_, buf_,
-				sparse_);
+				sparse_, scheme_);
 		}
 		if (scheme_=="implicit")
 		{	if (MPI::mpi_size==1)
 			{	const int buf_(4);
-				runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+				initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &lx_g, &lx_e, &Nvar_, &Nvar_e,
+					&Nghost_, &Sghost_, &Nx_g, &Nx_, &T_, &nite_);
+				runSolver(dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
 					Nvar_e, Nghost_, Sghost_, Nx_g, Nx_, nite_, nout_, buf_,
-					sparse_);
+					sparse_, scheme_);
 			}
 			if (MPI::mpi_size>1)
 			{	const int buf_(8);
-				runSolver(K_e, dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
+				initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &lx_g, &lx_e, &Nvar_, &Nvar_e,
+					&Nghost_, &Nx_g, &Nx_, &T_, &nite_);
+				runSolver(dt_, lx_e, A_, E_, I_, rho_, qx_, qy_, Nvar_,
 					Nvar_e, Nghost_, Sghost_, Nx_g, Nx_, nite_, nout_, buf_,
-					sparse_);
+					sparse_, scheme_);
 			}
 		}
 		if (scheme_=="none")

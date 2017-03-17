@@ -193,18 +193,17 @@ string replaceTabsAndReturns(string & str)
 //   }
 // }
 
-// void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
-//   double *dt_, int *Nvar_, int *Nvar_e, int *Nghost_, int *Nx_g, int *Nx_,
-//   int *T_, int *nite_)
 void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
-  double *dt_, int *Nvar_, int *Nvar_e, int *Nghost_, int *Sghost_, int *Nx_g,
-  int *Nx_, int *T_, int *nite_)
+  double *dt_, double *lx_g, double *lx_e, int *Nvar_, int *Nvar_e, int *Nghost_,
+  int *Sghost_, int *Nx_g, int *Nx_, int *T_, int *nite_)
 { // Initialise most value stuffs
   *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
   *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
   *Nvar_ = (*Nx_g-1)*3;          // Number of variables in global matrices excluding boundaries
   *E_ = *E_;
   *dt_ = double(*T_)/ *nite_;
+  *lx_e = *lx_g/ *Nx_g;   // Local element length
+
 
   // Initialise domain decomp
   *Nx_ = (*Nx_g-1)/(MPI::mpi_size);
@@ -231,4 +230,27 @@ void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
     { *Nghost_ = *Nvar_e+(2* *Sghost_);
     }
   }
+}
+
+void initVars(double *b_, double *h_, double *A_, double *I_, double *E_,
+  double *dt_, double *lx_g, double *lx_e, int *Nvar_, int *Nvar_e, int *Nghost_,
+  int *Nx_g, int *Nx_, int *T_, int *nite_)
+{ // Initialise most value stuffs
+  *A_ = *b_ * *h_;                   // Cross-sectional Area Calculation
+  *I_ = (*b_ * pow(*h_,3.))/12;      // Second Moments of area calculation
+  *Nvar_ = (*Nx_g-1)*3;          // Number of variables in global matrices excluding boundaries
+  *E_ = *E_;
+  *dt_ = double(*T_)/ *nite_;
+  *lx_e = *lx_g/ *Nx_g;   // Local element length
+
+  // Initialise domain decomp our original input 
+  //will change according to what is simple to discretise...
+  *Nx_ = *Nx_g/(MPI::mpi_size);
+  if ((*Nx_g%MPI::mpi_size))
+  { printMessage("Decomposition unsuitable try another size!");
+    exit(EXIT_FAILURE);
+  }
+  *Nvar_e = *Nx_ * 3;
+  *Nghost_ = MPI::mpi_size * *Nvar_e;
+
 }

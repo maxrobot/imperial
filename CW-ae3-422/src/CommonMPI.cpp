@@ -2,6 +2,7 @@
 #include <stdio.h> // for gcc >= 4.4 compatibility
 #include "CommonMPI.hpp"
 #include "Common.hpp"
+#include "Output.hpp"
 
 using namespace std;
 
@@ -27,17 +28,14 @@ int *n_rank;
 int *mpi_dims;
 
 // Cblacs things
-// int nrow = 1;
-// int ncol;
-// char order = 'R';
-// int ctx;
-// int mype;
-// int npe;
-// int myrow;
-// int mycol;
-
-
-
+int nrow = 1;
+int ncol;
+char order = 'R';
+int ctx;
+int mype;
+int npe;
+int myrow;
+int mycol;
 
 MPI_Comm mpi_comm = MPI_COMM_WORLD;
 MPI_Comm row_comm;
@@ -54,13 +52,13 @@ MPI_Status status;
 	  	MPI_Comm_dup(MPI_COMM_WORLD, &mpi_comm);
 	}
 
-	// void initCblacsStuff()
-	// {   ncol = mpi_size;
-	// 	Cblacs_pinfo(&mype, &npe);
-	//     Cblacs_get(0, 0, &ctx);
-	//     Cblacs_gridinit(&ctx, &order, nrow, ncol);
-	//     Cblacs_gridinfo(ctx, &nrow, &ncol, &myrow, &mycol);
-	// }
+	void initCblacsStuff()
+	{   ncol = mpi_size;
+		Cblacs_pinfo(&mype, &npe);
+	    Cblacs_get(0, 0, &ctx);
+	    Cblacs_gridinit(&ctx, &order, nrow, ncol);
+	    Cblacs_gridinfo(ctx, &nrow, &ncol, &myrow, &mycol);
+	}
 	
 	void checkMPI(int retval)
 	{	if(retval!=MPI_SUCCESS) 
