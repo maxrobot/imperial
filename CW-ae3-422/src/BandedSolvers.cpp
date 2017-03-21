@@ -60,17 +60,15 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 	parMatSum(K, M, MK_o, Nvar_, Nghost_);
     delete[] K;
 
-    // Makte the rest...
+    // Make the rest...
 	double *U 		= new double[Nghost_]();
 	double *MKU_o	= new double[Nghost_]();
 	double *Un_g	= new double[Nvar_]();
 	double *Minv_	= new double[Nvar_]();
 	double d1, d2;
-
     for (int i = 0; i < Nvar_; ++i)
     {	Minv_[i] = 1/M[i];
     }
-
 
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
@@ -109,8 +107,6 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 	double *Ud			= new double[Nvar_]();
 	double *Udd			= new double[Nvar_]();
 	double *tmp			= new double[Nvar_]();
-	double *tmp2		= new double[Nvar_]();
-	double *S			= new double[Nvar_]();
 
 	// Constanst and coefficients
 	const double beta_(.25);
@@ -135,30 +131,16 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 	for (int i = 0; i < nite_; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
-		assignArr(S, 0., Nvar_);
 		assignArr(tmp, 0., Nvar_);
-		assignArr(tmp2, 0., Nvar_);
 		updateVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
-		// Sum U, Ud and, Udd with coefficients
+		// Sum U, Ud and, Udd with coefficients, the add forces to sum...
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]);
-			tmp2[i] = sum;
-		}
-
-		// Multiple mass by sum
-		for (int i = 0; i < Nvar_; ++i)
-		{	S[i] = M[i]*tmp2[i];
-		}
-
-		// Add forces to sum...
-		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = S[i] + F[i];
-			S[i] = sum;
+		{	F[i] += M[i]*((co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]));
 		}
 
 		// Solve Keff*U_{n+1} = S
-	    F77NAME(dgbsv)(Nvar_, 4, 4, 1, K, 9+buf_, ipiv, S, Nvar_, info);
+	    F77NAME(dgbsv)(Nvar_, 4, 4, 1, K, 9+buf_, ipiv, F, Nvar_, info);
 
 		// Update K to contain only the K_eff as desgv overwrites...
 		F77NAME(dcopy)(Nvar_*(9+buf_), K_eff, 1, K, 1);
@@ -166,19 +148,17 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		// Now update Udd
 		F77NAME(dcopy)(Nvar_, Udd, 1, tmp, 1);   
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = (co1_*(S[i]-U[i])) - (co2_*Ud[i]) -
+		{	Udd[i] = (co1_*(F[i]-U[i])) - (co2_*Ud[i]) -
 				(co3_*Udd[i]);
-			Udd[i] = sum;
 		}
 
 		// Now update Ud
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
-			Ud[i] = sum;
+		{	Ud[i] = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
 		}
 
 		// Now update U
-		F77NAME(dcopy)(Nvar_, S, 1, U, 1);
+		F77NAME(dcopy)(Nvar_, F, 1, U, 1);
 	}
 	writeVec(U, Nx_g, 1, test);
 }
