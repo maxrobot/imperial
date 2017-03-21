@@ -1,5 +1,5 @@
 #include <iostream>
-#include <stdio.h> // for gcc >= 4.4 compatibility
+#include <stdio.h>
 #include "CommonMPI.hpp"
 #include "Common.hpp"
 #include "Output.hpp"
@@ -75,6 +75,7 @@ MPI_Status status;
 		MPI_Dims_create(mpi_size, ndims, mpi_dims);
 		MPI_Cart_create(mpi_comm, 1, mpi_dims, periods, reorder, &cartcomm);
 		MPI_Cart_coords(cartcomm, mpi_rank, ndims, mpi_coords);
+		getNeighbours();
   	}
 
 	void getNeighbours()
@@ -152,9 +153,7 @@ MPI_Status status;
 	}
 
 	void getLeftData(double *d1, double *d2)
-	{	MPI::getNeighbours();
-		// MPI_Comm_rank(row_comm, &row_rank);
-		MPI_Request request;
+	{	MPI_Request request;
 		MPI_Status status;
 
 		// Find the neighbours...
@@ -164,14 +163,11 @@ MPI_Status status;
 	    {   left = MPI::mpi_size - 1;
 	    }
 	    // MPI_Sendrecv
-	    MPI_Barrier(MPI_COMM_WORLD);
 		MPI_Sendrecv(d1, 1, MPI_DOUBLE, left, 123, d2, 1, MPI_DOUBLE, right, 123, MPI_COMM_WORLD, &status);
 	}
 	
 	void getRightData(double *d1, double *d2)
-	{	MPI::getNeighbours();
-		// MPI_Comm_rank(row_comm, &row_rank);
-		MPI_Request request;
+	{	MPI_Request request;
 		MPI_Status status;
 
 		// Find the neighbours...
@@ -185,9 +181,7 @@ MPI_Status status;
 	}
 
 	void gatherData(double *output, double *U, int Nvar_g, int Nvar_)
-	{	
-		MPI::getNeighbours();
-		MPI_Request request;
+	{	MPI_Request request;
 		MPI_Status status;
 		int right = n_rhs, left  = MPI::mpi_rank-1;
 		int pnt = 0;
@@ -217,7 +211,6 @@ MPI_Status status;
 			for (int j = 0; j < bnd; ++j)
 			{	if (MPI::mpi_rank==i)
 				{	d1 = U[j];
-					// cout << U[j] << endl;
 					MPI_Send(&d1, 1, MPI_DOUBLE, 0, 123, MPI_COMM_WORLD);
 				}
 				else if (MPI::mpi_rank==0)

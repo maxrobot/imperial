@@ -49,7 +49,7 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 	    F77NAME(dgbsv)(Nvar_, 0, 0, 1, Mt_, 1, ipiv, U, Nvar_, info);
 	}
-	writeVec(U, Nx_g, 1, test);
+	// writeVec(U, Nx_g, 1, test);
 }
 
 void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
@@ -172,8 +172,6 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 	double *Ud			= new double[Nvar_]();
 	double *Udd			= new double[Nvar_]();
 	double *tmp			= new double[Nvar_]();
-	double *tmp2		= new double[Nvar_]();
-	double *S			= new double[Nvar_]();
 
 	// Constanst and coefficients
 	const double beta_(.25);
@@ -183,6 +181,7 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 	const double co3_((1/(2*beta_))-1);
 	const double co4_(dt_*(1-gamma_));
 	const double co5_(dt_*gamma_);
+
     const int kl   = 4;             // Number of lower diagonals
     const int ku   = 4;             // Number of upper diagonals
     const int lda  = 1 + 2*kl + 2*ku; // Leading dimension (num of rows)
@@ -192,11 +191,11 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
     const int ib   = 1;             // Offset index in global array (row)
     const int lwork= (Nvar_+ku)*(kl+ku)+6*(kl+ku)*(kl+2*ku)
                         + max(nrhs*(Nvar_+2*kl+4*ku), 1);
-    int info = 0;
 
-    // Allocate memory
+    // Allocate factorisation matrices...
     double* wk   = new double[lwork]();   // Local workspace
     int*    ipiv = new int[Nghost_]();         // Local pivoting array
+    int info = 0;
 
 	// Build Keff
 	updateKglb(K, Nvar_, buf_);
@@ -225,51 +224,34 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 	for (int i = 0; i < nite_; ++i)
 	{	// Create Dynamic Force
 		assignArr(F, 0., Nvar_);
-		assignArr(S, 0., Nvar_);
 		assignArr(tmp, 0., Nvar_);
-		assignArr(tmp2, 0., Nvar_);
 		updateParVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
-		// Sum U, Ud and, Udd with coefficients
+		// Update RHS
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]);
-			tmp2[i] = sum;
-		}
-		// showParVec(tmp2, Nvar_);
-
-		// Multiple mass by sum
-		for (int i = 0; i < Nvar_; ++i)
-		{	S[i] = M[i]*tmp2[i];
-		}
-
-		// Add forces to sum...
-		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = S[i] + F[i];
-			S[i] = sum;
+		{	F[i] += M[i]*( (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]) );
 		}
 
 	    // Solver for parallel system matrix vector (RHS vector replaced by solution)
-	    F77NAME(pdgbsv)(Nghost_, kl, ku, nrhs, K, ja, desca, ipiv, S, ib, descb, wk, lwork, &info);
+	    F77NAME(pdgbsv)(Nghost_, kl, ku, nrhs, K, ja, desca, ipiv, F, ib, descb, wk, lwork, &info);
 
 		// Update K to contain only the K_eff as dgbsv overwrites...
 		F77NAME(dcopy)(Nvar_*(9+buf_), K_eff, 1, K, 1);
 
 		// Now update Udd
-		F77NAME(dcopy)(Nvar_, Udd, 1, tmp, 1);   
+		F77NAME(dcopy)(Nvar_, Udd, 1, tmp, 1);
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = (co1_*(S[i]-U[i])) - (co2_*Ud[i]) -
-				(co3_*Udd[i]);
-			Udd[i] = sum;
+		{ 	Udd[i] = (co1_*(F[i]-U[i])) - (co2_*Ud[i]) -
+				(co3_*Udd[i]);;
 		}
 
 		// Now update Ud
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
-			Ud[i] = sum;
+		{	Ud[i] = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
 		}
 
 		// Now update U
-		F77NAME(dcopy)(Nvar_, S, 1, U, 1);
+		F77NAME(dcopy)(Nvar_, F, 1, U, 1);
 	}
 	writeParVec(U, Nx_g, Nvar_*MPI::mpi_size, Nvar_, 1, test);
 }
