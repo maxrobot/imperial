@@ -1,3 +1,5 @@
+#include <fstream>
+#include <string.h>
 #include "Solvers.hpp"
 #include "Common.hpp"
 #include "CommonMPI.hpp"
@@ -32,8 +34,9 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
-	for (int i = 0; i <= nite_; ++i)
-	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
+	for (int i = 0; i < nite_; ++i)
+	{	
+		F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
 		assignArr(MKU_o, 0, Nvar_);
 		
 		// Calculate MK_o*U{n}
@@ -82,8 +85,6 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
     {	Minv_[i] = 1/M[i];
     }
 
-	// updateParVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, 1, nite_);
-	// showParVec(F, Nvar_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i < nite_; ++i)

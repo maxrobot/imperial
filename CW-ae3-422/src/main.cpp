@@ -61,12 +61,14 @@ int main(int argc, char *argv[])
 		&rho_, &b_, &h_, &qx_, &qy_, &eq_, &scheme_, &sparse_);
 	
 
-	// ===================== Build Tables =====================//
+	// ======================== Run Solvers =======================//
+	// Run Static Equation
 	if (eq_=="static")
 	{	initVars(&b_, &h_, &A_, &I_, &E_, &dt_, &lx_g, &lx_e, &Nvar_, &Nvar_e,
 			&Nghost_, &Sghost_, &Nx_g, &Nx_, &T_, &nite_);
 		runSolver(lx_e, A_, E_, I_, qx_, qy_, Nvar_, Nx_g, scheme_);
 	}
+	// Run Dynamic Equation
 	if (eq_=="dynamic")
 	{	if (scheme_=="explicit")
 		{	const int buf_(0);
@@ -98,6 +100,7 @@ int main(int argc, char *argv[])
 		{	printMessage("Please Choose Integration Scheme. (explicit/implicit)");
 		}
 	}
+	// ======================== End Simulation =======================//
 	printTime(tCPU_);
 	MPI_Finalize();
 	return 0;

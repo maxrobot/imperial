@@ -331,7 +331,7 @@ void buildMgBandPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf)
 }
 
 // Build global force
-void buildFgBand(double *Kg, double *ke, int Nx_g, int Nvar_)
+void buildFgBand(double *Kg, double *ke, double coeff, int Nx_g, int Nvar_)
 {	// Build Center	
 	if (MPI::mpi_rank==0)
 	{	Kg[1] = ke[1]; 
@@ -349,10 +349,10 @@ void buildFgBand(double *Kg, double *ke, int Nx_g, int Nvar_)
 	}
 	// Add the concentrated force to the middle node
 	if (MPI::mpi_rank==((MPI::mpi_size)/2 -1) && MPI::mpi_size>1)
-	{	Kg[(Nvar_-2)] +=1000;
+	{	Kg[(Nvar_-2)] += coeff*1000;
 	}
 	else if (MPI::mpi_size==1)
-	{	Kg[(Nvar_-1)/2] +=1000;
+	{	Kg[(Nvar_-1)/2] += coeff*1000;
 	}
 }
 
@@ -518,6 +518,6 @@ void updateParVars(double *F, double lx_e, double qx_, double qy_,
 {	double coef = double(step)/nite_;
 	double *fe = new double[6]();
 	buildFe(fe, lx_e, coef*qx_, coef*qy_);
-	buildFgBand(F, fe, Nx_g, Nvar_);
+	buildFgBand(F, fe, coef, Nx_g, Nvar_);
 	delete [] fe;
 }

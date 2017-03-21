@@ -14,7 +14,7 @@ void buildKgBand(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
 void buildMgBand(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
 void buildMgBandPar(double *Kg, double *ke, int Nvar_, int Nx_g, int buf);
 
-void buildFgBand(double *Kg, double *ke, int Nx_g, int Nvar_);
+void buildFgBand(double *Kg, double *ke, double coeff, int Nx_g, int Nvar_);
 void buildFg(double *Kg, double *ke, int Nx_g, int Nvar_);
 
 

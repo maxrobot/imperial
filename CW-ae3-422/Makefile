@@ -17,7 +17,7 @@ CPP_FILES = $(wildcard $(SRCDIR)*.cpp)
 OBJ_FILES = $(addprefix $(OBJDIR), $(notdir $(CPP_FILES:.cpp=.o)))
 
 # Main target
-$(EXEC): author compile_info $(MKDIRS) $(OBJ_FILES) 
+compile: author compile_info $(MKDIRS) $(OBJ_FILES) 
 	@echo
 	@printf $(LITEXT) 
 	@$(CC) $(OBJ_FILES) -o $(EXEC) $(LD_FLAGS)
@@ -77,10 +77,16 @@ help: author
 	@printf "\033[1;31m Linking options \033[0m \033[1m  [$(LD_FLAGS)]\033[0m\n"
 	@echo	
 	@printf "\033[1;31m Provided Rules: \033[0m\n"
-	@printf "\033[1;31m  help         =>\033[0m\033[1m printing this help message\033[0m\n"
-	@printf "\033[1;31m  clean        =>\033[0m\033[1m cleaning object, executable and archive files\033[0m\n"
-	@printf "\033[1;31m  tar          =>\033[0m\033[1m creating a tar archive of the project\033[0m\n"
 	@printf "\033[1;31m  all          =>\033[0m\033[1m run all tasks for this assignment\033[0m\n"
+	@printf "\033[1;31m  clean        =>\033[0m\033[1m cleaning object, executable and archive files\033[0m\n"
+	@printf "\033[1;31m  compile      =>\033[0m\033[1m compiles solver\033[0m\n"
+	@printf "\033[1;31m  help         =>\033[0m\033[1m printing this help message\033[0m\n"
+	@printf "\033[1;31m  tar          =>\033[0m\033[1m creating a tar archive of the project\033[0m\n"
+	@printf "\033[1;31m  task1        =>\033[0m\033[1m runs task 1\033[0m\n"
+	@printf "\033[1;31m  task2        =>\033[0m\033[1m runs task 2\033[0m\n"
+	@printf "\033[1;31m  task3        =>\033[0m\033[1m runs task 3\033[0m\n"
+	@printf "\033[1;31m  task4        =>\033[0m\033[1m runs task 4\033[0m\n"
+	@printf "\033[1;31m  task5        =>\033[0m\033[1m runs task 5\033[0m\n"
 	@echo
 
 task1:
