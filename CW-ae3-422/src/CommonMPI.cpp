@@ -105,24 +105,54 @@ MPI_Status status;
 		int Sghost_ = 3;
 
 		// Temp array for old input
+		// double *temp =  new double[Nghost_]();
+		// for (int i = 0; i < Nghost_; ++i)
+		// {	temp[i] = U[i];
+		// }
+		// for (int i = 0; i < bnd; ++i)
+		// {	int pnt = Sghost_ + i;
+		// 	int pnt2 = Nghost_ - bnd  + i;
+		// 	double d1 = U[pnt], d2;
+		// 	getLeftData(&d1, &d2);
+		// 	if (mpi_rank<(MPI::mpi_size-1))
+		// 	{	U[pnt2] = d2;
+		// 	}
+		// 	pnt = Nghost_ - bnd - Sghost_ + i;
+		// 	pnt2 = i;
+		// 	d1 = temp[pnt];
+		// 	getRightData(&d1, &d2);
+		// 	if (mpi_rank>0)
+		// 	{	U[pnt2] = d2;
+		// 	}
+		// }
+		// Temp array for old input
 		double *temp =  new double[Nghost_]();
 		for (int i = 0; i < Nghost_; ++i)
 		{	temp[i] = U[i];
 		}
+
+		double d1[6], d2[6];
 		for (int i = 0; i < bnd; ++i)
-		{	int pnt = Sghost_ + i;
-			int pnt2 = Nghost_ - bnd  + i;
-			double d1 = U[pnt], d2;
-			getLeftData(&d1, &d2);
-			if (mpi_rank<(MPI::mpi_size-1))
-			{	U[pnt2] = d2;
-			}
-			pnt = Nghost_ - bnd - Sghost_ + i;
-			pnt2 = i;
-			d1 = temp[pnt];
-			getRightData(&d1, &d2);
-			if (mpi_rank>0)
-			{	U[pnt2] = d2;
+		{	int pnt = 0 + i;
+			int pnt2 = Nghost_-bnd + i;
+			d1[i] = U[pnt];
+		}
+		getLeftData(d1, d2);
+		if (mpi_rank<(MPI::mpi_size-1))
+		{	for (int i = 0; i < bnd; ++i)
+			{	int pnt2 = Nghost_-bnd + i;
+				U[pnt2] = d2[i];
+			}		
+		}
+		for (int i = 0; i < bnd; ++i)
+		{	int pnt2 = Nghost_-bnd + i;
+			d1[i] = temp[pnt2];
+		}
+		getRightData(d1, d2);
+		if (mpi_rank>0)
+		{	for (int i = 0; i < bnd; ++i)
+			{	int pnt = 0 + i;
+				U[pnt] = d2[i];
 			}
 		}
 	}
@@ -136,21 +166,56 @@ MPI_Status status;
 		for (int i = 0; i < Nghost_; ++i)
 		{	temp[i] = U[i];
 		}
+
+		double d1[6], d2[6];
 		for (int i = 0; i < bnd; ++i)
 		{	int pnt = 0 + i;
 			int pnt2 = Nghost_-bnd + i;
-			double d1 = U[pnt], d2;
-			getLeftData(&d1, &d2);
-			if (mpi_rank<(MPI::mpi_size-1))
-			{	U[pnt2] += d2;
-			}
-			d1 = temp[pnt2];
-			getRightData(&d1, &d2);
-			if (mpi_rank>0)
-			{	U[pnt]+= d2;
+			d1[i] = U[pnt];
+		}
+		getLeftData(d1, d2);
+		if (mpi_rank<(MPI::mpi_size-1))
+		{	for (int i = 0; i < bnd; ++i)
+			{	int pnt2 = Nghost_-bnd + i;
+				U[pnt2] += d2[i];
+			}		
+		}
+		for (int i = 0; i < bnd; ++i)
+		{	int pnt2 = Nghost_-bnd + i;
+			d1[i] = temp[pnt2];
+		}
+		getRightData(d1, d2);
+		if (mpi_rank>0)
+		{	for (int i = 0; i < bnd; ++i)
+			{	int pnt = 0 + i;
+				U[pnt]+= d2[i];
 			}
 		}
 	}
+	// void exchangeVecConts(double *U, int Nghost_, int Sghost_)
+	// {	// Set exchange length
+	// 	int bnd = 6;
+
+	// 	// Temp array for old input
+	// 	double *temp =  new double[Nghost_]();
+	// 	for (int i = 0; i < Nghost_; ++i)
+	// 	{	temp[i] = U[i];
+	// 	}
+	// 	for (int i = 0; i < bnd; ++i)
+	// 	{	int pnt = 0 + i;
+	// 		int pnt2 = Nghost_-bnd + i;
+	// 		double d1 = U[pnt], d2;
+	// 		getLeftData(&d1, &d2);
+	// 		if (mpi_rank<(MPI::mpi_size-1))
+	// 		{	U[pnt2] += d2;
+	// 		}
+	// 		d1 = temp[pnt2];
+	// 		getRightData(&d1, &d2);
+	// 		if (mpi_rank>0)
+	// 		{	U[pnt]+= d2;
+	// 		}
+	// 	}
+	// }
 
 	void getLeftData(double *d1, double *d2)
 	{	MPI_Request request;
@@ -163,7 +228,8 @@ MPI_Status status;
 	    {   left = MPI::mpi_size - 1;
 	    }
 	    // MPI_Sendrecv
-		MPI_Sendrecv(d1, 1, MPI_DOUBLE, left, 123, d2, 1, MPI_DOUBLE, right, 123, MPI_COMM_WORLD, &status);
+		// MPI_Sendrecv(d1, 1, MPI_DOUBLE, left, 123, d2, 1, MPI_DOUBLE, right, 123, MPI_COMM_WORLD, &status);
+		MPI_Sendrecv(d1, 6, MPI_DOUBLE, left, 123, d2, 6, MPI_DOUBLE, right, 123, MPI_COMM_WORLD, &status);
 	}
 	
 	void getRightData(double *d1, double *d2)
@@ -177,7 +243,8 @@ MPI_Status status;
 	    {   left = MPI::mpi_size - 1;
 	    }
 	    // MPI_Sendrecv 
-		MPI_Sendrecv(d1, 1, MPI_DOUBLE, right, 123, d2, 1, MPI_DOUBLE, left, 123, MPI_COMM_WORLD, &status);
+		// MPI_Sendrecv(d1, 1, MPI_DOUBLE, right, 123, d2, 1, MPI_DOUBLE, left, 123, MPI_COMM_WORLD, &status);
+		MPI_Sendrecv(d1, 6, MPI_DOUBLE, right, 123, d2, 6, MPI_DOUBLE, left, 123, MPI_COMM_WORLD, &status);
 	}
 
 	void gatherData(double *output, double *U, int Nvar_g, int Nvar_)

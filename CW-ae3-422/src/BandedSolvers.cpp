@@ -49,7 +49,7 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 	    F77NAME(dgbsv)(Nvar_, 0, 0, 1, Mt_, 1, ipiv, U, Nvar_, info);
 	}
-	// writeVec(U, Nx_g, 1, test);
+	writeVec(U, Nx_g, 1, test);
 }
 
 void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
@@ -70,9 +70,11 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
     {	Minv_[i] = 1/M[i];
     }
 
+	// assignArr(U, 1.2, Nvar_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i < nite_; ++i)
+	// for (int i = 0; i < 1; ++i)
 	{	
 		// Calculate MK_o*U{n}
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
@@ -160,7 +162,7 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		// Now update U
 		F77NAME(dcopy)(Nvar_, F, 1, U, 1);
 	}
-	writeVec(U, Nx_g, 1, test);
+	// writeVec(U, Nx_g, 1, test);
 }
 
 void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double qx_,
@@ -253,5 +255,5 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 		// Now update U
 		F77NAME(dcopy)(Nvar_, F, 1, U, 1);
 	}
-	writeParVec(U, Nx_g, Nvar_*MPI::mpi_size, Nvar_, 1, test);
+	// writeParVec(U, Nx_g, Nvar_*MPI::mpi_size, Nvar_, 1, test);
 }

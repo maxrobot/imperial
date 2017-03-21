@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	MPI::initMpiDomain();
 	MPI::initCblacsStuff();
 	// ================ Reading of Inputs =====================//
-	printHeader();
+	// printHeader();
 	ifstream param_file;
 	param_file.open(argv[1], ifstream::in);
 	if (!param_file)
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	// ======================== End Simulation =======================//
-	printTime(tCPU_);
+	// printTime(tCPU_);
 	MPI_Finalize();
 	return 0;
 }
