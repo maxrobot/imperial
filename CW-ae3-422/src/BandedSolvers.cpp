@@ -14,7 +14,6 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 {	double *MK_o	= new double[Nvar_ * 9]();
 	double *U 		= new double[Nvar_]();
 	double *Un_g	= new double[Nvar_]();
-	double *S		= new double[Nvar_]();
 	double *Mt_		= new double[Nvar_]();
 	double *MKU_o	= new double[Nvar_]();
 	double *MU_o	= new double[Nvar_]();
@@ -51,17 +50,16 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 		{	MU_o[i] = Mt_[i]*Un_g[i];
 		}
 
+		// Calculate updated M*U{n+1} = S
+		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
 		for (int i = 0; i < Nvar_; ++i)
 		{	double sum = F[i] - MKU_o[i] - MU_o[i];
-			S[i] = sum;
+			U[i] = sum;
 		}
 
-		// Calculate updated M*U{n+1} = S
-	    F77NAME(dgbsv)(Nvar_, 0, 0, 1, Mt_, 1, ipiv, S, Nvar_, info);
+	    F77NAME(dgbsv)(Nvar_, 0, 0, 1, Mt_, 1, ipiv, U, Nvar_, info);
 
 		// Now update vars for repeat
-		F77NAME(dcopy)(Nvar_, U, 1, Un_g, 1); // Save Un-1
-		F77NAME(dcopy)(Nvar_, S, 1, U, 1); // Update Un
 	}
 	writeVec(U, Nx_g, 1, test);
 }
