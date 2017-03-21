@@ -55,53 +55,45 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
 	double qx_, double qy_, int Nvar_g, int Nvar_, int Nghost_, int Sghost_,
 	int Nx_g, int Nx_, int nite_, int nout_, int buf_, std::string test)
-{	double *MK_o	= new double[Nghost_ * 9]();
+{	// Make the initial matrix, and free unused k before continuing...
+	double *MK_o	= new double[Nghost_ * 9]();
+	parMatSum(K, M, MK_o, Nvar_, Nghost_);
+    delete[] K;
+
+    // Makte the rest...
 	double *U 		= new double[Nghost_]();
 	double *MKU_o	= new double[Nghost_]();
 	double *Un_g	= new double[Nvar_]();
-	double *S		= new double[Nvar_]();
-	double *Mt_		= new double[Nvar_]();
 	double *Minv_	= new double[Nvar_]();
-	double *MU_o	= new double[Nvar_]();
 	double d1, d2;
 
-    // Make the initial matrix...
-	parMatSum(K, M, MK_o, Nvar_, Nghost_);
     for (int i = 0; i < Nvar_; ++i)
     {	Minv_[i] = 1/M[i];
     }
 
+
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i < nite_; ++i)
-	{	F77NAME(dcopy)(Nvar_, M, 1, Mt_, 1); // Save Un-1
-		assignArr(MKU_o, 0, Nghost_);
-
+	{	
 		// Calculate MK_o*U{n}
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
 		MPI::exchangeVecConts(MKU_o, Nghost_, Sghost_);
-		MPI_Barrier(MPI_COMM_WORLD);
 
 		// Update Variables
 		assignArr(F, 0., Nvar_);
 		updateParVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
-		// Calculate M*U{n-1}
 		for (int i = 0; i < Nvar_; ++i)
-		{	MU_o[i] = Mt_[i]*Un_g[i];
+		{	F[i] -= M[i]*Un_g[i];
 		}
-		
-		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = F[i] - MU_o[i];
-			S[i] = sum;
-		}
-		parVecSub(S, MKU_o, Nvar_);
+		parVecSub(F, MKU_o, Nvar_);
 
 		// Update old U into Un_g
 		parVecCopy(Un_g, U, Nvar_);
 
 		// Calculate updated M*U{n+1} = S
-		parMatSolve(Minv_, S, U, Nvar_);
+		parMatSolve(Minv_, F, U, Nvar_);
 		MPI::copyVecConts(U, Nghost_);
 	}
 	parVecCopy(Un_g, U, Nvar_);
