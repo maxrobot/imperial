@@ -70,11 +70,9 @@ void solveParSparseExplicit(double *K, double *M, double *F, double lx_e,
     {	Minv_[i] = 1/M[i];
     }
 
-	// assignArr(U, 1.2, Nvar_);
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i < nite_; ++i)
-	// for (int i = 0; i < 1; ++i)
 	{	
 		// Calculate MK_o*U{n}
 		F77NAME(dgbmv)('n', Nghost_, Nghost_, 4, 4, 1, MK_o, 9, U, 1, 0, MKU_o, 1);
@@ -138,7 +136,8 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 
 		// Sum U, Ud and, Udd with coefficients, the add forces to sum...
 		for (int i = 0; i < Nvar_; ++i)
-		{	F[i] += M[i]*((co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]));
+		{	double sum = ((co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]));
+			F[i] += M[i]*sum;
 		}
 
 		// Solve Keff*U_{n+1} = S
@@ -150,19 +149,20 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		// Now update Udd
 		F77NAME(dcopy)(Nvar_, Udd, 1, tmp, 1);   
 		for (int i = 0; i < Nvar_; ++i)
-		{	Udd[i] = (co1_*(F[i]-U[i])) - (co2_*Ud[i]) -
-				(co3_*Udd[i]);
+		{	double sum = (co2_*Ud[i]) + (co3_*Udd[i]);
+			Udd[i] = (co1_*(F[i]-U[i])) - sum;
 		}
 
 		// Now update Ud
 		for (int i = 0; i < Nvar_; ++i)
-		{	Ud[i] = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
+		{	double sum = (co4_*tmp[i]) + (co5_*Udd[i]);
+			Ud[i] = Ud[i] + sum;
 		}
 
 		// Now update U
 		F77NAME(dcopy)(Nvar_, F, 1, U, 1);
 	}
-	// writeVec(U, Nx_g, 1, test);
+	writeVec(U, Nx_g, 1, test);
 }
 
 void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double qx_,
@@ -231,7 +231,8 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 
 		// Update RHS
 		for (int i = 0; i < Nvar_; ++i)
-		{	F[i] += M[i]*( (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]) );
+		{	double sum = ( (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]) );
+			F[i] += M[i]*sum;
 		}
 
 	    // Solver for parallel system matrix vector (RHS vector replaced by solution)
@@ -243,17 +244,25 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 		// Now update Udd
 		F77NAME(dcopy)(Nvar_, Udd, 1, tmp, 1);
 		for (int i = 0; i < Nvar_; ++i)
-		{ 	Udd[i] = (co1_*(F[i]-U[i])) - (co2_*Ud[i]) -
-				(co3_*Udd[i]);;
+		{	double sum = (co2_*Ud[i]) + (co3_*Udd[i]);
+			Udd[i] = (co1_*(F[i]-U[i])) - sum;
 		}
+		// for (int i = 0; i < Nvar_; ++i)
+		// { 	Udd[i] = (co1_*(F[i]-U[i])) - (co2_*Ud[i]) -
+		// 		(co3_*Udd[i]);;
+		// }
 
 		// Now update Ud
 		for (int i = 0; i < Nvar_; ++i)
-		{	Ud[i] = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
+		{	double sum = (co4_*tmp[i]) + (co5_*Udd[i]);
+			Ud[i] = Ud[i] + sum;
 		}
+		// for (int i = 0; i < Nvar_; ++i)
+		// {	Ud[i] = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
+		// }
 
 		// Now update U
 		F77NAME(dcopy)(Nvar_, F, 1, U, 1);
 	}
-	// writeParVec(U, Nx_g, Nvar_*MPI::mpi_size, Nvar_, 1, test);
+	writeParVec(U, Nx_g, Nvar_*MPI::mpi_size, Nvar_, 1, test);
 }

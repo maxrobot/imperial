@@ -43,7 +43,7 @@ void runSolver(double dt_, double lx_e, double A_,
 	int Nvar_, int Nvar_e, int Nghost_, int Sghost_, int Nx_g,
 	int Nx_, int nite_, int nout_, const int buf_, string sparse_,
 	string scheme_)
-{	//printInfo(Nx_g, Nx_, Nvar_, Nvar_e, scheme_);
+{	printInfo(Nx_g, Nx_, Nvar_, Nvar_e, scheme_);
 	// ================ Initialise Local Vars. ================//
 	const double Al_(1./24);  	// Constant Alpha
 

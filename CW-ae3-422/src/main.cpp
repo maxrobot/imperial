@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	// ======================== End Simulation =======================//
-	// printTime(tCPU_);
+	printTime(tCPU_);
 	MPI_Finalize();
 	return 0;
 }
