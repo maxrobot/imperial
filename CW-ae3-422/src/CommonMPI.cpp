@@ -134,6 +134,7 @@ MPI_Status status;
 				U[pnt] = d2[i];
 			}
 		}
+		delete[] temp;
 	}
 
 	void exchangeVecConts(double *U, int Nghost_, int Sghost_)
@@ -170,6 +171,7 @@ MPI_Status status;
 				U[pnt]+= d2[i];
 			}
 		}
+		delete[] temp;
 	}
 
 	void getLeftData(double *d1, double *d2)

@@ -107,6 +107,7 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 	double *Ud			= new double[Nvar_]();
 	double *Udd			= new double[Nvar_]();
 	double *tmp			= new double[Nvar_]();
+	double sum;
 
 	// Constanst and coefficients
 	const double beta_(.25);
@@ -130,13 +131,11 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 
 	for (int i = 0; i < nite_; ++i)
 	{	// Create Dynamic Force
-		assignArr(F, 0., Nvar_);
-		assignArr(tmp, 0., Nvar_);
 		updateVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
 		// Sum U, Ud and, Udd with coefficients, the add forces to sum...
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = ((co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]));
+		{	sum = ((co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]));
 			F[i] += M[i]*sum;
 		}
 
@@ -149,13 +148,13 @@ void solveSparseImplicit(double *K, double *M, double *F, double lx_e, double qx
 		// Now update Udd
 		F77NAME(dcopy)(Nvar_, Udd, 1, tmp, 1);   
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = (co2_*Ud[i]) + (co3_*Udd[i]);
+		{	sum = (co2_*Ud[i]) + (co3_*Udd[i]);
 			Udd[i] = (co1_*(F[i]-U[i])) - sum;
 		}
 
 		// Now update Ud
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = (co4_*tmp[i]) + (co5_*Udd[i]);
+		{	sum = (co4_*tmp[i]) + (co5_*Udd[i]);
 			Ud[i] = Ud[i] + sum;
 		}
 
@@ -174,6 +173,7 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 	double *Ud			= new double[Nvar_]();
 	double *Udd			= new double[Nvar_]();
 	double *tmp			= new double[Nvar_]();
+	double sum;
 
 	// Constanst and coefficients
 	const double beta_(.25);
@@ -225,13 +225,11 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
     
 	for (int i = 0; i < nite_; ++i)
 	{	// Create Dynamic Force
-		assignArr(F, 0., Nvar_);
-		assignArr(tmp, 0., Nvar_);
 		updateParVars(F, lx_e, qx_, qy_, Nx_g, Nvar_, i, nite_);
 
 		// Update RHS
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = ( (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]) );
+		{	sum = ( (co1_*U[i]) + (co2_*Ud[i]) + (co3_*Udd[i]) );
 			F[i] += M[i]*sum;
 		}
 
@@ -244,22 +242,15 @@ void solveParSparseImplicit(double *K, double *M, double *F, double lx_e, double
 		// Now update Udd
 		F77NAME(dcopy)(Nvar_, Udd, 1, tmp, 1);
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = (co2_*Ud[i]) + (co3_*Udd[i]);
+		{	sum = (co2_*Ud[i]) + (co3_*Udd[i]);
 			Udd[i] = (co1_*(F[i]-U[i])) - sum;
 		}
-		// for (int i = 0; i < Nvar_; ++i)
-		// { 	Udd[i] = (co1_*(F[i]-U[i])) - (co2_*Ud[i]) -
-		// 		(co3_*Udd[i]);;
-		// }
 
 		// Now update Ud
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = (co4_*tmp[i]) + (co5_*Udd[i]);
+		{	sum = (co4_*tmp[i]) + (co5_*Udd[i]);
 			Ud[i] = Ud[i] + sum;
 		}
-		// for (int i = 0; i < Nvar_; ++i)
-		// {	Ud[i] = Ud[i] + (co4_*tmp[i]) + (co5_*Udd[i]);
-		// }
 
 		// Now update U
 		F77NAME(dcopy)(Nvar_, F, 1, U, 1);

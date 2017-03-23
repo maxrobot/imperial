@@ -1,0 +1,11 @@
+#!/bin/bash
+for k in {24,48,72,96,144,192,288};
+	do for j in {1..2};
+		do for i in {1..3};
+			do /usr/bin/time -o time$i mpiexec -np $j bin/hpc_solver task4/size$k;
+		done &&  paste time1 time2 time3 > np$j && rm time1 time2 time3;
+	done
+	mv np1 np1el$k;
+	mv np2 np2el$k;
+done &&
+mv np* output/data/timing_task4/

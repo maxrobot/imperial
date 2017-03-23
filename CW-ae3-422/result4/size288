@@ -7,9 +7,9 @@ equation: dynamic
 integration: explicit
 matrix format: sparse
 simulation time (s): 1
-number of iterations: 10000
+number of iterations: 1500000
 output spacing: 1000
-number of elements: 24
+number of elements: 288
 
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000
