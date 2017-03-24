@@ -69,7 +69,7 @@ Figure \ref{fig:task1} shows the analytical solution against computed solution u
 
 \begin{figure}[!htb]
   \centering
-	  \includegraphics[width=.75\linewidth, clip=true, trim=0cm 0cm 0cm 0cm]{task1}
+	  \includegraphics[width=.5\linewidth, clip=true, trim=0cm 0cm 0cm 0cm]{task1}
   \caption{Static against analytical solutions.}
   \label{fig:task1}
 \end{figure}%
@@ -80,6 +80,84 @@ Matrices have been set up in banded format to minimise the memory footprint. The
 %	QUESTION 2
 %----------------------------------------------------------------------------------------
 \section*{Question 2}
+
+For task 2 the solution was found using an explicit central-difference scheme. As in task 1 banded storage was utilised and BLAS level 3 routine dgbmv in order to find the solution.
+
+\begin{figure}[!htb]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{task2_amplitude}
+  \caption{Amplitude of oscillations.}
+  \label{fig:amplitude2}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{task2_deflection}
+  \caption{Oscilation with different loading factors.}
+  \label{fig:deflection2}
+\end{subfigure}
+\caption{Grid Independence Test.}
+\label{fig:task2}
+\end{figure}
+
+Figure \ref{fig:deflection2} shows the deflection at the midpoint against time, for a number of different loading times. To the left of which is figure \ref{fig:amplitude2} which shows the amplitude of oscillations as the loading time is increased from time $0 - 1 (s)$ in steps of size $\Delta t = 0.001 s$. As load time increases the amplitude of oscillations decrease. However 
+%----------------------------------------------------------------------------------------
+%	QUESTION 3
+%----------------------------------------------------------------------------------------
+\section*{Question 3}
+
+Task 3 required the system to be solved using the Newmark implicit integration scheme. Again all matrices were created in banded format and solved using BLAS level 3 routines.
+
+\begin{figure}[!htb]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{task3_amplitude}
+  \caption{Amplitude of oscillations.}
+  \label{fig:amplitude3}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=1\linewidth]{task3_deflection}
+  \caption{Oscilation with different loading factors.}
+  \label{fig:deflection3}
+\end{subfigure}
+\caption{Grid Independence Test.}
+\label{fig:task3}
+\end{figure}
+
+Using the implicit scheme the beam exhibits an almost identical response to that of the explicit integration scheme, which is to be expected. Again some sort of frequency response is seen in that certain frequencies have significantly lower amplitude than others however the general trend is to an oscillation at order of magnitude $\approx 1mm$.
+
+However with the Newmark method a solution is found using far fewer time steps due to the implicit nature of the scheme.
+
+%----------------------------------------------------------------------------------------
+%	QUESTION 4
+%----------------------------------------------------------------------------------------
+\section*{Question 4}
+
+In task 4 the beam was solved across multiple processors. To do so MPI has been implemented into the code and the domain split between processors. In order to keep the problem size as small as possible but still keep an even distribution across nodes, the domain has been split with an overlap region at the centre-point. The system is solved using the dgemv on a single core and exchanging contributions at the end of each time step. However from the upper rank the overlap contributions must be ignored to keep the system correct.
+
+\begin{figure}[!htb]
+  \centering
+	  \includegraphics[width=.5\linewidth, clip=true, trim=0cm 0cm 0cm 0cm]{task4_timing}
+  \caption{Time to solution as problem size increases with 1 and 2 processors.}
+  \label{fig:timing4}
+\end{figure}%
+
+Above figure \ref{fig:timing4} shows the time to solution for different problem sizes. Clear to see that except for small problems less than 200 elements the MPI routines are significantly quicker.
+
+%----------------------------------------------------------------------------------------
+%	QUESTION 5
+%----------------------------------------------------------------------------------------
+\section*{Question 5}
+
+\begin{figure}[!htb]
+  \centering
+	  \includegraphics[width=.5\linewidth, clip=true, trim=0cm 0cm 0cm 0cm]{task5_timing}
+  \caption{Time to solution as problem size increases with 1, 2 and 4 processors.}
+  \label{fig:timing5}
+\end{figure}%
 
 %---------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY

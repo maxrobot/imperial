@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.9.30)  24 MAR 2017 11:21
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.9.30)  24 MAR 2017 18:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -543,49 +543,116 @@ Underfull \hbox (badness 10000) in paragraph at lines 63--63
 File: ./images/task1.png Graphic file (type png)
  <use ./images/task1.png>
 Package pdftex.def Info: ./images/task1.png used on input line 72.
-(pdftex.def)             Requested size: 362.77263pt x 291.88159pt.
+(pdftex.def)             Requested size: 241.84842pt x 194.57736pt.
 
 [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+<./images/task2_amplitude.png, id=18, 517.4532pt x 413.3844pt>
+File: ./images/task2_amplitude.png Graphic file (type png)
 
-Package natbib Warning: Citation `Lapack1999' on page 2 undefined on input line
- 77.
+<use ./images/task2_amplitude.png>
+Package pdftex.def Info: ./images/task2_amplitude.png used on input line 90.
+(pdftex.def)             Requested size: 241.84842pt x 193.21207pt.
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 93.
+ (/usr/share/texmf/tex/latex/lm/omllmm.fd
+File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 93.
 
 
-Package natbib Warning: Citation `Blas1979' on page 2 undefined on input line 7
-7.
+(/usr/share/texmf/tex/latex/lm/omslmsy.fd
+File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 93.
 
-No file hpc_01220997.bbl.
 
-Package natbib Warning: There were undefined citations.
+(/usr/share/texmf/tex/latex/lm/omxlmex.fd
+File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 93.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 93.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 93.
+LaTeX Font Info:    Try loading font information for U+msa on input line 93.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 96.
-[2 <./images/task1.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 96.
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 93.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+<./images/task2_deflection.png, id=19, 693.59125pt x 566.115pt>
+File: ./images/task2_deflection.png Graphic file (type png)
+
+<use ./images/task2_deflection.png>
+Package pdftex.def Info: ./images/task2_deflection.png used on input line 96.
+(pdftex.def)             Requested size: 241.84842pt x 197.40033pt.
+
+<./images/task3_amplitude.png, id=22, 517.4532pt x 413.3844pt>
+File: ./images/task3_amplitude.png Graphic file (type png)
+
+<use ./images/task3_amplitude.png>
+Package pdftex.def Info: ./images/task3_amplitude.png used on input line 116.
+(pdftex.def)             Requested size: 241.84842pt x 193.21207pt.
+
+<./images/task3_deflection.png, id=23, 693.59125pt x 566.115pt>
+File: ./images/task3_deflection.png Graphic file (type png)
+
+<use ./images/task3_deflection.png>
+Package pdftex.def Info: ./images/task3_deflection.png used on input line 122.
+(pdftex.def)             Requested size: 241.84842pt x 197.40033pt.
+ [2 <./images/task1.png> <./images/task2_amplitude.png> <./images/task2_deflect
+ion.png>]
+<./images/task4_timing.png, id=40, 524.6802pt x 407.6028pt>
+File: ./images/task4_timing.png Graphic file (type png)
+
+<use ./images/task4_timing.png>
+Package pdftex.def Info: ./images/task4_timing.png used on input line 143.
+(pdftex.def)             Requested size: 241.84842pt x 187.87894pt.
+
+<./images/task5_timing.png, id=42, 509.5035pt x 407.6028pt>
+File: ./images/task5_timing.png Graphic file (type png)
+
+<use ./images/task5_timing.png>
+Package pdftex.def Info: ./images/task5_timing.png used on input line 155.
+(pdftex.def)             Requested size: 241.84842pt x 193.4765pt.
+ [3 <./images/task4_timing.png> <./images/task3_amplitude.png> <./images/task3_
+deflection.png>] (./hpc_01220997.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 172.
+ [4 <./images/task5_timing.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 172.
  (./hpc_01220997.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 96.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 96.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 172.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 172.
 Package rerunfilecheck Info: File `hpc_01220997.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 96.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 172.
  ) 
 Here is how much of TeX's memory you used:
- 9887 strings out of 493304
- 142392 string characters out of 6139871
- 263155 words of memory out of 5000000
- 13229 multiletter control sequences out of 15000+600000
- 27028 words of font info for 22 fonts, out of 8000000 for 9000
+ 10021 strings out of 493304
+ 145100 string characters out of 6139871
+ 266155 words of memory out of 5000000
+ 13312 multiletter control sequences out of 15000+600000
+ 40559 words of font info for 38 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 42i,6n,58p,336b,350s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 42i,8n,58p,551b,483s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dv
-ips/lm/lm-rmsc.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/sha
-re/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/
-lm/lmcsc10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb>
-Output written on hpc_01220997.pdf (2 pages, 133738 bytes).
+ips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/s
+hare/texmf/fonts/enc/dvips/lm/lm-rmsc.enc}</usr/share/texmf/fonts/type1/public/
+lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmcsc10.pfb></usr/share/t
+exmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/l
+mr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr9.pfb></usr/share/texmf/fon
+ts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pf
+b>
+Output written on hpc_01220997.pdf (4 pages, 517894 bytes).
 PDF statistics:
- 44 PDF objects out of 1000 (max. 8388607)
- 32 compressed objects within 1 object stream
- 6 named destinations out of 1000 (max. 500000)
- 12 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 97 PDF objects out of 1000 (max. 8388607)
+ 68 compressed objects within 1 object stream
+ 18 named destinations out of 1000 (max. 500000)
+ 54 words of extra memory for PDF output out of 10000 (max. 10000000)
 

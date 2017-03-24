@@ -1,0 +1,371 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: hpc_01220997.aux
+The style file: unsrt.bst
+Database file #1: /home/fmg215/Documents/latex/myrefs.bib
+Missing "}" in string command---line 37 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : @string{AE    = "Applied Energy"}
+(Error may have been on previous line)
+I'm skipping whatever remains of this command
+I was expecting a `,' or a `}'---line 301 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   year    = 1998,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 325 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   edition = 2
+ :              nd,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 479 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   edition = 2
+ :              nd,
+I'm skipping whatever remains of this entry
+You're missing a field part---line 790 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   owner   = 
+ :             ,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 1511 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = TT,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 1521 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = QY,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 1529 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = QY,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 1651 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   volume  = early 
+ :                   edition,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 1903 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   pages   = 345
+ :                -376,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 2074 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = SC,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 2189 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = TT,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 2218 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = SJC,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field part---line 2426 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   number  = 
+ :             ,
+I'm skipping whatever remains of this entry
+You're missing a field name---line 2497 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : %  month   = {June},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 2519 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : %  month   = {June},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 3767 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   pages   = 111
+ :                -123,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 3823 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = TT,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 3833 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = YMC,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 4172 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = TT,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 4181 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = YMC,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 4191 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = TT,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 4210 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = QY,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field part---line 4396 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   number  = 
+ :             ,
+I'm skipping whatever remains of this entry
+You're missing a field part---line 4483 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   year    = 
+ :             ,
+I'm skipping whatever remains of this entry
+You're missing a field part---line 4525 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   editor  = 
+ :             ,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 4550 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   volume  = 174
+ :                (2),
+I'm skipping whatever remains of this entry
+You're missing a field part---line 4913 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   volume  = 
+ :             ,
+I'm skipping whatever remains of this entry
+You're missing a field part---line 4922 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   volume  = 
+ :             ,
+I'm skipping whatever remains of this entry
+You're missing a field name---line 5396 of file /home/fmg215/Documents/latex/myrefs.bib
+ :  
+ :  % month   = {JUN},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 5475 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = QY,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 5796 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : %?  volume  = {1},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 5923 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   pages   = 3218
+ :                 -3220,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 6065 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   conference = IASTED 
+ :                       International Conference on Applied Simulation an Modelling,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 6384 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = AKP,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 6552 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   volume  = in 
+ :                press,
+I'm skipping whatever remains of this entry
+You're missing a field name---line 6674 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : %  address = {National Aeronautics and Space Administration. Ames Research Center, Moffett Field, CA},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field part---line 6899 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   number  = 
+ :             ,
+I'm skipping whatever remains of this entry
+You're missing a field name---line 7022 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : %  number  = 3,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 7141 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = TT,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field part---line 7797 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   number  = 
+ :             ,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 8216 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   pages   = 40
+ :               -45,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 8363 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   owner   = TT,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 8508 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   pages   = {770-774},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 8537 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   pages   = {70-77},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field part---line 8766 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   volume  = 
+ :             ,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 9143 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   year    = 2001,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing a field name---line 9291 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   keywords= IBC, 
+ :                  {review},
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 9723 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   pages   = 427
+ :                -433,
+I'm skipping whatever remains of this entry
+You're missing a field part---line 9907 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   volume  = 
+ :             ,
+I'm skipping whatever remains of this entry
+You're missing a field name---line 10402 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : %  title   = {{Product  Specification  ePLB  C020B  rev-4.1  CELL  LEVEL.pdf}},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10487 of file /home/fmg215/Documents/latex/myrefs.bib
+ : publisher  = OpenCFD 
+ :                      \textsuperscript{\textregistered} Ltd.,
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10493 of file /home/fmg215/Documents/latex/myrefs.bib
+ :   
+ :   booktitle = {OpenCFD Ltd, http://www.openfoam.org/},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10515 of file /home/fmg215/Documents/latex/myrefs.bib
+ : year       = "
+ :               2008",
+I'm skipping whatever remains of this entry
+"{" immediately follows a field part---line 10521 of file /home/fmg215/Documents/latex/myrefs.bib
+ : note       = \url
+ :                  {http://www.mcs.anl.gov/~fischer/nek5000/sprague_nek5000_dec2010.pdf},
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10530 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : owner      = FMG,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10537 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : owner      = FMG,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10544 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : owner      = FMG,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10551 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : owner      = FMG,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10558 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : owner      = FMG,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Unbalanced braces---line 10563 of file /home/fmg215/Documents/latex/myrefs.bib
+ : note       = "\url{http://nek5000.mcs.anl.gov/index.php/Building_and_Using_Nek_/_MOAB}
+ :                                                                                       },
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10572 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : note       = "\url{http://trac.mcs.anl.gov/projects/ITAPS/wiki/MOAB}",
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10581 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : owner      = FMG,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10588 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : owner      = FMG,
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10594 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : note       = "\url{https://svn.mcs.anl.gov/repos/ITAPS/MOAB/branches/Version4.0/README.IO}",
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10601 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : note       = "\url{http://lists.mcs.anl.gov/pipermail/nek5000-users/2010-June/000645.html}",
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10607 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : note       = "\url{http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/introvisc/node9.html}",
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10613 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : note       = " Efluids - Bicycle Aerodynamics",
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10619 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : note       = "Online Blog",
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 10625 of file /home/fmg215/Documents/latex/myrefs.bib
+ : 
+ : year       = "2011"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--there's a number but no volume in Blas1979
+You've used 2 entries,
+            1791 wiz_defined-function locations,
+            978 strings with 15048 characters,
+and the built_in function-call counts, 571 in all, are:
+= -- 37
+> -- 49
+< -- 0
++ -- 17
+- -- 15
+* -- 53
+:= -- 106
+add.period$ -- 6
+call.type$ -- 2
+change.case$ -- 2
+chr.to.int$ -- 0
+cite$ -- 3
+duplicate$ -- 19
+empty$ -- 44
+format.name$ -- 15
+if$ -- 117
+int.to.chr$ -- 0
+int.to.str$ -- 2
+missing$ -- 3
+newline$ -- 13
+num.names$ -- 2
+pop$ -- 7
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 3
+stack$ -- 0
+substring$ -- 21
+swap$ -- 2
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 1
+while$ -- 3
+width$ -- 3
+write$ -- 25
+(There were 70 error messages)

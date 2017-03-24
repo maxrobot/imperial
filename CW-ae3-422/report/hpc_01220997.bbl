@@ -1,0 +1,15 @@
+\begin{thebibliography}{1}
+
+\bibitem{Lapack1999}
+E.~Anderson, Z.~Bai, C.~Bischof, S.~Blackford, J.~Demmel, J.~Dongarra,
+  J.~Du~Croz, A.~Greenbaum, S.~Hammarling, A.~McKenney, and D.~Sorensen.
+\newblock {\em {LAPACK} Users' Guide}.
+\newblock Society for Industrial and Applied Mathematics, Philadelphia, PA,
+  third edition, 1999.
+
+\bibitem{Blas1979}
+C.~L. Lawson, R.~J. Hanson, D.~Kincaid, and F.~T. Krogh.
+\newblock Basic linear algebra subprograms for fortran usage.
+\newblock {\em ACM Trans. Math. Soft.}, (3):308--323, 1979.
+
+\end{thebibliography}
