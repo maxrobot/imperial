@@ -1,6 +1,6 @@
 # Declaration of variables
 CC = mpicxx
-CC_FLAGS = -O3 -std=c++11
+CC_FLAGS = -O2 -std=c++11
 LD_FLAGS = -lscalapack-openmpi -lblacs-openmpi -lblacsCinit-openmpi -llapack -lblas
 DEBUG_FLAGS = -g
 
@@ -90,16 +90,16 @@ help: author
 	@echo
 
 task1:
-	@mpiexec -np 1 bin/hpc_solver task1.txt && python output/scripts/task1_sol.py
+	@mpiexec -np 1 bin/hpc_solver param_file/task1.txt && python output/scripts/task1_sol.py
 
 task2:
-	@mpiexec -np 1 bin/hpc_solver task2.txt && python output/scripts/task2_sol.py
+	@mpiexec -np 1 bin/hpc_solver param_file/task2.txt && python output/scripts/task2_sol.py
 
 task3:
-	@mpiexec -np 1 bin/hpc_solver task3.txt && python output/scripts/task3_sol.py
+	@mpiexec -np 1 bin/hpc_solver param_file/task3.txt && python output/scripts/task3_sol.py
 
 task4:
-	@mpiexec -np 2 bin/hpc_solver task4.txt && python output/scripts/task4_sol.py
+	@mpiexec -np 2 bin/hpc_solver param_file/task4.txt && python output/scripts/task4_sol.py
 
 task5:
-	@mpiexec -np 4 bin/hpc_solver task5.txt && python output/scripts/task5_sol.py
+	@mpiexec -np 4 bin/hpc_solver param_file/task5.txt && python output/scripts/task5_sol.py

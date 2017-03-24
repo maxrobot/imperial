@@ -1,0 +1,23 @@
+===============================================================================
+Input file
+===============================================================================
+
+Simulation Parameters =========================================================
+equation: dynamic
+integration: implicit
+matrix format: sparse
+simulation time (s): 1
+number of iterations: 30000
+output spacing: 1000
+number of elements: 480
+
+Physical Parameters ===========================================================
+youngs modulus (mpa): 210000
+rho (ton/mm^3): 7850E-12
+axial uniform load (n/mm): 0
+traverse uniform load (n/mm): 1
+
+Beam Dimensions ===============================================================
+beam length (mm): 10000
+cross-sectional width (mm): 100
+cross-sectional height (mm): 120

@@ -6,24 +6,25 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
 
-cnt = [24,48,92,144,192,288]
-values = np.zeros((3,6))
+cnt = [24,48,72,96,144,192,288,480,984]
+values = np.zeros((3,9))
 
 pnt2 = 0
 for i in [1,2,4]:
 	pnt = 0
 	for j in cnt:
-		crs = open('./output/data/timing_task5/np' + str(i) +'el' + str(j),'r')
+		crs = open('./output/data/timing_task5/ex' + str(i) +'el' + str(j),'r')
 		D =  np.loadtxt(crs)
 		avg = np.mean(D, axis=0)
-		values[pnt2,pnt] = avg
+		values[pnt2,pnt] = avg/i
 		pnt += 1
-	plt.plot(cnt[:],values[pnt2,:])
+	plt.plot(cnt[:],values[pnt2,:],label='Procs: '+str(i), lw=2.5)
 	pnt2 += 1
 
 plt.title('Time to solution for Np =  1, 2 and 4')
 plt.xlabel('Number of elements')
 plt.ylabel('Time (s)')
+plt.grid(True)
 plt.legend(bbox_to_anchor=(1, 0), loc=4, borderaxespad=0., title="Num. of proc.")
 plt.savefig('./output/images/task5_timing',bbox_inches='tight')
 
