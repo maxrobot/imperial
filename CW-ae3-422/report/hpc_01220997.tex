@@ -65,7 +65,7 @@
 %	QUESTION 1
 %----------------------------------------------------------------------------------------
 \section*{Question 1}
-This first task asks for the solution
+Figure \ref{fig:task1} shows the analytical solution against computed solution using the static equations. The computed solution shows strong correlation to that of the analytical.
 
 \begin{figure}[!htb]
   \centering
@@ -74,6 +74,12 @@ This first task asks for the solution
   \label{fig:task1}
 \end{figure}%
 
+Matrices have been set up in banded format to minimise the memory footprint. Then the system is solved utilising Lapack\cite{Lapack1999} function DGBSV. However to utilise the Fortran routines in BLAS\cite{Blas1979}, column-major storage format has been utilised which goes against natural C++ format.
+
+%----------------------------------------------------------------------------------------
+%	QUESTION 2
+%----------------------------------------------------------------------------------------
+\section*{Question 2}
 
 %---------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY

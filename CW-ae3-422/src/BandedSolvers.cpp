@@ -15,6 +15,7 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 	double *Un_g	= new double[Nvar_]();
 	double *Mt_		= new double[Nvar_]();
 	double *MKU_o	= new double[Nvar_]();
+	double sum;
 
 	int kl = 4;
 	int ku = 4;
@@ -25,8 +26,8 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
     for (int i = 0; i < Nvar_; ++i)
     {	int pnt = 4 + (i*9);
     	K[pnt] -= 2*M[i];
-    }    	
-
+    }
+	
 	// =================== Create S Matrix ====================//
 	// Start marching through time...
 	for (int i = 0; i < nite_; ++i)
@@ -42,7 +43,7 @@ void solveSparseExplicit(double *K, double *M, double *F, double lx_e,
 
 		// Calculate updated M*U{n+1} = S
 		for (int i = 0; i < Nvar_; ++i)
-		{	double sum = F[i] - MKU_o[i] - Mt_[i]*Un_g[i];
+		{	sum = F[i] - MKU_o[i] - Mt_[i]*Un_g[i];
 			Un_g[i] = U[i]; // Update the old variable...
 			U[i] = sum;
 		}
