@@ -1,0 +1,14 @@
+##-----------------------------------------------------------------------------------------------##
+## Title: HPC AE3-422: COURSEWORK
+## Owner: Friedrich M. Grabner - 01220997
+## Description: Solver to calculate beam deflection using multiple numerical methods.
+##-----------------------------------------------------------------------------------------------##
+#  Usage:
+#	compile: 	make
+#	
+#	Run task 1: make task1
+#	Run task 2: make task2
+#	Run task 3: make task3
+#	Run task 4: make task4
+#	Run task 5: make task5
+##-----------------------------------------------------------------------------------------------##

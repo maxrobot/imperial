@@ -7,7 +7,7 @@ equation: static
 simulation time (s): 1
 number of iterations: 10000
 output spacing: 1000
-number of elements: 8
+number of elements: 24
 
 Physical Parameters ===========================================================
 youngs modulus (mpa): 210000
