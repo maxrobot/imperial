@@ -7,7 +7,7 @@
 #include <sstream>
 #include <iomanip>
 
-// Define LAPACK Shit ###########################################
+// Define LAPACK ###################################################
 #define F77NAME(x) x##_
 extern "C" {
     double F77NAME(ddot)(const int &N, const double *X, const int &incx, 

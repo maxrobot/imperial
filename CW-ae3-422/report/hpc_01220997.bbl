@@ -12,4 +12,18 @@ C.~L. Lawson, R.~J. Hanson, D.~Kincaid, and F.~T. Krogh.
 \newblock Basic linear algebra subprograms for fortran usage.
 \newblock {\em ACM Trans. Math. Soft.}, (3):308--323, 1979.
 
+\bibitem{scalapack1997}
+L.~S. Blackford, J.~Choi, A.~Cleary, E.~D'Azevedo, J.~Demmel, I.~Dhillon,
+  J.~Dongarra, S.~Hammarling, G.~Henry, A.~Petitet, K.~Stanley, D.~Walker, and
+  R.~C. Whaley.
+\newblock {\em {ScaLAPACK} Users' Guide}.
+\newblock Society for Industrial and Applied Mathematics, Philadelphia, PA,
+  1997.
+
+\bibitem{MPI-2.2}
+{MPI Forum}.
+\newblock {\textsf{MPI}: A Message-Passing Interface Standard. Version 2.2},
+  September 4th 2009.
+\newblock available at: \url{http://www.mpi-forum.org} (Dec. 2009).
+
 \end{thebibliography}
